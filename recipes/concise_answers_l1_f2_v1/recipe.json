@@ -1,0 +1,62 @@
+{
+  "artifacts": {
+    "json_path": "",
+    "markdown_path": "",
+    "results_path": ""
+  },
+  "benchmark": {
+    "controls": {},
+    "methods_compared": [],
+    "metrics": {},
+    "prompt_set_id": "",
+    "status": "draft",
+    "summary": ""
+  },
+  "created_at": "2026-05-27T13:23:48Z",
+  "created_by": "qwen-scope-bench",
+  "discovery": {
+    "candidate_count": 0,
+    "candidate_layers": [],
+    "method": "manual",
+    "negative_prompts": [],
+    "positive_prompts": [],
+    "ranking_metric": ""
+  },
+  "examples": [],
+  "interventions": [
+    {
+      "feature_id": 2,
+      "injection_mode": "all_positions",
+      "layer": 1,
+      "position_policy": "all_generated_tokens",
+      "sign": "positive",
+      "strength": 4.0
+    }
+  ],
+  "limitations": [],
+  "model": {
+    "config_name": "configs/fake_test.yaml",
+    "dtype": "float32",
+    "model_id": "fake/qwen-scope-test",
+    "sae_id": "fake/sae-test"
+  },
+  "provenance": {
+    "command": "",
+    "git_commit": "",
+    "modal_gpu": "",
+    "python_version": "",
+    "seed": 0,
+    "torch_version": "",
+    "transformers_version": ""
+  },
+  "recipe_id": "concise_answers_l1_f2_v1",
+  "schema_version": "0.1.0",
+  "side_effects": [],
+  "status": "draft",
+  "target_behavior": {
+    "description": "Steer toward concise answers.",
+    "name": "concise_answers",
+    "negative_description": "Less concise answers.",
+    "positive_description": "More concise answers."
+  }
+}

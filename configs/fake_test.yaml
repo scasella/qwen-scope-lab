@@ -1,0 +1,17 @@
+model_id: fake/qwen-scope-test
+sae_id: fake/sae-test
+top_k: 2
+num_layers: 2
+d_model: 4
+d_sae: 6
+default_layer: 1
+default_max_new_tokens: 4
+torch_dtype: float32
+device: cpu
+sae_cache_max_layers: 1
+hf_cache_dir: /tmp/qwen-scope-test-cache
+trust_remote_code: false
+device_map:
+low_cpu_mem_usage: false
+local_files_only: true
+notebook_path: /tmp/qwen-scope-feature-notebook.json

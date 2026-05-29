@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qwen Scope Steering — GUI Redesign Brainstorm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080b11; --bg-2:#0c1119; --surface:#121925; --surface-2:#19222f; --surface-3:#212c3b;
+    --border:#26313f; --border-soft:#1c2533;
+    --text:#e8eef5; --dim:#94a3b6; --faint:#5d6a7a;
+    --brand:#5eead4; --brand-dim:#2dd4bf;
+    --pos:#f0883e; --neg:#5b8def;
+    --ok:#3fb950; --warn:#d6a429; --bad:#f0626b; --draft:#6e7d90;
+    --heat-0:#0e2a33; --heat-1:#0f5a66; --heat-2:#13a3a0; --heat-3:#3ce0c8; --heat-4:#a9fff0;
+    --r:14px; --r-sm:9px;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"Inter",system-ui,-apple-system,sans-serif;
+    --serif:"Newsreader",Georgia,serif;
+    --sp:24px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:radial-gradient(1200px 700px at 75% -10%, #102234 0%, transparent 55%),
+               radial-gradient(900px 600px at 0% 0%, #0d1a26 0%, transparent 50%),
+               var(--bg);
+    color:var(--text); font-family:var(--sans); line-height:1.6;
+    -webkit-font-smoothing:antialiased; font-size:16px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+  a{color:var(--brand);text-decoration:none}
+
+  /* ---- top bar ---- */
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+    background:rgba(8,11,17,.72);border-bottom:1px solid var(--border-soft)}
+  .topbar .wrap{display:flex;align-items:center;gap:16px;height:58px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.01em}
+  .logo .dot{width:11px;height:11px;border-radius:50%;background:var(--brand);
+    box-shadow:0 0 14px var(--brand)}
+  .topnav{margin-left:auto;display:flex;gap:6px;font-size:13px}
+  .topnav a{color:var(--dim);padding:6px 11px;border-radius:8px;transition:.15s}
+  .topnav a:hover{color:var(--text);background:var(--surface)}
+  .badge-mono{font-family:var(--mono);font-size:11px;color:var(--faint);
+    border:1px solid var(--border);border-radius:6px;padding:3px 8px}
+
+  /* ---- hero ---- */
+  .hero{padding:96px 0 64px;position:relative}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--brand-dim);margin-bottom:22px}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(38px,6vw,68px);line-height:1.04;
+    letter-spacing:-.02em;margin-bottom:24px}
+  h1 em{font-style:italic;color:var(--brand)}
+  .lede{font-size:20px;color:var(--dim);max-width:640px;line-height:1.55}
+  .lede strong{color:var(--text);font-weight:500}
+  .hero-meta{display:flex;gap:28px;margin-top:40px;flex-wrap:wrap}
+  .hero-meta div{font-size:13px;color:var(--faint)}
+  .hero-meta b{display:block;font-family:var(--mono);font-size:22px;color:var(--text);
+    font-weight:500;margin-bottom:2px}
+
+  /* ---- section scaffold ---- */
+  section{padding:70px 0;border-top:1px solid var(--border-soft)}
+  .sec-tag{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .sec-tag::before{content:"";width:26px;height:1px;background:var(--brand)}
+  h2{font-family:var(--serif);font-weight:500;font-size:clamp(28px,4vw,42px);
+    letter-spacing:-.015em;margin-bottom:18px;line-height:1.1}
+  h3{font-size:20px;font-weight:600;margin-bottom:10px;letter-spacing:-.01em}
+  .sub{font-size:17px;color:var(--dim);max-width:680px;margin-bottom:36px}
+  p{color:var(--dim);margin-bottom:14px}
+  p strong{color:var(--text);font-weight:600}
+  .mono{font-family:var(--mono)}
+
+  /* ---- cards / grid ---- */
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--surface) 0%,var(--bg-2) 100%);
+    border:1px solid var(--border);border-radius:var(--r);padding:24px;position:relative}
+  .card.glow{box-shadow:0 0 0 1px rgba(94,234,212,.12),0 18px 50px -28px rgba(45,212,191,.35)}
+  .num-chip{font-family:var(--mono);font-size:12px;color:var(--brand);
+    border:1px solid rgba(94,234,212,.3);border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:12px}
+
+  /* problem list */
+  .prob{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid var(--border-soft)}
+  .prob:last-child{border-bottom:none}
+  .prob .ic{flex:none;width:34px;height:34px;border-radius:9px;background:var(--surface-2);
+    display:grid;place-items:center;font-family:var(--mono);color:var(--bad);font-size:15px;border:1px solid var(--border)}
+  .prob h4{font-size:16px;margin-bottom:3px;color:var(--text);font-weight:600}
+  .prob p{margin:0;font-size:14.5px}
+  .prob code{font-family:var(--mono);font-size:12.5px;background:var(--bg);padding:2px 6px;
+    border-radius:5px;color:#f0a868;border:1px solid var(--border-soft)}
+
+  /* ---- mockup chrome ---- */
+  .mock{background:#0a0f17;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;
+    box-shadow:0 30px 70px -40px rgba(0,0,0,.9)}
+  .mock-bar{display:flex;align-items:center;gap:7px;padding:11px 15px;background:var(--bg-2);
+    border-bottom:1px solid var(--border-soft)}
+  .mock-bar i{width:11px;height:11px;border-radius:50%;background:#2a3340;display:block}
+  .mock-bar .ttl{margin-left:10px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .mock-body{padding:22px}
+  .caption{font-size:13.5px;color:var(--faint);margin-top:12px;font-style:italic}
+  .caption b{color:var(--dim);font-style:normal}
+
+  /* token heatmap */
+  .tokrow{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 16px}
+  .tok{font-family:var(--mono);font-size:14px;padding:8px 11px;border-radius:8px;
+    border:1px solid var(--border-soft);cursor:default;transition:.15s;position:relative}
+  .tok small{position:absolute;top:-7px;right:-4px;font-size:9px;color:var(--bg);
+    background:var(--brand);border-radius:20px;padding:1px 4px;font-weight:700}
+  .tok:hover{transform:translateY(-2px)}
+  .h0{background:var(--heat-0);color:#7fa6ab} .h1{background:var(--heat-1);color:#bfeef0}
+  .h2{background:var(--heat-2);color:#04221f} .h3{background:var(--heat-3);color:#042a25}
+  .h4{background:var(--heat-4);color:#04302a}
+
+  /* feature bar */
+  .fbar{display:flex;align-items:center;gap:12px;margin:9px 0;font-size:13px}
+  .fbar .fid{font-family:var(--mono);color:var(--dim);width:74px;flex:none}
+  .fbar .flabel{flex:none;width:150px;color:var(--text);font-size:12.5px;overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap}
+  .fbar .track{flex:1;height:9px;background:var(--bg);border-radius:20px;overflow:hidden;border:1px solid var(--border-soft)}
+  .fbar .fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--brand-dim),var(--heat-4))}
+  .fbar .val{font-family:var(--mono);color:var(--brand);width:48px;text-align:right;flex:none;font-size:12px}
+
+  /* diverging contrast bars */
+  .divrow{display:grid;grid-template-columns:110px 1fr 110px;align-items:center;gap:10px;margin:7px 0;font-size:12px}
+  .divrow .lab{font-family:var(--mono);color:var(--dim);text-align:center}
+  .divtrack{height:22px;position:relative;background:var(--bg);border-radius:6px;border:1px solid var(--border-soft);
+    display:flex;justify-content:center}
+  .divtrack .mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border)}
+  .divtrack .bl{position:absolute;right:50%;top:3px;bottom:3px;background:linear-gradient(90deg,transparent,var(--neg));border-radius:4px 0 0 4px}
+  .divtrack .br{position:absolute;left:50%;top:3px;bottom:3px;background:linear-gradient(90deg,var(--pos),transparent);border-radius:0 4px 4px 0}
+
+  /* steering studio */
+  .studio{display:grid;grid-template-columns:200px 1fr;gap:20px}
+  @media(max-width:680px){.studio{grid-template-columns:1fr}}
+  .dial-wrap{text-align:center}
+  .dial-val{font-family:var(--mono);font-size:34px;font-weight:600;color:var(--pos);margin-top:-6px}
+  .dial-cap{font-size:11px;color:var(--faint);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase}
+  .diff{font-family:var(--mono);font-size:13px;line-height:1.7;background:var(--bg);border:1px solid var(--border-soft);
+    border-radius:9px;padding:14px}
+  .diff .del{background:rgba(240,98,107,.16);color:#f3a0a6;border-radius:3px;text-decoration:line-through;padding:0 2px}
+  .diff .ins{background:rgba(94,234,212,.16);color:#8ff0e0;border-radius:3px;padding:0 2px}
+  .gauges{display:flex;gap:10px;margin-top:14px}
+  .gauge{flex:1;background:var(--bg);border:1px solid var(--border-soft);border-radius:9px;padding:11px 13px}
+  .gauge .gk{font-size:10.5px;color:var(--faint);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em}
+  .gauge .gv{font-family:var(--mono);font-size:19px;font-weight:600;margin-top:3px}
+  .gv.green{color:var(--ok)} .gv.teal{color:var(--brand)}
+
+  /* sweep filmstrip */
+  .strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-top:8px}
+  .frame{flex:none;width:128px;background:var(--bg);border:1px solid var(--border-soft);border-radius:9px;padding:11px}
+  .frame.center{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+  .frame .s{font-family:var(--mono);font-size:11px;text-align:center;margin-bottom:7px;color:var(--dim)}
+  .frame .s b{color:var(--pos)} .frame.neg .s b{color:var(--neg)}
+  .frame .t{font-size:11px;color:var(--faint);line-height:1.45}
+
+  /* scoreboard */
+  .score{margin:5px 0 4px}
+  .score .top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px}
+  .score .top .m{font-family:var(--mono);color:var(--dim)}
+  .score .top .v{font-family:var(--mono);color:var(--text)}
+  .score .tr{height:7px;background:var(--bg);border-radius:20px;overflow:hidden;border:1px solid var(--border-soft)}
+  .score .fl{height:100%;border-radius:20px}
+  .verdict{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:30px;font-size:13px;
+    font-weight:600;margin-top:4px}
+  .verdict.cand{background:rgba(214,164,41,.14);color:var(--warn);border:1px solid rgba(214,164,41,.3)}
+  .verdict.val{background:rgba(63,185,80,.14);color:var(--ok);border:1px solid rgba(63,185,80,.3)}
+
+  /* recipe cards */
+  .rcard{background:linear-gradient(165deg,var(--surface-2),var(--bg-2));border:1px solid var(--border);
+    border-radius:12px;padding:16px;position:relative;overflow:hidden}
+  .rcard::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+  .rcard.val::before{background:var(--ok)} .rcard.cand::before{background:var(--warn)}
+  .rcard.draft::before{background:var(--draft)}
+  .rcard .st{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    padding:2px 7px;border-radius:5px;display:inline-block;margin-bottom:9px}
+  .st.val{background:rgba(63,185,80,.15);color:var(--ok)} .st.cand{background:rgba(214,164,41,.15);color:var(--warn)}
+  .st.draft{background:rgba(110,125,144,.18);color:var(--draft)}
+  .rcard h4{font-size:15px;margin-bottom:5px}
+  .rcard .meta{font-family:var(--mono);font-size:11px;color:var(--faint);line-height:1.7}
+
+  /* direction switcher */
+  .dirtabs{display:flex;gap:8px;margin-bottom:26px;flex-wrap:wrap}
+  .dirtab{padding:13px 18px;border:1px solid var(--border);border-radius:11px;cursor:pointer;
+    background:var(--surface);transition:.18s;flex:1;min-width:200px}
+  .dirtab .n{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em}
+  .dirtab .t{font-weight:600;font-size:16px;margin:4px 0 2px}
+  .dirtab .d{font-size:12.5px;color:var(--dim)}
+  .dirtab.on{border-color:var(--brand);background:linear-gradient(180deg,rgba(94,234,212,.08),var(--surface));
+    box-shadow:0 0 0 1px rgba(94,234,212,.2)}
+  .dirpane{display:none;animation:fade .4s ease}
+  .dirpane.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* principle */
+  .princ{display:flex;gap:18px;padding:22px 0;border-bottom:1px solid var(--border-soft)}
+  .princ:last-child{border:none}
+  .princ .pn{font-family:var(--serif);font-size:40px;color:var(--surface-3);line-height:1;flex:none;width:54px}
+  .princ h3{margin-bottom:6px}
+  .princ p{margin:0;font-size:15px}
+
+  /* roadmap */
+  .phase{display:flex;gap:20px;padding:24px 0;border-bottom:1px solid var(--border-soft)}
+  .phase:last-child{border:none}
+  .phase .pl{flex:none;width:120px}
+  .phase .pl .pt{font-family:var(--mono);font-size:12px;color:var(--brand);letter-spacing:.1em}
+  .phase .pl .pw{font-size:12px;color:var(--faint);margin-top:3px}
+  .phase .pc{flex:1}
+  .phase h3{font-size:17px}
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--dim);
+    border:1px solid var(--border);border-radius:6px;padding:3px 9px;margin:4px 6px 0 0}
+
+  .pill{display:inline-flex;gap:7px;align-items:center;background:var(--surface);border:1px solid var(--border);
+    border-radius:30px;padding:7px 15px;font-size:13px;color:var(--dim);margin:4px 8px 4px 0}
+  .pill b{color:var(--brand)}
+
+  .rec{background:linear-gradient(135deg,rgba(94,234,212,.07),rgba(91,141,239,.05));
+    border:1px solid rgba(94,234,212,.25);border-radius:var(--r);padding:30px}
+  .rec h3{color:var(--brand)}
+
+  table.cmp{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+  table.cmp th{text-align:left;font-family:var(--mono);font-size:11px;color:var(--faint);
+    text-transform:uppercase;letter-spacing:.08em;padding:10px 12px;border-bottom:1px solid var(--border)}
+  table.cmp td{padding:13px 12px;border-bottom:1px solid var(--border-soft);color:var(--dim);vertical-align:top}
+  table.cmp td b{color:var(--text)}
+  .yes{color:var(--ok)} .no{color:var(--bad)} .mid{color:var(--warn)}
+
+  footer{padding:60px 0 80px;text-align:center;color:var(--faint);font-size:13px;border-top:1px solid var(--border-soft)}
+  .fade-edge{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <div class="logo"><span class="dot"></span> Qwen Scope Steering</div>
+  <span class="badge-mono">GUI REDESIGN · BRAINSTORM v1</span>
+  <nav class="topnav">
+    <a href="#diagnosis">Diagnosis</a>
+    <a href="#principles">Principles</a>
+    <a href="#directions">Directions</a>
+    <a href="#surfaces">Surfaces</a>
+    <a href="#platform">Platform</a>
+    <a href="#roadmap">Roadmap</a>
+  </nav>
+</div></div>
+
+<!-- HERO -->
+<header class="hero"><div class="wrap">
+  <div class="kicker">Interpretability, made tangible</div>
+  <h1>Stop <em>printing</em> activations.<br>Start <em>seeing</em> them.</h1>
+  <p class="lede">The backend already speaks rich, structured truth — token-level feature activations, contrastive diffs, causal steering deltas, seven-way control benchmarks. The current GUI flattens all of it into <strong>tables of floats and JSON dumps</strong>. This is a brainstorm for a workbench that turns that data into a <strong>microscope you want to look through</strong>.</p>
+  <div class="hero-meta">
+    <div><b>8 → 1</b>siloed tabs become one loop</div>
+    <div><b>0</b>visualizations today</div>
+    <div><b>7</b>benchmark controls to make legible</div>
+    <div><b>3</b>design directions explored below</div>
+  </div>
+</div></header>
+
+<!-- DIAGNOSIS -->
+<section id="diagnosis"><div class="wrap">
+  <div class="sec-tag">01 · What's there now</div>
+  <h2>A capable engine wearing a spreadsheet</h2>
+  <p class="sub">The <span class="mono">SteeringService</span> facade is clean and returns JSON-serializable dicts for every operation. Nothing below is an engine problem — it's all a presentation problem, which is the good kind.</p>
+
+  <div class="grid g2" style="align-items:start">
+    <div class="card">
+      <div class="num-chip">TODAY</div>
+      <div class="mock" style="box-shadow:none">
+        <div class="mock-bar"><i></i><i></i><i></i><span class="ttl">Inspect prompt features</span></div>
+        <div class="mock-body" style="font-family:var(--mono);font-size:11.5px;color:var(--dim);padding:16px">
+          <div style="color:var(--faint);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:8px">token_index &nbsp; token_text &nbsp; top_features</div>
+          <div style="padding:4px 0">0 &nbsp;&nbsp; The &nbsp;&nbsp; <span style="color:#f0a868">57440:64.045, 67175:54.598, 42605:42.909, …</span></div>
+          <div style="padding:4px 0">1 &nbsp;&nbsp; capital &nbsp; <span style="color:#f0a868">62322:16.258, 13099:13.390, 56780:12.319, …</span></div>
+          <div style="padding:4px 0">2 &nbsp;&nbsp; of &nbsp;&nbsp;&nbsp; <span style="color:#f0a868">18176:16.239, 13099:11.732, 56780:9.315, …</span></div>
+          <div style="padding:4px 0;color:var(--faint)">{ "metadata": { "model_id": "Qwen/Qwen3.5-2B", … } }</div>
+        </div>
+      </div>
+      <p class="caption">Real output, today. A feature is a <b>number colon number</b>. Magnitude is invisible; meaning is absent; the JSON below repeats it all.</p>
+    </div>
+
+    <div>
+      <div class="prob"><div class="ic">!</div><div>
+        <h4>Raw IDs where meaning belongs</h4>
+        <p>Features render as <code>57440:64.045</code>. There is no signal for "this fires hard" vs "barely," and no hint of what feature 57440 <em>does</em>.</p>
+      </div></div>
+      <div class="prob"><div class="ic">#</div><div>
+        <h4>Float noise</h4>
+        <p>Values print at full precision — <code>22.009756088256836</code> — so the eye can't scan or compare anything.</p>
+      </div></div>
+      <div class="prob"><div class="ic">⊟</div><div>
+        <h4>Eight disconnected rooms</h4>
+        <p>Inspect, Compare, Steer, Bench, Autopilot, Library, Notebook, Status are sibling tabs. The actual <em>workflow</em> — find a feature, test it, measure it, save it — is left for the user to stitch together by hand.</p>
+      </div></div>
+      <div class="prob"><div class="ic">◫</div><div>
+        <h4>JSON as the primary output</h4>
+        <p>Steering verdicts, control results, and recipe state are dumped as raw JSON. The conservative validation story (controls often tie steering) is <em>true and important</em> — and completely buried.</p>
+      </div></div>
+      <div class="prob"><div class="ic">▢</div><div>
+        <h4>No sense of place</h4>
+        <p>Which model? which layer? what's loaded on the GPU? It's a separate tab you have to remember to visit.</p>
+      </div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- PRINCIPLES -->
+<section id="principles"><div class="wrap">
+  <div class="sec-tag">02 · Design principles</div>
+  <h2>Six commitments for the redesign</h2>
+  <p class="sub">Every concept below is downstream of these. They're the rubric I'd hold the build to.</p>
+
+  <div class="princ"><div class="pn">1</div><div>
+    <h3>Show the activation, don't print it</h3>
+    <p>Color-tinted token heatmaps, horizontal feature bars, before/after token diffs, diverging contrast bars. Magnitude should be a thing your eye catches in 200ms, with the exact float one hover away.</p>
+  </div></div>
+  <div class="princ"><div class="pn">2</div><div>
+    <h3>Make the loop the spine</h3>
+    <p><span class="mono">Explore → Hypothesize → Steer → Measure → Save.</span> The unit you carry through the app is a <em>feature</em> or a <em>behavior</em>, not a tab. Clicking a feature in Inspect should arm it in Steer; a good steer should flow into Bench; a passing bench should mint a recipe.</p>
+  </div></div>
+  <div class="princ"><div class="pn">3</div><div>
+    <h3>Meaning over magnitude</h3>
+    <p>Lead with the human label, the top-activating tokens, the one-line "fires on…" summary. Keep raw IDs and floats present but secondary. A feature should introduce itself before it shows its math.</p>
+  </div></div>
+  <div class="princ"><div class="pn">4</div><div>
+    <h3>Always-present context</h3>
+    <p>A persistent rail: model, layer, dtype, device, GPU memory, what's loaded, and the feature/recipe currently in focus. You should never wonder "what am I even looking at right now."</p>
+  </div></div>
+  <div class="princ"><div class="pn">5</div><div>
+    <h3>Honesty is a feature, so visualize it</h3>
+    <p>The seven-method control story is the scientific heart of this tool. Render it as a scoreboard with a plain-English verdict — so a user <em>sees</em> why a recipe is "candidate," not "validated," and trusts the result more for it.</p>
+  </div></div>
+  <div class="princ"><div class="pn">6</div><div>
+    <h3>Delight earns the next click</h3>
+    <p>Smooth strength sweeps, a satisfying steering dial, live diffs, a feeling of operating an instrument. Not decoration — momentum. The reward for exploring should be the joy of exploring more.</p>
+  </div></div>
+</div></section>
+
+<!-- DIRECTIONS -->
+<section id="directions"><div class="wrap">
+  <div class="sec-tag">03 · Three design directions</div>
+  <h2>Three lenses on the same workbench</h2>
+  <p class="sub">Each is a complete, internally-consistent vision. They aren't mutually exclusive — the recommendation at the end fuses them — but seeing them apart sharpens the choice. Click to switch.</p>
+
+  <div class="dirtabs">
+    <div class="dirtab on" data-dir="0">
+      <div class="n">DIRECTION A</div><div class="t">The Lab Bench</div>
+      <div class="d">Workflow-first. One canvas, the loop as spine.</div>
+    </div>
+    <div class="dirtab" data-dir="1">
+      <div class="n">DIRECTION B</div><div class="t">Feature Atlas</div>
+      <div class="d">Exploration-first. Wander a space of features.</div>
+    </div>
+    <div class="dirtab" data-dir="2">
+      <div class="n">DIRECTION C</div><div class="t">Steering Studio</div>
+      <div class="d">Causal-first. The intervention is the hero.</div>
+    </div>
+  </div>
+
+  <!-- DIR A -->
+  <div class="dirpane on" data-pane="0">
+    <div class="grid g2" style="align-items:start;margin-bottom:8px">
+      <div>
+        <h3>The Lab Bench</h3>
+        <p>Kill the tab strip. Replace it with a <strong>three-zone canvas</strong>: a left rail for navigation + live context, a center stage for the active experiment, and a right <em>inspector</em> that carries the feature or recipe you're working on across every step.</p>
+        <p>Navigation becomes the scientific loop itself — <span class="mono">Explore · Steer · Measure · Library</span> — so the tool teaches its own method just by existing. The thing you select stays selected as you move through stages.</p>
+        <div style="margin-top:14px">
+          <span class="pill">Best for <b>the daily driver</b></span>
+          <span class="pill">Mood: <b>instrument, precise</b></span>
+        </div>
+      </div>
+      <div class="mock">
+        <div class="mock-bar"><i></i><i></i><i></i><span class="ttl">qwen-scope · lab bench</span></div>
+        <div class="mock-body" style="padding:0">
+          <div style="display:grid;grid-template-columns:118px 1fr 132px;min-height:280px">
+            <!-- rail -->
+            <div style="background:var(--bg-2);border-right:1px solid var(--border-soft);padding:14px 10px;font-size:12px">
+              <div style="color:var(--brand);font-family:var(--mono);font-size:10px;letter-spacing:.1em;margin-bottom:12px">LOOP</div>
+              <div style="padding:8px 9px;border-radius:7px;background:rgba(94,234,212,.12);color:var(--brand);margin-bottom:5px">◎ Explore</div>
+              <div style="padding:8px 9px;color:var(--dim);margin-bottom:5px">↗ Steer</div>
+              <div style="padding:8px 9px;color:var(--dim);margin-bottom:5px">▤ Measure</div>
+              <div style="padding:8px 9px;color:var(--dim)">▦ Library</div>
+              <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border-soft);font-family:var(--mono);font-size:10px;color:var(--faint);line-height:1.8">
+                Qwen3.5-2B<br>layer 12<br><span style="color:var(--ok)">● loaded</span><br>L4 · bf16</div>
+            </div>
+            <!-- stage -->
+            <div style="padding:16px">
+              <div style="font-size:12px;color:var(--faint);font-family:var(--mono);margin-bottom:8px">PROMPT</div>
+              <div class="tokrow" style="margin-bottom:12px">
+                <span class="tok h4">The<small>64</small></span><span class="tok h1">Ġcapital</span>
+                <span class="tok h1">Ġof</span><span class="tok h2">ĠFrance</span><span class="tok h2">Ġis</span>
+              </div>
+              <div style="font-size:11px;color:var(--faint);font-family:var(--mono);margin-bottom:6px">TOP FEATURES · token "The"</div>
+              <div class="fbar"><span class="fid">#57440</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">64.0</span></div>
+              <div class="fbar"><span class="fid">#67175</span><span class="track"><span class="fill" style="width:85%"></span></span><span class="val">54.6</span></div>
+              <div class="fbar"><span class="fid">#42605</span><span class="track"><span class="fill" style="width:67%"></span></span><span class="val">42.9</span></div>
+            </div>
+            <!-- inspector -->
+            <div style="background:var(--bg-2);border-left:1px solid var(--border-soft);padding:13px 11px">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.1em;margin-bottom:8px">PINNED</div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px">
+                <div style="font-family:var(--mono);color:var(--brand);font-size:13px">#57440</div>
+                <div style="font-size:11px;color:var(--dim);margin:5px 0">fires on sentence-initial "The"</div>
+                <button style="width:100%;margin-top:6px;background:var(--brand);color:#042a25;border:none;border-radius:6px;padding:7px;font-size:11px;font-weight:600;font-family:var(--mono)">STEER WITH THIS →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Signature move:</b> the right-rail inspector. Pin a feature in Explore and it rides with you into Steer, Measure, and Library — the loop made literal.</p>
+  </div>
+
+  <!-- DIR B -->
+  <div class="dirpane" data-pane="1">
+    <div class="grid g2" style="align-items:start;margin-bottom:8px">
+      <div>
+        <h3>Feature Atlas</h3>
+        <p>Treat the SAE's tens of thousands of features as a <strong>place to wander</strong>, not a lookup table. The home screen is a gallery of feature cards — each with its id, human label (when known), a sparkline of its top-token activations, and a one-line "fires on…" summary.</p>
+        <p>Search and filter by label, layer, or activation profile. Click a card to drop into a feature detail with where-it-fires, a contrast view, and a "steer with this" button. The notebook stops being a tab and becomes <em>margin notes on the card</em>.</p>
+        <div style="margin-top:14px">
+          <span class="pill">Best for <b>discovery & teaching</b></span>
+          <span class="pill">Mood: <b>museum, generous</b></span>
+        </div>
+      </div>
+      <div class="mock">
+        <div class="mock-bar"><i></i><i></i><i></i><span class="ttl">qwen-scope · atlas</span></div>
+        <div class="mock-body">
+          <div style="display:flex;gap:8px;margin-bottom:14px">
+            <div style="flex:1;background:var(--bg);border:1px solid var(--border-soft);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--faint);font-family:var(--mono)">⌕ search features…</div>
+            <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--dim);font-family:var(--mono)">layer 12 ▾</div>
+          </div>
+          <div class="grid g2" style="gap:10px">
+            <div class="card" style="padding:14px">
+              <div style="font-family:var(--mono);color:var(--brand);font-size:13px">#49012</div>
+              <div style="font-size:13px;color:var(--text);margin:4px 0 8px;font-weight:500">"concise / factual register"</div>
+              <svg width="100%" height="26" viewBox="0 0 120 26"><polyline points="0,22 18,20 36,8 54,14 72,4 90,16 108,10 120,18" fill="none" stroke="var(--brand)" stroke-width="1.5"/></svg>
+              <div style="font-size:11px;color:var(--faint);margin-top:6px">fires on · concise, factual, answer</div>
+            </div>
+            <div class="card" style="padding:14px">
+              <div style="font-family:var(--mono);color:var(--brand);font-size:13px">#41519</div>
+              <div style="font-size:13px;color:var(--text);margin:4px 0 8px;font-weight:500">"comma / clause boundary"</div>
+              <svg width="100%" height="26" viewBox="0 0 120 26"><polyline points="0,14 18,6 36,18 54,10 72,20 90,8 108,16 120,12" fill="none" stroke="var(--brand)" stroke-width="1.5"/></svg>
+              <div style="font-size:11px;color:var(--faint);margin-top:6px">fires on · factual, "," answer</div>
+            </div>
+            <div class="card" style="padding:14px">
+              <div style="font-family:var(--mono);color:var(--brand);font-size:13px">#13099</div>
+              <div style="font-size:13px;color:var(--dim);margin:4px 0 8px;font-style:italic">unlabeled</div>
+              <svg width="100%" height="26" viewBox="0 0 120 26"><polyline points="0,20 18,18 36,16 54,17 72,12 90,14 108,9 120,11" fill="none" stroke="var(--faint)" stroke-width="1.5"/></svg>
+              <div style="font-size:11px;color:var(--faint);margin-top:6px">fires on · of, France, is</div>
+            </div>
+            <div class="card glow" style="padding:14px">
+              <div style="font-family:var(--mono);color:var(--brand);font-size:13px">#51531</div>
+              <div style="font-size:13px;color:var(--text);margin:4px 0 8px;font-weight:500">"answer-giving stance"</div>
+              <svg width="100%" height="26" viewBox="0 0 120 26"><polyline points="0,22 18,16 36,18 54,6 72,10 90,4 108,8 120,3" fill="none" stroke="var(--brand)" stroke-width="1.5"/></svg>
+              <div style="font-size:11px;color:var(--faint);margin-top:6px">fires on · concise, factual, answer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Signature move:</b> the feature card. A feature finally gets a face — label, fingerprint sparkline, and the tokens it loves — before you ever see a raw activation value.</p>
+  </div>
+
+  <!-- DIR C -->
+  <div class="dirpane" data-pane="2">
+    <div class="grid g2" style="align-items:start;margin-bottom:8px">
+      <div>
+        <h3>Steering Studio</h3>
+        <p>Put the <strong>intervention</strong> dead center. A big strength dial, a <em>live before/after token diff</em> as you turn it, and an evidence panel — hook fired, hidden Δ, logits Δ — rendered as gauges instead of JSON keys.</p>
+        <p>The strength sweep becomes a <strong>filmstrip</strong>: the same prompt generated at strength −10 … 0 … +10, side by side, so the causal effect is something you scrub through. Below it, the benchmark "did it really work?" scoreboard with a one-glance verdict.</p>
+        <div style="margin-top:14px">
+          <span class="pill">Best for <b>causal demos & rigor</b></span>
+          <span class="pill">Mood: <b>tactile, confident</b></span>
+        </div>
+      </div>
+      <div class="mock">
+        <div class="mock-bar"><i></i><i></i><i></i><span class="ttl">qwen-scope · studio</span></div>
+        <div class="mock-body">
+          <div class="studio">
+            <div class="dial-wrap">
+              <svg width="150" height="150" viewBox="0 0 150 150">
+                <circle cx="75" cy="75" r="60" fill="none" stroke="var(--border)" stroke-width="9"/>
+                <circle cx="75" cy="75" r="60" fill="none" stroke="var(--pos)" stroke-width="9" stroke-linecap="round"
+                  stroke-dasharray="377" stroke-dashoffset="245" transform="rotate(-90 75 75)"/>
+                <circle cx="75" cy="15" r="0"/>
+                <g transform="rotate(54 75 75)"><line x1="75" y1="75" x2="75" y2="24" stroke="var(--pos)" stroke-width="3" stroke-linecap="round"/></g>
+              </svg>
+              <div class="dial-val">+7.0</div>
+              <div class="dial-cap">strength · #49012</div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--faint);font-family:var(--mono);margin-bottom:6px">LIVE DIFF</div>
+              <div class="diff">Paris <span class="del">is the beautiful capital city renowned for its art, cafés and…</span><span class="ins">is the capital of France.</span></div>
+              <div class="gauges">
+                <div class="gauge"><div class="gk">hook</div><div class="gv green">✓ fired</div></div>
+                <div class="gauge"><div class="gk">hidden Δ</div><div class="gv teal">8.41</div></div>
+                <div class="gauge"><div class="gk">logits Δ</div><div class="gv teal">3.02</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--faint);font-family:var(--mono);margin:16px 0 2px">STRENGTH SWEEP</div>
+          <div class="strip">
+            <div class="frame neg"><div class="s">str <b>−10</b></div><div class="t">…rambling, drifting prose with no end…</div></div>
+            <div class="frame"><div class="s">str <b style="color:var(--dim)">0</b></div><div class="t">Paris is the beautiful capital city…</div></div>
+            <div class="frame center"><div class="s">str <b>+7</b></div><div class="t">Paris is the capital of France.</div></div>
+            <div class="frame"><div class="s">str <b>+14</b></div><div class="t">Capital. France. Paris. Fact.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Signature move:</b> the live diff + sweep filmstrip. Causation you can scrub. Turn the dial, watch the sentence collapse toward the target behavior, and see the evidence gauges confirm the hook is real.</p>
+  </div>
+</div></section>
+
+<!-- SURFACES -->
+<section id="surfaces"><div class="wrap">
+  <div class="sec-tag">04 · Surface-by-surface concepts</div>
+  <h2>What each operation becomes</h2>
+  <p class="sub">Concrete redesigns for every backend capability, each grounded in the exact data the service already returns.</p>
+
+  <!-- compare -->
+  <div class="card" style="margin-bottom:18px">
+    <div class="grid g2" style="align-items:center">
+      <div>
+        <div class="num-chip">COMPARE → CONTRAST LENS</div>
+        <h3>Two prompts, one shared axis</h3>
+        <p>Instead of two stacked tables of <code style="font-family:var(--mono);font-size:12px;color:#f0a868">positive_max / negative_max / difference</code>, draw a <strong>diverging bar chart</strong> on a shared feature axis. Features that pull "concise" go right; features that pull "rambling" go left. Hover a bar to light up the exact tokens that drove it in each prompt.</p>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--faint);font-family:var(--mono);display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="color:var(--neg)">◀ rambling</span><span>feature</span><span style="color:var(--pos)">concise ▶</span></div>
+        <div class="divrow"><span class="lab" style="color:var(--neg)"></span>
+          <div class="divtrack"><span class="mid"></span><span class="br" style="width:46%"></span></div><span class="lab">#49012</span></div>
+        <div class="divrow"><span class="lab"></span>
+          <div class="divtrack"><span class="mid"></span><span class="br" style="width:38%"></span></div><span class="lab">#41519</span></div>
+        <div class="divrow"><span class="lab"></span>
+          <div class="divtrack"><span class="mid"></span><span class="br" style="width:31%"></span></div><span class="lab">#36597</span></div>
+        <div class="divrow"><span class="lab"></span>
+          <div class="divtrack"><span class="mid"></span><span class="bl" style="width:34%"></span></div><span class="lab">#71225</span></div>
+        <div class="divrow"><span class="lab"></span>
+          <div class="divtrack"><span class="mid"></span><span class="bl" style="width:52%"></span></div><span class="lab">#80213</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- bench -->
+  <div class="card" style="margin-bottom:18px">
+    <div class="grid g2" style="align-items:center">
+      <div>
+        <div class="num-chip">BENCH → VERDICT BOARD</div>
+        <h3>"Did it actually work?" in one glance</h3>
+        <p>The seven required methods become a sorted bar chart on the objective metric, controls clearly tinted. The <span class="mono">validation_decision</span> becomes a verdict chip with a plain-English reason. When a control ties steering, the user <em>sees</em> the tie — which is exactly the honesty the project insists on.</p>
+      </div>
+      <div>
+        <div class="score"><div class="top"><span class="m">prompt + steering</span><span class="v">0.91</span></div><div class="tr"><span class="fl" style="width:91%;background:var(--brand)"></span></div></div>
+        <div class="score"><div class="top"><span class="m">steering only</span><span class="v">0.78</span></div><div class="tr"><span class="fl" style="width:78%;background:var(--brand-dim)"></span></div></div>
+        <div class="score"><div class="top"><span class="m">prompt only</span><span class="v" style="color:var(--warn)">0.74</span></div><div class="tr"><span class="fl" style="width:74%;background:var(--warn)"></span></div></div>
+        <div class="score"><div class="top"><span class="m">random feature ⊘</span><span class="v" style="color:var(--faint)">0.31</span></div><div class="tr"><span class="fl" style="width:31%;background:var(--faint)"></span></div></div>
+        <div class="score"><div class="top"><span class="m">zero strength ⊘</span><span class="v" style="color:var(--faint)">0.29</span></div><div class="tr"><span class="fl" style="width:29%;background:var(--faint)"></span></div></div>
+        <div style="margin-top:12px"><span class="verdict cand">◐ CANDIDATE — beats controls, but prompt-only is close (Δ 0.17)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- autopilot + library -->
+  <div class="grid g2" style="align-items:start">
+    <div class="card">
+      <div class="num-chip">AUTOPILOT → DISCOVERY RUN</div>
+      <h3>A search you can watch</h3>
+      <p>A horizontal stepper makes the pipeline legible — and shows progress on slow 27B runs instead of a frozen button.</p>
+      <div style="display:flex;align-items:center;gap:6px;margin:16px 0 8px;font-family:var(--mono);font-size:10.5px">
+        <span style="color:var(--ok)">●&nbsp;examples</span><span style="color:var(--border)">──</span>
+        <span style="color:var(--ok)">●&nbsp;candidates</span><span style="color:var(--border)">──</span>
+        <span style="color:var(--brand)">◐&nbsp;bench</span><span style="color:var(--border)">──</span>
+        <span style="color:var(--faint)">○&nbsp;sweep</span><span style="color:var(--border)">──</span>
+        <span style="color:var(--faint)">○&nbsp;recipe</span>
+      </div>
+      <div style="font-size:11px;color:var(--faint);font-family:var(--mono);margin:14px 0 6px">CANDIDATE LEADERBOARD</div>
+      <div class="fbar"><span class="fid">#49012</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">0.91</span></div>
+      <div class="fbar"><span class="fid">#51531</span><span class="track"><span class="fill" style="width:72%"></span></span><span class="val">0.66</span></div>
+      <div class="fbar"><span class="fid">#36597</span><span class="track"><span class="fill" style="width:51%"></span></span><span class="val">0.47</span></div>
+    </div>
+
+    <div class="card">
+      <div class="num-chip">LIBRARY → RECIPE GALLERY</div>
+      <h3>Recipes as trading cards</h3>
+      <p>Status becomes a colored top-edge and chip; the strict <span class="mono">validated</span> ladder reads at a glance.</p>
+      <div class="grid g2" style="gap:10px;margin-top:14px">
+        <div class="rcard val"><span class="st val">validated</span><h4>concise_answers</h4><div class="meta">L12 · #49012<br>str +6.0<br>4/4 held-out ✓</div></div>
+        <div class="rcard cand"><span class="st cand">candidate</span><h4>json_validity</h4><div class="meta">L12 · #51531<br>str +5.0<br>prompt-only ties</div></div>
+        <div class="rcard cand"><span class="st cand">candidate</span><h4>no_repetition</h4><div class="meta">L12 · #36597<br>str +4.5<br>needs held-out</div></div>
+        <div class="rcard draft"><span class="st draft">draft</span><h4>formal_tone</h4><div class="meta">L12 · #14430<br>str —<br>not benchmarked</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:26px" class="grid g3">
+    <div class="card">
+      <div class="num-chip">INSPECT → MICROSCOPE</div>
+      <p style="font-size:14.5px;margin:0">Token strip tinted by max activation. Click a token → its top features expand as bars. Click a feature → spotlight everywhere it fires across the prompt.</p>
+    </div>
+    <div class="card">
+      <div class="num-chip">NOTEBOOK → MARGIN NOTES</div>
+      <p style="font-size:14.5px;margin:0">Notes and speculative labels fold into the feature card itself, where they belong — not a disconnected form. Optional model labels appear inline, clearly flagged as speculative.</p>
+    </div>
+    <div class="card">
+      <div class="num-chip">STATUS → CONTEXT RAIL</div>
+      <p style="font-size:14.5px;margin:0">Model, layer, dtype, device, GPU memory live permanently in the left rail. A "system" drawer holds the full status JSON for when you actually need it.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- PLATFORM -->
+<section id="platform"><div class="wrap">
+  <div class="sec-tag">05 · The platform question</div>
+  <h2>How beautiful can we actually get?</h2>
+  <p class="sub">This is the one real architecture decision. The good news: <span class="mono">SteeringService</span> already returns plain dicts for every operation, so any of these reuses 100% of the engine.</p>
+
+  <table class="cmp">
+    <tr><th>Approach</th><th>Visual ceiling</th><th>Effort & risk</th><th>Keeps Modal / tests</th><th>Verdict</th></tr>
+    <tr>
+      <td><b>A · Themed Gradio</b><br><span style="font-size:12.5px">Custom theme + CSS + <span class="mono">gr.HTML</span> for heatmaps/cards/diffs</span></td>
+      <td class="mid">Medium — real upgrade, but capped by Gradio's layout model</td>
+      <td class="yes">Low — incremental on <span class="mono">app.py</span></td>
+      <td class="yes">✓ unchanged</td>
+      <td>Fast win, low risk</td>
+    </tr>
+    <tr>
+      <td><b>B · FastAPI + custom SPA</b><br><span style="font-size:12.5px">Thin JSON API over the service, hand-built frontend</span></td>
+      <td class="yes">High — full freedom; everything in this doc is buildable</td>
+      <td class="mid">Medium — new API layer + frontend, new tests</td>
+      <td class="mid">~ Modal serve path changes (still ASGI)</td>
+      <td>Highest ceiling</td>
+    </tr>
+    <tr>
+      <td><b>C · Phased hybrid</b><br><span style="font-size:12.5px">Prototype the experience static-first, then wire to a thin API; keep Gradio alive during transition</span></td>
+      <td class="yes">High — same ceiling as B, de-risked</td>
+      <td class="yes">Staged — value at every step</td>
+      <td class="yes">✓ Gradio stays until parity</td>
+      <td><b style="color:var(--brand)">Recommended</b></td>
+    </tr>
+  </table>
+
+  <div class="rec" style="margin-top:30px">
+    <h3>Recommendation: fuse the directions, build it phased</h3>
+    <p style="margin-bottom:10px">The three directions aren't a vote — they're <strong>three rooms of one workbench</strong>. <b>The Lab Bench</b> is the shell (rail + stage + inspector). <b>Feature Atlas</b> is what "Explore" looks like. <b>Steering Studio</b> is what "Steer + Measure" looks like. One coherent app, three modes.</p>
+    <p style="margin-bottom:0">On platform: start with <b>a static, mock-data HTML prototype</b> of the Lab Bench shell so we lock the experience fast and cheaply — then wrap <span class="mono">SteeringService</span> in a thin FastAPI and wire it up surface by surface, keeping the existing Gradio app serveable until the new one reaches parity. Maximum ceiling, value at every step, nothing thrown away.</p>
+  </div>
+</div></section>
+
+<!-- ROADMAP -->
+<section id="roadmap"><div class="wrap">
+  <div class="sec-tag">06 · A possible path</div>
+  <h2>From this doc to a working workbench</h2>
+  <p class="sub">Not a commitment — a sketch of how the build could stage so you see something real quickly.</p>
+
+  <div class="phase">
+    <div class="pl"><div class="pt">PHASE 0</div><div class="pw">prototype</div></div>
+    <div class="pc">
+      <h3>Clickable shell, mock data</h3>
+      <p style="margin:0">Build the Lab Bench shell — rail, stage, inspector — as static HTML with the hero visualizations (token heatmap, feature bars, contrast lens, steering studio, verdict board). Nail the feel before touching the engine.</p>
+      <div><span class="tag">no GPU</span><span class="tag">no risk</span><span class="tag">decides the look</span></div>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="pl"><div class="pt">PHASE 1</div><div class="pw">wire Explore</div></div>
+    <div class="pc">
+      <h3>Thin FastAPI + live Inspect / Compare</h3>
+      <p style="margin:0">Wrap the service's <span class="mono">inspect_prompt</span> / <span class="mono">compare_prompts</span> in JSON endpoints; light up the microscope and contrast lens with the real 2B dev model. First real "wow."</p>
+      <div><span class="tag">2B on L4</span><span class="tag">reuses service dicts</span></div>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="pl"><div class="pt">PHASE 2</div><div class="pw">wire Steer + Measure</div></div>
+    <div class="pc">
+      <h3>Studio, sweep, verdict board</h3>
+      <p style="margin:0">Live steering with the dial, the sweep filmstrip, evidence gauges, and the seven-control scoreboard with honest verdicts. The causal heart, fully alive.</p>
+      <div><span class="tag">steering deltas</span><span class="tag">benchmark controls</span></div>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="pl"><div class="pt">PHASE 3</div><div class="pw">close the loop</div></div>
+    <div class="pc">
+      <h3>Atlas, Autopilot run, Recipe gallery</h3>
+      <p style="margin:0">Feature gallery + cards, the watchable Autopilot stepper, recipe trading cards with the status ladder, Modal-served parity with the old app, then retire the tabs.</p>
+      <div><span class="tag">27B on Modal</span><span class="tag">parity → cutover</span></div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div style="font-family:var(--serif);font-size:22px;color:var(--dim);margin-bottom:10px">Pick a direction and I'll build the prototype.</div>
+  Qwen Scope Steering · GUI redesign brainstorm · self-contained, no build step · open in any browser
+</div></footer>
+
+<script>
+  document.querySelectorAll('.dirtab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      const d=tab.dataset.dir;
+      document.querySelectorAll('.dirtab').forEach(t=>t.classList.toggle('on',t===tab));
+      document.querySelectorAll('.dirpane').forEach(p=>p.classList.toggle('on',p.dataset.pane===d));
+    });
+  });
+</script>
+</body>
+</html>

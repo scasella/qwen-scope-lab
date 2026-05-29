@@ -1,0 +1,46 @@
+.env
+.DS_Store
+.venv/
+__pycache__/
+.pytest_cache/
+.playwright-mcp/
+*.pyc
+.cache/
+cache/
+hf-cache/
+model-cache/
+*.bin
+*.gguf
+*.pt
+*.pth
+*.safetensors
+feature_notebook.json
+RESULTS.local.json
+BLOCKED.local.md
+artifacts/
+reports/*.json
+reports/*.jsonl
+recipes/*/benchmark_results.json
+recipes/*/candidate_features.json
+recipes/*/examples.jsonl
+recipes/*/sweep_results.json
+experiments/
+monitors/
+
+# Internal / local-only docs (kept on disk, not published)
+HANDOFF.md
+AGENTS.md
+RESULTS.md
+UAT_REPORT.md
+docs/AGENT_HANDOFF.md
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# Defensive build/cache ignores
+*.egg-info/
+build/
+dist/
+.mypy_cache/
+.ruff_cache/
+node_modules/

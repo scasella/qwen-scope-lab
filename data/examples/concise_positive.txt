@@ -1,0 +1,3 @@
+A sparse autoencoder learns a compact set of features that reconstruct model activations.
+
+It maps activations into sparse feature activations and decodes them back into the residual stream.

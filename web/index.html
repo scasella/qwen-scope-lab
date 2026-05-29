@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qwen Scope Steering · The Lab Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand"><span class="dot"></span> Qwen Scope Steering</div>
+  <div class="crumbs" id="crumbs">Lab Bench · <b>Explore</b></div>
+  <div class="right">
+    <span class="protochip" id="backendChip">connecting…</span>
+    <span class="warm" id="warmChip"><span class="lv"></span> <span id="warmText">starting</span></span>
+  </div>
+</div>
+
+<div class="app">
+  <nav class="rail">
+    <div class="lbl">THE LOOP</div>
+    <div class="railflow">
+      <div class="navitem on" data-act="mode" data-arg="explore"><span class="ic">◎</span> Explore <span class="step">01</span></div>
+      <div class="navitem" data-act="mode" data-arg="steer"><span class="ic">↗</span> Steer <span class="step">02</span></div>
+      <div class="navitem" data-act="mode" data-arg="measure"><span class="ic">▤</span> Measure <span class="step">03</span></div>
+      <div class="navitem" data-act="mode" data-arg="manifold"><span class="ic">∿</span> Manifold <span class="step">04</span></div>
+      <div class="navitem" data-act="mode" data-arg="monitor"><span class="ic">◉</span> Monitor <span class="step">05</span></div>
+      <div class="navitem" data-act="mode" data-arg="library"><span class="ic">▦</span> Library <span class="step">06</span></div>
+    </div>
+    <div class="ctx">
+      <div class="lbl" style="margin-bottom:6px">CONTEXT</div>
+      <div class="row"><span>model</span><span id="ctxModel">—</span></div>
+      <div class="row"><span>SAE</span><span id="ctxSae">—</span></div>
+      <div class="row"><span>layer</span><span id="ctxLayer">—</span></div>
+      <div class="row"><span>dtype</span><span id="ctxDtype">—</span></div>
+      <div class="row"><span>device</span><span id="ctxDevice">—</span></div>
+      <div class="row"><span>status</span><span class="ld" id="ctxStatus">—</span></div>
+      <div class="bar"><i id="ctxBar"></i></div>
+      <div class="row" style="margin-top:2px"><span>GPU mem</span><span id="ctxGpu">—</span></div>
+    </div>
+  </nav>
+
+  <main class="stage" id="stage"></main>
+
+  <aside class="inspector" id="inspector"></aside>
+</div>
+
+<div class="toast" id="toast"><span class="ti">◈</span><span id="toastMsg"></span></div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module" src="manifold3d.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

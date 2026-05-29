@@ -1,0 +1,3 @@
+Sparse autoencoders are a broad family of machine learning systems, and before explaining them it can be helpful to discuss representation learning, dictionary learning, neural networks, interpretability history, and many caveats.
+
+A complete answer might include long background, multiple analogies, several exceptions, and repeated qualifiers before reaching the main point.

@@ -1,0 +1,17 @@
+model_id: Qwen/Qwen3.5-2B
+sae_id: Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100
+top_k: 100
+num_layers: 24
+d_model: 2048
+d_sae: 32768
+default_layer: 12
+default_max_new_tokens: 64
+torch_dtype: bfloat16
+device: cuda
+sae_cache_max_layers: 1
+hf_cache_dir: /cache/huggingface
+trust_remote_code: true
+device_map: auto
+low_cpu_mem_usage: true
+local_files_only: false
+notebook_path: feature_notebook.json

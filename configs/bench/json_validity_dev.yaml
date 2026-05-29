@@ -1,0 +1,3 @@
+prompt_set: data/prompt_sets/json_validity_dev.jsonl
+objective: maximize_json_validity
+prompt_only_instruction: "Return only strict valid JSON. Do not include markdown or prose. Prompt: {prompt}"

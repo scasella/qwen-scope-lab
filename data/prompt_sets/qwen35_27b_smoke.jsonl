@@ -1,0 +1,2 @@
+{"id":"q27b_001","prompt":"Explain sparse autoencoders in one sentence.","metadata":{"task":"27b_smoke"}}
+{"id":"q27b_002","prompt":"Return a JSON object with key city and value Paris.","metadata":{"task":"27b_smoke"}}

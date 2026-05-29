@@ -1,0 +1,2 @@
+{"id":"json_001","prompt":"Return a JSON object with keys name and age for a fictional person.","metadata":{"task":"json_validity"}}
+{"id":"json_002","prompt":"Return a JSON object with keys route and arguments for a search action.","metadata":{"task":"json_validity"}}

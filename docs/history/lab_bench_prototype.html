@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qwen Scope Steering · The Lab Bench (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080b11; --bg-2:#0c1119; --surface:#121925; --surface-2:#19222f; --surface-3:#212c3b;
+    --border:#26313f; --border-soft:#1b2431;
+    --text:#e8eef5; --dim:#94a3b6; --faint:#5d6a7a;
+    --brand:#5eead4; --brand-dim:#2dd4bf; --brand-deep:#042a25;
+    --pos:#f0883e; --neg:#5b8def;
+    --ok:#3fb950; --warn:#d6a429; --bad:#f0626b; --draft:#6e7d90;
+    --h0:#0e2a33; --h1:#0f5a66; --h2:#13a3a0; --h3:#3ce0c8; --h4:#a9fff0;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"Inter",system-ui,-apple-system,sans-serif;
+    --serif:"Newsreader",Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;overflow:hidden}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:10px}
+  ::-webkit-scrollbar-track{background:transparent}
+  button{font-family:inherit;cursor:pointer}
+  .mono{font-family:var(--mono)}
+
+  /* ---------- app bar ---------- */
+  .appbar{height:54px;flex:none;display:flex;align-items:center;gap:14px;padding:0 18px;
+    background:linear-gradient(180deg,#0c1320,#080b11);border-bottom:1px solid var(--border-soft);z-index:20}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:600;letter-spacing:-.01em;font-size:15px}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--brand);box-shadow:0 0 12px var(--brand)}
+  .crumbs{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .crumbs b{color:var(--brand)}
+  .appbar .right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .warm{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--dim);
+    border:1px solid var(--border);border-radius:30px;padding:5px 11px}
+  .warm .lv{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .protochip{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--brand-dim);
+    border:1px solid rgba(94,234,212,.3);border-radius:6px;padding:3px 8px}
+
+  /* ---------- shell ---------- */
+  .app{flex:1;display:grid;grid-template-columns:236px 1fr 308px;min-height:0}
+  .rail,.stage,.inspector{min-height:0;overflow-y:auto}
+  .rail{background:var(--bg-2);border-right:1px solid var(--border-soft);padding:18px 14px;display:flex;flex-direction:column}
+  .stage{padding:26px 30px}
+  .inspector{background:var(--bg-2);border-left:1px solid var(--border-soft);padding:18px 16px}
+  @media(max-width:1080px){.app{grid-template-columns:200px 1fr}.inspector{display:none}}
+
+  /* ---------- rail ---------- */
+  .rail .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--faint);margin:6px 4px 10px}
+  .navitem{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;color:var(--dim);
+    font-size:14.5px;font-weight:500;margin-bottom:4px;transition:.15s;border:1px solid transparent;position:relative}
+  .navitem .ic{width:20px;text-align:center;font-size:15px}
+  .navitem .step{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--faint)}
+  .navitem:hover{background:var(--surface);color:var(--text)}
+  .navitem.on{background:linear-gradient(180deg,rgba(94,234,212,.12),rgba(94,234,212,.04));
+    color:var(--brand);border-color:rgba(94,234,212,.25)}
+  .navitem.on .step{color:var(--brand-dim)}
+  .railflow{position:relative;margin:2px 0 8px}
+  .ctx{margin-top:auto;padding-top:16px;border-top:1px solid var(--border-soft)}
+  .ctx .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;padding:4px 4px;color:var(--dim)}
+  .ctx .row span:first-child{color:var(--faint)}
+  .ctx .ld{color:var(--ok)}
+  .ctx .bar{height:5px;background:var(--bg);border:1px solid var(--border-soft);border-radius:20px;margin:7px 4px 2px;overflow:hidden}
+  .ctx .bar i{display:block;height:100%;width:34%;background:linear-gradient(90deg,var(--brand-dim),var(--brand))}
+
+  /* ---------- generic ---------- */
+  .stage-head{margin-bottom:20px}
+  .stage-head .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--brand-dim);text-transform:uppercase;margin-bottom:7px}
+  .stage-head h1{font-family:var(--serif);font-weight:500;font-size:30px;letter-spacing:-.015em;line-height:1.1}
+  .stage-head p{color:var(--dim);font-size:14.5px;margin-top:5px;max-width:620px}
+  .seg{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:20px}
+  .seg button{background:none;border:none;color:var(--dim);font-size:13px;font-weight:500;padding:7px 16px;border-radius:7px;transition:.15s}
+  .seg button.on{background:var(--surface-3);color:var(--text)}
+  .panel{background:linear-gradient(180deg,var(--surface),var(--bg-2));border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:18px}
+  .panel-h{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .panel-h h3{font-size:15px;font-weight:600}
+  .panel-h .tag{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--border);border-radius:6px;padding:3px 8px}
+  .field{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);
+    font-family:var(--sans);font-size:14px;padding:11px 13px;resize:vertical;line-height:1.5}
+  .field:focus{outline:none;border-color:var(--brand-dim);box-shadow:0 0 0 3px rgba(94,234,212,.1)}
+  textarea.field{min-height:64px}
+  .btn{background:var(--brand);color:var(--brand-deep);border:none;border-radius:9px;font-weight:600;font-size:13.5px;padding:10px 18px;transition:.15s}
+  .btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .btn.ghost{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
+  .btn.ghost:hover{background:var(--surface-3)}
+  .btn.sm{padding:7px 12px;font-size:12px;border-radius:8px}
+  .row{display:flex;gap:12px;align-items:center}
+  .muted{color:var(--faint);font-size:12.5px}
+
+  /* ---------- heatmap ---------- */
+  .tokrow{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+  .tok{font-family:var(--mono);font-size:14px;padding:9px 12px;border-radius:9px;border:1px solid var(--border-soft);
+    position:relative;transition:.13s;cursor:pointer}
+  .tok:hover{transform:translateY(-2px);border-color:var(--brand-dim)}
+  .tok.sel{outline:2px solid var(--brand);outline-offset:1px}
+  .tok small{position:absolute;top:-8px;right:-5px;font-size:9px;color:var(--brand-deep);background:var(--brand);
+    border-radius:20px;padding:1px 5px;font-weight:700;font-family:var(--mono)}
+  .heat-legend{display:flex;align-items:center;gap:8px;margin-top:14px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+  .heat-legend .scale{height:9px;width:120px;border-radius:20px;background:linear-gradient(90deg,var(--h0),var(--h1),var(--h2),var(--h3),var(--h4))}
+
+  /* feature bars */
+  .fbar{display:flex;align-items:center;gap:11px;margin:8px 0;font-size:13px;cursor:pointer;padding:4px;border-radius:8px;transition:.13s}
+  .fbar:hover{background:var(--surface-2)}
+  .fbar .fid{font-family:var(--mono);color:var(--dim);width:62px;flex:none}
+  .fbar .flabel{flex:none;width:160px;color:var(--text);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fbar .flabel.un{color:var(--faint);font-style:italic}
+  .fbar .track{flex:1;height:9px;background:var(--bg);border-radius:20px;overflow:hidden;border:1px solid var(--border-soft)}
+  .fbar .fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--brand-dim),var(--h4))}
+  .fbar .val{font-family:var(--mono);color:var(--brand);width:46px;text-align:right;flex:none;font-size:12px}
+  .fbar .pin{flex:none;width:24px;text-align:center;color:var(--faint);font-size:14px}
+  .fbar:hover .pin{color:var(--brand)}
+
+  /* atlas cards */
+  .atlas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:13px}
+  .fcard{background:linear-gradient(165deg,var(--surface-2),var(--bg-2));border:1px solid var(--border);
+    border-radius:12px;padding:15px;cursor:pointer;transition:.15s}
+  .fcard:hover{border-color:var(--brand-dim);transform:translateY(-3px);box-shadow:0 16px 40px -26px rgba(45,212,191,.5)}
+  .fcard.pinned{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+  .fcard .fid{font-family:var(--mono);color:var(--brand);font-size:13px}
+  .fcard h4{font-size:13.5px;font-weight:500;margin:5px 0 9px;min-height:18px}
+  .fcard h4.un{color:var(--faint);font-style:italic;font-weight:400}
+  .fcard .fires{font-size:11px;color:var(--faint);margin-top:8px}
+  .fcard .fires b{color:var(--dim);font-weight:500}
+
+  /* diverging contrast */
+  .divrow{display:grid;grid-template-columns:1fr 96px;align-items:center;gap:12px;margin:6px 0;cursor:pointer;
+    padding:5px;border-radius:8px;transition:.13s}
+  .divrow:hover{background:var(--surface-2)}
+  .divtrack{height:24px;position:relative;background:var(--bg);border-radius:7px;border:1px solid var(--border-soft)}
+  .divtrack .mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border);z-index:2}
+  .divtrack .bl{position:absolute;right:50%;top:3px;bottom:3px;background:linear-gradient(90deg,transparent,var(--neg));border-radius:5px 0 0 5px}
+  .divtrack .br{position:absolute;left:50%;top:3px;bottom:3px;background:linear-gradient(90deg,var(--pos),transparent);border-radius:0 5px 5px 0}
+  .divrow .dfid{font-family:var(--mono);font-size:12px;color:var(--dim);text-align:right}
+  .divlabels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;margin-bottom:10px}
+
+  /* ---------- inspector ---------- */
+  .ins-empty{color:var(--faint);font-size:13px;text-align:center;padding:40px 16px;border:1px dashed var(--border);border-radius:12px;margin-top:20px}
+  .ins-empty .big{font-size:26px;margin-bottom:10px;opacity:.5}
+  .ins-h{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--faint);margin-bottom:12px}
+  .ins-feat .fid{font-family:var(--mono);color:var(--brand);font-size:18px;font-weight:600}
+  .ins-feat .lab{font-size:15px;font-weight:500;margin:4px 0 2px}
+  .ins-feat .lab.un{color:var(--faint);font-style:italic;font-weight:400}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+  .chip{font-family:var(--mono);font-size:11px;background:var(--surface-2);border:1px solid var(--border);
+    border-radius:20px;padding:4px 10px;color:var(--dim)}
+  .ins-block{margin-top:16px}
+  .ins-block .t{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--faint);margin-bottom:8px}
+  .toktag{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--bg);border:1px solid var(--border-soft);
+    border-radius:6px;padding:3px 8px;margin:0 5px 5px 0;color:var(--brand-dim)}
+  .spark{background:var(--bg);border:1px solid var(--border-soft);border-radius:9px;padding:10px;margin-top:6px}
+  .note{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);
+    font-size:12.5px;padding:9px;min-height:54px;resize:vertical;font-family:var(--sans)}
+  .ins-cta{width:100%;margin-top:14px;background:var(--brand);color:var(--brand-deep);border:none;border-radius:9px;
+    padding:11px;font-weight:600;font-size:13px}
+  .ins-cta:hover{filter:brightness(1.08)}
+  .ins-sub{width:100%;margin-top:8px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);
+    border-radius:9px;padding:9px;font-size:12.5px}
+
+  /* ---------- steer studio ---------- */
+  .studio{display:grid;grid-template-columns:230px 1fr;gap:24px;align-items:start}
+  @media(max-width:760px){.studio{grid-template-columns:1fr}}
+  .dialbox{text-align:center;background:var(--bg);border:1px solid var(--border-soft);border-radius:14px;padding:18px}
+  .dialval{font-family:var(--mono);font-size:36px;font-weight:600;margin-top:-4px}
+  .dialval.pos{color:var(--pos)} .dialval.neg{color:var(--neg)} .dialval.zero{color:var(--faint)}
+  .dialcap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
+  input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:20px;margin-top:18px;
+    background:linear-gradient(90deg,var(--neg) 0%,#2a3340 46%,#2a3340 54%,var(--pos) 100%);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+    background:#fff;border:3px solid var(--brand);cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:620px){.ba{grid-template-columns:1fr}}
+  .bapane{background:var(--bg);border:1px solid var(--border-soft);border-radius:10px;padding:13px}
+  .bapane .h{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--faint);margin-bottom:8px;text-transform:uppercase}
+  .bapane.after{border-color:rgba(94,234,212,.3)}
+  .bapane .txt{font-size:13.5px;line-height:1.6}
+  .bapane.before .txt{color:var(--dim)}
+  .bapane.after .txt{color:var(--text)}
+  .gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:14px}
+  .gauge{background:var(--bg);border:1px solid var(--border-soft);border-radius:10px;padding:12px}
+  .gauge .gk{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase}
+  .gauge .gv{font-family:var(--mono);font-size:20px;font-weight:600;margin-top:4px}
+  .gv.green{color:var(--ok)} .gv.teal{color:var(--brand)} .gv.off{color:var(--faint)}
+  .strip{display:flex;gap:9px;overflow-x:auto;padding-bottom:8px}
+  .frame{flex:none;width:150px;background:var(--bg);border:1px solid var(--border-soft);border-radius:10px;padding:12px;cursor:pointer;transition:.13s}
+  .frame:hover{border-color:var(--brand-dim)}
+  .frame.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+  .frame .s{font-family:var(--mono);font-size:11px;text-align:center;margin-bottom:8px;color:var(--dim)}
+  .frame .s b{color:var(--pos)} .frame.neg .s b{color:var(--neg)} .frame.zero .s b{color:var(--faint)}
+  .frame .t{font-size:11px;color:var(--faint);line-height:1.45}
+  .armhdr{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(94,234,212,.08),transparent);
+    border:1px solid rgba(94,234,212,.2);border-radius:12px;padding:13px 16px;margin-bottom:18px}
+  .armhdr .fid{font-family:var(--mono);color:var(--brand);font-size:16px;font-weight:600}
+  .armhdr .lab{font-size:13.5px;color:var(--text)}
+  .armhdr .swap{margin-left:auto}
+
+  /* ---------- verdict board ---------- */
+  .score{margin:11px 0}
+  .score .top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+  .score .top .m{font-family:var(--mono);color:var(--dim)}
+  .score .top .m .ctrl{color:var(--faint);font-size:11px}
+  .score .top .v{font-family:var(--mono);color:var(--text)}
+  .score .tr{height:9px;background:var(--bg);border-radius:20px;overflow:hidden;border:1px solid var(--border-soft)}
+  .score .fl{height:100%;border-radius:20px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .verdict{display:inline-flex;align-items:center;gap:9px;padding:9px 16px;border-radius:30px;font-size:13.5px;font-weight:600;margin-top:6px}
+  .verdict.cand{background:rgba(214,164,41,.13);color:var(--warn);border:1px solid rgba(214,164,41,.3)}
+  .verdict.val{background:rgba(63,185,80,.13);color:var(--ok);border:1px solid rgba(63,185,80,.3)}
+  .reason{color:var(--dim);font-size:13px;margin-top:10px;max-width:560px}
+
+  /* autopilot stepper */
+  .stepper{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;margin:6px 0 16px;flex-wrap:wrap}
+  .stepper .st{display:flex;align-items:center;gap:6px;color:var(--faint);transition:.3s}
+  .stepper .st.done{color:var(--ok)} .stepper .st.active{color:var(--brand)}
+  .stepper .dash{color:var(--border)}
+  .stepper .st .d{width:8px;height:8px;border-radius:50%;background:currentColor}
+
+  /* ---------- library ---------- */
+  .libfilters{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .libfilters button{background:var(--surface);border:1px solid var(--border);color:var(--dim);font-size:12.5px;
+    padding:7px 14px;border-radius:20px;transition:.13s;font-family:var(--mono)}
+  .libfilters button.on{background:var(--surface-3);color:var(--text);border-color:var(--brand-dim)}
+  .rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:15px}
+  .rcard{background:linear-gradient(165deg,var(--surface-2),var(--bg-2));border:1px solid var(--border);
+    border-radius:13px;padding:17px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
+  .rcard:hover{transform:translateY(-3px);border-color:var(--brand-dim);box-shadow:0 18px 44px -28px rgba(45,212,191,.5)}
+  .rcard::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+  .rcard.val::before{background:var(--ok)} .rcard.cand::before{background:var(--warn)}
+  .rcard.draft::before{background:var(--draft)} .rcard.benchmarked::before{background:var(--brand-dim)}
+  .st-chip{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:5px;display:inline-block;margin-bottom:10px}
+  .st-chip.val{background:rgba(63,185,80,.15);color:var(--ok)} .st-chip.cand{background:rgba(214,164,41,.15);color:var(--warn)}
+  .st-chip.draft{background:rgba(110,125,144,.18);color:var(--draft)} .st-chip.benchmarked{background:rgba(45,212,191,.15);color:var(--brand-dim)}
+  .rcard h4{font-size:15.5px;margin-bottom:8px}
+  .rcard .meta{font-family:var(--mono);font-size:11.5px;color:var(--faint);line-height:1.8}
+  .rcard .meta b{color:var(--dim);font-weight:500}
+
+  /* recipe detail */
+  .rdetail{background:linear-gradient(170deg,var(--surface),var(--bg-2));border:1px solid var(--border);border-radius:16px;padding:26px;max-width:760px}
+  .rdetail .back{background:none;border:none;color:var(--brand);font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:6px;padding:0}
+  .rdetail h2{font-family:var(--serif);font-weight:500;font-size:28px;margin:4px 0 6px}
+  .rdetail .prov{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:18px 0}
+  .rdetail .pv{background:var(--bg);border:1px solid var(--border-soft);border-radius:9px;padding:11px 13px}
+  .rdetail .pv .k{font-family:var(--mono);font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+  .rdetail .pv .v{font-family:var(--mono);font-size:14px;color:var(--text);margin-top:4px}
+  .rdetail .sec-t{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;margin:22px 0 10px}
+
+  /* toast */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface-3);
+    border:1px solid var(--brand-dim);color:var(--text);padding:12px 20px;border-radius:30px;font-size:13.5px;
+    box-shadow:0 12px 40px rgba(0,0,0,.6);opacity:0;transition:.35s cubic-bezier(.2,.9,.2,1);z-index:100;display:flex;align-items:center;gap:9px}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast .ti{color:var(--brand)}
+  .fade{animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand"><span class="dot"></span> Qwen Scope Steering</div>
+  <div class="crumbs" id="crumbs">Lab Bench · <b>Explore</b></div>
+  <div class="right">
+    <span class="protochip">STATIC PROTOTYPE · MOCK DATA</span>
+    <span class="warm"><span class="lv"></span> warm · 2B on L4</span>
+  </div>
+</div>
+
+<div class="app">
+  <nav class="rail">
+    <div class="lbl">THE LOOP</div>
+    <div class="railflow">
+      <div class="navitem on" data-act="mode" data-arg="explore"><span class="ic">◎</span> Explore <span class="step">01</span></div>
+      <div class="navitem" data-act="mode" data-arg="steer"><span class="ic">↗</span> Steer <span class="step">02</span></div>
+      <div class="navitem" data-act="mode" data-arg="measure"><span class="ic">▤</span> Measure <span class="step">03</span></div>
+      <div class="navitem" data-act="mode" data-arg="library"><span class="ic">▦</span> Library <span class="step">04</span></div>
+    </div>
+    <div class="ctx">
+      <div class="lbl" style="margin-bottom:6px">CONTEXT</div>
+      <div class="row"><span>model</span><span>Qwen3.5-2B</span></div>
+      <div class="row"><span>SAE</span><span>W32K·L0_100</span></div>
+      <div class="row"><span>layer</span><span id="ctxLayer">12</span></div>
+      <div class="row"><span>dtype</span><span>bf16</span></div>
+      <div class="row"><span>device</span><span>L4 · cuda:0</span></div>
+      <div class="row"><span>status</span><span class="ld">● loaded</span></div>
+      <div class="bar"><i></i></div>
+      <div class="row" style="margin-top:2px"><span>GPU mem</span><span>7.6 / 22 GB</span></div>
+    </div>
+  </nav>
+
+  <main class="stage" id="stage"></main>
+
+  <aside class="inspector" id="inspector"></aside>
+</div>
+
+<div class="toast" id="toast"><span class="ti">◈</span><span id="toastMsg"></span></div>
+
+<script>
+/* ============================== MOCK DATA ============================== */
+const FEATURES = {
+  49012:{label:"concise / factual register", fires:["concise","factual","answer"], spark:[22,20,8,14,4,16,10,18,6,12], tokens:["Ġconcise","Ġfactual","Ġanswer","."], note:""},
+  41519:{label:"comma / clause boundary",    fires:["factual",",","answer"],       spark:[14,6,18,10,20,8,16,12,9,15], tokens:["Ġfactual",",","Ġanswer"], note:""},
+  36597:{label:"answer-giving stance",       fires:["answer","is","."],            spark:[6,10,12,9,15,11,17,14,20,22], tokens:["Ġanswer",".","Ġis"], note:""},
+  51531:{label:"list / enumeration",         fires:["concise","factual","answer"], spark:[22,16,18,6,10,4,8,3,9,5],     tokens:["Ġconcise","Ġfactual"], note:""},
+  28566:{label:"directness",                 fires:["answer","."],                 spark:[8,12,9,16,11,18,14,20,17,21], tokens:["Ġanswer","."], note:""},
+  14430:{label:"formal register",            fires:["factual","answer"],           spark:[10,14,12,16,13,17,15,18,14,16], tokens:["Ġfactual","Ġanswer"], note:""},
+  57440:{label:"sentence-initial 'The'",     fires:["The"],                        spark:[64,12,8,6,5,4,4,3,3,2],      tokens:["The"], note:"Fires extremely hard on a leading determiner; near-positional."},
+  67175:{label:"capitalized noun onset",     fires:["The","France"],               spark:[54,30,12,9,7,5,4,4,3,3],     tokens:["The","ĠFrance"], note:""},
+  13099:{label:null,                         fires:["of","France","is"],           spark:[13,11,12,9,10,8,9,7,8,6],    tokens:["Ġof","ĠFrance","Ġis"], note:""},
+  6671: {label:"geography / place names",    fires:["France","capital"],           spark:[11,9,13,7,10,8,12,6,9,5],    tokens:["ĠFrance","Ġcapital"], note:""},
+  71225:{label:"narrative / story expansion",fires:["story","long","once"],        spark:[4,8,9,12,14,16,15,18,20,21], tokens:["Ġstory","Ġlong","ĠOnce"], note:""},
+  80213:{label:"elaboration / digression",   fires:["which","and","that"],         spark:[5,9,8,13,12,16,14,19,17,20], tokens:["Ġwhich","Ġand","Ġthat"], note:""},
+};
+const FIDS = Object.keys(FEATURES).map(Number);
+
+// contrast: positive = concise (right), negative = rambling (left). value = signed difference.
+const CONTRAST = [
+  {id:49012, diff: 0.46}, {id:41519, diff: 0.38}, {id:36597, diff: 0.31},
+  {id:51531, diff: 0.26}, {id:28566, diff: 0.21}, {id:14430, diff: 0.12},
+  {id:80213, diff:-0.41}, {id:71225, diff:-0.52},
+];
+
+// concise-behavior strength sweep anchors (strength -> generated text)
+const SWEEP_ANCHORS = [
+  {s:-15, t:"Paris, the resplendent and storied capital of France, is a city that has, across many centuries, captured the imaginations of artists, writers, and wanderers alike, with its grand boulevards, its quiet courtyards, and the soft amber light that settles over the Seine each evening as…"},
+  {s:-10, t:"Paris is the beautiful capital city of France, long admired the world over for its art, its cafés, its fashion, and the gentle golden light that drapes itself over the rooftops at dusk."},
+  {s:-5,  t:"Paris is the capital city of France, a major cultural, artistic, and political center in Europe with a long and storied history."},
+  {s:0,   t:"Paris is the capital of France, and one of the major cultural centers of Europe."},
+  {s:5,   t:"Paris is the capital of France."},
+  {s:10,  t:"Paris — capital of France."},
+  {s:15,  t:"Paris. France."},
+];
+
+const RECIPES = [
+  {id:"concise_answers", behavior:"concise_answers", status:"val", layer:12, feat:49012, str:6.0,
+   desc:"Make answers shorter and more direct while preserving correctness.",
+   heldout:"4 / 4 held-out prompts pass", verdict:"Validated — beats prompt-only and all controls on held-out prompts.",
+   before:"Paris is the beautiful capital city of France, known the world over for…",
+   after:"Paris is the capital of France.",
+   controls:{"prompt+steer":0.91,"steer only":0.78,"prompt only":0.74,"random feat":0.31,"zero str":0.29}},
+  {id:"json_validity", behavior:"json_validity", status:"cand", layer:12, feat:51531, str:5.0,
+   desc:"Produce strict valid JSON without markdown or prose.",
+   heldout:"prompt-only ties steering", verdict:"Candidate — steering works, but a prompt instruction alone matches it (Δ 0.04).",
+   before:"Here is the JSON you asked for:\n```json\n{\"name\":\"Ada\"}\n```",
+   after:"{\"name\":\"Ada\",\"age\":31}",
+   controls:{"prompt+steer":0.88,"steer only":0.62,"prompt only":0.84,"random feat":0.22,"zero str":0.19}},
+  {id:"no_repetition", behavior:"no_repetition", status:"cand", layer:12, feat:36597, str:4.5,
+   desc:"Reduce verbatim repetition across the generation.",
+   heldout:"needs more held-out prompts", verdict:"Candidate — promising on dev set; held-out coverage is thin.",
+   before:"It is good. It is good. It is very very good and good.",
+   after:"It is good — genuinely well made, and worth the price.",
+   controls:{"prompt+steer":0.80,"steer only":0.71,"prompt only":0.58,"random feat":0.34,"zero str":0.30}},
+  {id:"directness", behavior:"directness", status:"benchmarked", layer:12, feat:28566, str:5.5,
+   desc:"Answer the question first, hedge less.",
+   heldout:"benchmarked, not yet validated", verdict:"Benchmarked — improvement is real but modest; revisit strength.",
+   before:"Well, it depends on a number of factors, but broadly speaking…",
+   after:"Yes. Here is why:",
+   controls:{"prompt+steer":0.69,"steer only":0.64,"prompt only":0.55,"random feat":0.33,"zero str":0.31}},
+  {id:"formal_tone", behavior:"formal_tone", status:"draft", layer:12, feat:14430, str:0,
+   desc:"Shift register toward formal written English.",
+   heldout:"not benchmarked", verdict:"Draft — discovered from contrast, not yet tested.",
+   before:"—", after:"—", controls:null},
+];
+
+// Measure: the seven required benchmark methods
+const BENCH = [
+  {m:"prompt + steering", v:0.91, ctrl:false, c:"var(--brand)"},
+  {m:"steering only",     v:0.78, ctrl:false, c:"var(--brand-dim)"},
+  {m:"prompt only",       v:0.74, ctrl:true,  c:"var(--warn)"},
+  {m:"unsteered baseline",v:0.42, ctrl:true,  c:"var(--faint)"},
+  {m:"random feature",    v:0.31, ctrl:true,  c:"var(--faint)"},
+  {m:"negative strength", v:0.30, ctrl:true,  c:"var(--neg)"},
+  {m:"zero strength",     v:0.29, ctrl:true,  c:"var(--faint)"},
+];
+
+/* ============================== STATE ============================== */
+const S = {
+  mode:"explore",
+  exploreView:"inspect",
+  prompt:"The capital of France is",
+  selToken:0,
+  pinned:49012,
+  steerPrompt:"Write one sentence about Paris.",
+  strength:6,
+  libFilter:"all",
+  openRecipe:null,
+  apRan:false,
+};
+
+/* ============================== HELPERS ============================== */
+const $ = s => document.querySelector(s);
+const esc = s => (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function rnd(seed){let t=seed+0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;}
+function heatClass(frac){return "h"+Math.min(4,Math.floor(frac*4.999));}
+function fLabel(id){const f=FEATURES[id];return f&&f.label?f.label:null;}
+
+function tokenize(text){
+  const words=(text||"").trim().split(/\s+/).filter(Boolean);
+  const toks=words.map((w,i)=>{
+    const seed=hash(w.toLowerCase())+i*7;
+    const act=0.18+0.82*rnd(seed);
+    const top=[];
+    for(let k=0;k<4;k++){const fid=FIDS[(hash(w.toLowerCase()+"#"+k))%FIDS.length];
+      top.push({id:fid, act:0.2+0.8*rnd(seed+k*13+5)});}
+    // de-dup feature ids within a token
+    const seen=new Set();const ut=top.filter(f=>!seen.has(f.id)&&seen.add(f.id));
+    ut.sort((a,b)=>b.act-a.act);
+    return {text:i===0?w:"Ġ"+w, act, top:ut};
+  });
+  const mx=Math.max(...toks.map(t=>t.act),0.001);
+  toks.forEach(t=>t.frac=t.act/mx);
+  return toks;
+}
+function sparkSVG(pts,color){
+  const mx=Math.max(...pts),n=pts.length;
+  const p=pts.map((v,i)=>`${(i/(n-1)*118).toFixed(1)},${(24-(v/mx)*22).toFixed(1)}`).join(" ");
+  return `<svg width="100%" height="26" viewBox="0 0 118 26" preserveAspectRatio="none"><polyline points="${p}" fill="none" stroke="${color}" stroke-width="1.6"/></svg>`;
+}
+function toast(msg){const t=$("#toast");$("#toastMsg").textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1900);}
+function frameAt(str){let best=SWEEP_ANCHORS[0],bd=1e9;for(const a of SWEEP_ANCHORS){const d=Math.abs(a.s-str);if(d<bd){bd=d;best=a;}}return best;}
+
+/* ============================== RENDER: RAIL + SHELL ============================== */
+function renderRail(){
+  document.querySelectorAll(".navitem").forEach(n=>n.classList.toggle("on",n.dataset.arg===S.mode));
+  const names={explore:"Explore",steer:"Steer",measure:"Measure",library:"Library"};
+  $("#crumbs").innerHTML="Lab Bench · <b>"+names[S.mode]+"</b>";
+}
+function render(){renderRail();renderStage();renderInspector();}
+
+/* ============================== RENDER: STAGE ============================== */
+function renderStage(){
+  const st=$("#stage");st.classList.remove("fade");void st.offsetWidth;st.classList.add("fade");
+  if(S.mode==="explore")st.innerHTML=viewExplore();
+  else if(S.mode==="steer")st.innerHTML=viewSteer();
+  else if(S.mode==="measure")st.innerHTML=viewMeasure();
+  else if(S.mode==="library")st.innerHTML=viewLibrary();
+  if(S.mode==="steer")syncDial();
+  if(S.mode==="measure"&&!S.openRecipe)animateScores();
+}
+
+/* ---------- EXPLORE ---------- */
+function viewExplore(){
+  const seg=`<div class="seg">
+    <button data-act="exploreView" data-arg="inspect" class="${S.exploreView==='inspect'?'on':''}">Inspect</button>
+    <button data-act="exploreView" data-arg="atlas" class="${S.exploreView==='atlas'?'on':''}">Atlas</button>
+    <button data-act="exploreView" data-arg="contrast" class="${S.exploreView==='contrast'?'on':''}">Contrast</button>
+  </div>`;
+  let body="";
+  if(S.exploreView==="inspect")body=viewInspect();
+  else if(S.exploreView==="atlas")body=viewAtlas();
+  else body=viewContrast();
+  return `<div class="stage-head"><div class="k">01 · Explore</div>
+    <h1>Find a feature worth steering</h1>
+    <p>Inspect where features fire, browse the feature atlas, or contrast two prompts. Click any feature to pin it — it rides with you into Steer and Measure.</p></div>${seg}${body}`;
+}
+
+function viewInspect(){
+  const toks=tokenize(S.prompt);
+  if(S.selToken>=toks.length)S.selToken=0;
+  const heat=toks.map((t,i)=>{
+    const badge=t.frac>0.6?`<small>${(t.act*64).toFixed(0)}</small>`:"";
+    return `<span class="tok ${heatClass(t.frac)} ${i===S.selToken?'sel':''}" data-act="token" data-arg="${i}">${esc(t.text)}${badge}</span>`;
+  }).join("");
+  const sel=toks[S.selToken];
+  const mxa=sel?Math.max(...sel.top.map(f=>f.act),0.001):1;
+  const bars=sel?sel.top.map(f=>{
+    const lab=fLabel(f.id);
+    return `<div class="fbar" data-act="pin" data-arg="${f.id}">
+      <span class="fid">#${f.id}</span>
+      <span class="flabel ${lab?'':'un'}">${lab?esc(lab):'unlabeled'}</span>
+      <span class="track"><span class="fill" style="width:${(f.act/mxa*100).toFixed(0)}%"></span></span>
+      <span class="val">${(f.act*64).toFixed(1)}</span><span class="pin">⊕</span>
+    </div>`;}).join(""):"";
+  return `<div class="panel">
+    <div class="panel-h"><h3>Prompt</h3><span class="tag">inspect_prompt · layer 12</span></div>
+    <textarea class="field" id="promptInput">${esc(S.prompt)}</textarea>
+    <div class="row" style="margin-top:12px"><button class="btn" data-act="inspect">Inspect activations</button>
+      <span class="muted">tokens tinted by max SAE activation · click one to expand its features</span></div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><h3>Activation microscope</h3><span class="tag">${toks.length} tokens</span></div>
+    <div class="tokrow">${heat}</div>
+    <div class="heat-legend">low <span class="scale"></span> high</div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><h3>Top features · token <span class="mono" style="color:var(--brand)">${esc(sel?sel.text:'')}</span></h3>
+      <span class="tag">click ⊕ to pin</span></div>
+    ${bars||'<p class="muted">No token selected.</p>'}
+  </div>`;
+}
+
+function viewAtlas(){
+  return `<div class="panel">
+    <div class="panel-h"><h3>Feature atlas</h3><span class="tag">${FIDS.length} features · layer 12</span></div>
+    <input class="field" id="atlasSearch" placeholder="⌕  search by label or token…  (try: concise, story, France)" style="margin-bottom:16px">
+    <div class="atlas-grid" id="atlasGrid">${atlasCards("")}</div>
+  </div>`;
+}
+function atlasCards(q){
+  q=(q||"").toLowerCase().trim();
+  const ids=FIDS.filter(id=>{
+    if(!q)return true;const f=FEATURES[id];
+    return (f.label||"").toLowerCase().includes(q)||f.fires.some(x=>x.toLowerCase().includes(q))||(""+id).includes(q);
+  });
+  if(!ids.length)return `<p class="muted" style="grid-column:1/-1">No features match "${esc(q)}".</p>`;
+  return ids.map(id=>{const f=FEATURES[id];
+    return `<div class="fcard ${S.pinned===id?'pinned':''}" data-act="pin" data-arg="${id}">
+      <div class="fid">#${id}</div>
+      <h4 class="${f.label?'':'un'}">${f.label?esc(f.label):'unlabeled'}</h4>
+      <div class="spark" style="padding:6px 8px">${sparkSVG(f.spark, f.label?'var(--brand)':'var(--faint)')}</div>
+      <div class="fires"><b>fires on</b> · ${f.fires.map(esc).join(", ")}</div>
+    </div>`;}).join("");
+}
+
+function viewContrast(){
+  const mx=Math.max(...CONTRAST.map(c=>Math.abs(c.diff)));
+  const rows=CONTRAST.slice().sort((a,b)=>b.diff-a.diff).map(c=>{
+    const w=(Math.abs(c.diff)/mx*100).toFixed(0);
+    const bar=c.diff>=0?`<span class="br" style="width:${w/2}%"></span>`:`<span class="bl" style="width:${w/2}%"></span>`;
+    const lab=fLabel(c.id);
+    return `<div class="divrow" data-act="pin" data-arg="${c.id}" title="${lab?esc(lab):'unlabeled'}">
+      <div class="divtrack"><span class="mid"></span>${bar}</div>
+      <span class="dfid">#${c.id} <span style="color:var(--faint)">${c.diff>0?'+':''}${c.diff.toFixed(2)}</span></span>
+    </div>`;}).join("");
+  return `<div class="panel">
+    <div class="panel-h"><h3>Contrast lens</h3><span class="tag">compare_prompts · layer 12</span></div>
+    <div class="row" style="align-items:stretch;gap:12px">
+      <textarea class="field" id="posPrompt" style="flex:1" placeholder="positive prompt">Write a concise factual answer.</textarea>
+      <textarea class="field" id="negPrompt" style="flex:1" placeholder="negative prompt">Write a long rambling story.</textarea>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn" data-act="exploreView" data-arg="contrast">Compare</button>
+      <span class="muted">diverging bars on a shared feature axis · click a bar to pin</span></div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><h3>Contrastive features</h3><span class="tag">difference = positive_max − negative_max</span></div>
+    <div class="divlabels"><span style="color:var(--neg)">◀ pulls "rambling"</span><span style="color:var(--pos)">pulls "concise" ▶</span></div>
+    ${rows}
+  </div>`;
+}
+
+/* ---------- STEER ---------- */
+function viewSteer(){
+  if(!S.pinned)return `<div class="stage-head"><div class="k">02 · Steer</div><h1>No feature armed</h1>
+    <p>Pin a feature in Explore first, then come back to steer with it.</p></div>
+    <button class="btn" data-act="mode" data-arg="explore">← Go to Explore</button>`;
+  const f=FEATURES[S.pinned],lab=f.label;
+  return `<div class="stage-head"><div class="k">02 · Steer</div>
+    <h1>Steering studio</h1>
+    <p>Add <span class="mono">strength × W_dec[:, ${S.pinned}]</span> to the layer-12 residual stream. Turn the dial; watch the sentence move toward the target behavior.</p></div>
+  <div class="armhdr">
+    <span class="fid">#${S.pinned}</span><span class="lab">${lab?esc(lab):'<i style="color:var(--faint)">unlabeled feature</i>'}</span>
+    <button class="btn ghost sm swap" data-act="mode" data-arg="explore">swap feature</button>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><h3>Prompt</h3><span class="tag">steer · all positions</span></div>
+    <textarea class="field" id="steerPrompt">${esc(S.steerPrompt)}</textarea>
+  </div>
+  <div class="panel">
+    <div class="studio">
+      <div class="dialbox">
+        <svg width="168" height="168" viewBox="0 0 170 170">
+          <circle cx="85" cy="85" r="60" fill="none" stroke="var(--border)" stroke-width="10"/>
+          <circle id="dialArc" cx="85" cy="85" r="60" fill="none" stroke="var(--pos)" stroke-width="10" stroke-linecap="round"
+            stroke-dasharray="377" stroke-dashoffset="377" transform="rotate(-90 85 85)"/>
+          <line id="dialNeedle" x1="85" y1="85" x2="85" y2="33" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="85" cy="85" r="5" fill="#fff"/>
+        </svg>
+        <div class="dialval" id="dialVal">+6.0</div>
+        <div class="dialcap">strength</div>
+        <input type="range" id="strengthSlider" min="-15" max="15" step="0.5" value="${S.strength}">
+      </div>
+      <div>
+        <div class="ba">
+          <div class="bapane before"><div class="h">strength 0 · baseline</div><div class="txt" id="beforeTxt"></div></div>
+          <div class="bapane after"><div class="h">strength <span id="afterS"></span> · steered</div><div class="txt" id="afterTxt"></div></div>
+        </div>
+        <div class="gauges">
+          <div class="gauge"><div class="gk">hook</div><div class="gv" id="gHook"></div></div>
+          <div class="gauge"><div class="gk">hidden Δ</div><div class="gv teal" id="gHidden"></div></div>
+          <div class="gauge"><div class="gk">logits Δ</div><div class="gv teal" id="gLogits"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><h3>Strength sweep</h3><span class="tag">includes 0 · click a frame to jump</span></div>
+    <div class="strip" id="strip"></div>
+  </div>
+  <div class="row"><button class="btn" data-act="sendMeasure">Send to Measure →</button>
+    <span class="muted">a fired hook ≠ a real behavior change. Prove it in Measure.</span></div>`;
+}
+function syncDial(){
+  const str=S.strength, f=frameAt(str), base=SWEEP_ANCHORS.find(a=>a.s===0);
+  // dial value
+  const dv=$("#dialVal");dv.textContent=(str>0?"+":"")+str.toFixed(1);
+  dv.className="dialval "+(str>0?"pos":str<0?"neg":"zero");
+  // ring gauge (magnitude) + needle (signed rotation, 0 = straight up)
+  const C=377, fracMag=Math.min(1,Math.abs(str)/15);
+  const arc=$("#dialArc");
+  arc.setAttribute("stroke-dashoffset",(C*(1-fracMag)).toFixed(1));
+  arc.setAttribute("stroke",str>=0?"var(--pos)":"var(--neg)");
+  $("#dialNeedle").setAttribute("transform",`rotate(${(str/15*135).toFixed(1)} 85 85)`);
+  // before/after
+  $("#beforeTxt").textContent=base.t;
+  $("#afterS").textContent=(str>0?"+":"")+str.toFixed(1);
+  $("#afterTxt").textContent= str===0 ? base.t+"  (no intervention)" : f.t;
+  // gauges
+  const hooked=str!==0;
+  const gh=$("#gHook");gh.textContent=hooked?"✓ fired":"— off";gh.className="gv "+(hooked?"green":"off");
+  $("#gHidden").textContent=(Math.abs(str)*0.78).toFixed(2);
+  $("#gLogits").textContent=(Math.abs(str)*0.31).toFixed(2);
+  // filmstrip
+  const frames=[-10,-5,0,5,10];
+  $("#strip").innerHTML=frames.map(s=>{const fr=frameAt(s);const on=Math.abs(s-str)<2.5;
+    const cls=s<0?"neg":s===0?"zero":"";
+    return `<div class="frame ${cls} ${on?'on':''}" data-act="setStrength" data-arg="${s}">
+      <div class="s">str <b>${s>0?'+':''}${s}</b></div>
+      <div class="t">${esc(fr.t.length>92?fr.t.slice(0,92)+"…":fr.t)}</div></div>`;}).join("");
+}
+
+/* ---------- MEASURE ---------- */
+function viewMeasure(){
+  const f=S.pinned?FEATURES[S.pinned]:null;
+  const mx=Math.max(...BENCH.map(b=>b.v));
+  const rows=BENCH.slice().sort((a,b)=>b.v-a.v).map(b=>`
+    <div class="score">
+      <div class="top"><span class="m">${b.m}${b.ctrl?' <span class="ctrl">⊘ control</span>':''}</span><span class="v">${b.v.toFixed(2)}</span></div>
+      <div class="tr"><span class="fl" data-w="${(b.v/mx*100).toFixed(0)}" style="width:0%;background:${b.c}"></span></div>
+    </div>`).join("");
+  const ap = S.apRan ? `
+    <div class="stepper">
+      <span class="st done"><span class="d"></span>examples</span><span class="dash">──</span>
+      <span class="st done"><span class="d"></span>candidates</span><span class="dash">──</span>
+      <span class="st done"><span class="d"></span>bench</span><span class="dash">──</span>
+      <span class="st done"><span class="d"></span>sweep</span><span class="dash">──</span>
+      <span class="st done"><span class="d"></span>recipe</span>
+    </div>
+    <p class="muted" style="margin-bottom:12px">Searched 3 candidate features from your examples, benchmarked + swept each, and minted a recipe card.</p>
+    <div class="fbar"><span class="fid">#49012</span><span class="flabel">concise / factual register</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">0.91</span></div>
+    <div class="fbar"><span class="fid">#51531</span><span class="flabel">list / enumeration</span><span class="track"><span class="fill" style="width:72%"></span></span><span class="val">0.66</span></div>
+    <div class="fbar"><span class="fid">#36597</span><span class="flabel">answer-giving stance</span><span class="track"><span class="fill" style="width:51%"></span></span><span class="val">0.47</span></div>
+    <div class="row" style="margin-top:14px"><button class="btn" data-act="mode" data-arg="library">Save as recipe →</button>
+      <span class="muted">best candidate: #49012 · candidate status</span></div>`
+    : `<p class="muted" style="margin-bottom:14px">Give a target behavior plus positive / negative examples; autopilot searches candidate features, benchmarks each against all seven controls, sweeps strength, and proposes a recipe.</p>
+       <div class="row" style="align-items:stretch;gap:12px">
+         <textarea class="field" style="flex:1" placeholder="positive examples">{"name":"Ada","age":31}</textarea>
+         <textarea class="field" style="flex:1" placeholder="negative examples">Here is the JSON you asked for: ...</textarea>
+       </div>
+       <button class="btn" style="margin-top:12px" data-act="runAutopilot">Run autopilot</button>`;
+  return `<div class="stage-head"><div class="k">03 · Measure</div>
+    <h1>Did it actually work?</h1>
+    <p>Every recipe is judged against all seven required methods, including controls. When a control ties steering, you'll see it — that honesty is the point.</p></div>
+  <div class="panel">
+    <div class="panel-h"><h3>Verdict board</h3><span class="tag">objective · maximize_rule_score</span></div>
+    ${f?`<p class="muted" style="margin-bottom:10px">Experiment · feature <span class="mono" style="color:var(--brand)">#${S.pinned}</span> @ strength <span class="mono" style="color:var(--pos)">+${S.strength.toFixed(1)}</span> on held-out prompts</p>`:''}
+    ${rows}
+    <div style="margin-top:16px"><span class="verdict cand">◐ CANDIDATE</span></div>
+    <p class="reason">Steering beats every control, but a plain prompt instruction ("answer concisely…") comes within <b>Δ 0.17</b>. Conservative gate ⇒ <b>candidate</b>, not <b>validated</b>. Add held-out prompts to promote.</p>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><h3>Autopilot · discovery run</h3><span class="tag">candidate search → recipe</span></div>
+    ${ap}
+  </div>`;
+}
+function animateScores(){requestAnimationFrame(()=>{document.querySelectorAll(".score .fl").forEach(el=>{el.style.width=el.dataset.w+"%";});});}
+
+/* ---------- LIBRARY ---------- */
+function viewLibrary(){
+  if(S.openRecipe)return recipeDetail(S.openRecipe);
+  const filters=["all","validated","candidate","benchmarked","draft"];
+  const mapf={validated:"val",candidate:"cand",benchmarked:"benchmarked",draft:"draft"};
+  const fbtns=filters.map(f=>`<button class="${S.libFilter===f?'on':''}" data-act="libFilter" data-arg="${f}">${f}</button>`).join("");
+  const list=RECIPES.filter(r=>S.libFilter==="all"||r.status===mapf[S.libFilter]);
+  const cards=list.map(r=>{
+    const stName={val:"validated",cand:"candidate",benchmarked:"benchmarked",draft:"draft"}[r.status];
+    return `<div class="rcard ${r.status}" data-act="recipe" data-arg="${r.id}">
+      <span class="st-chip ${r.status}">${stName}</span>
+      <h4>${esc(r.behavior)}</h4>
+      <div class="meta"><b>L${r.layer} · #${r.feat}</b><br>strength ${r.str?('+'+r.str.toFixed(1)):'—'}<br>${esc(r.heldout)}</div>
+    </div>`;}).join("");
+  return `<div class="stage-head"><div class="k">04 · Library</div>
+    <h1>Recipe gallery</h1>
+    <p>Every benchmarked experiment becomes a reproducible recipe card. The status edge tells you how far it climbed the validation ladder.</p></div>
+  <div class="libfilters">${fbtns}</div>
+  <div class="rgrid">${cards||'<p class="muted">No recipes with this status.</p>'}</div>`;
+}
+function recipeDetail(id){
+  const r=RECIPES.find(x=>x.id===id);if(!r)return"";
+  const stName={val:"validated",cand:"candidate",benchmarked:"benchmarked",draft:"draft"}[r.status];
+  const ctrls=r.controls?Object.entries(r.controls).map(([k,v])=>{
+    const mx=Math.max(...Object.values(r.controls));
+    const isSteer=k.includes("steer");
+    return `<div class="score"><div class="top"><span class="m">${esc(k)}</span><span class="v">${v.toFixed(2)}</span></div>
+      <div class="tr"><span class="fl" style="width:${(v/mx*100).toFixed(0)}%;background:${isSteer?'var(--brand)':'var(--faint)'}"></span></div></div>`;}).join(""):'<p class="muted">Not benchmarked.</p>';
+  return `<div class="rdetail fade">
+    <button class="back" data-act="libBack">← back to gallery</button>
+    <span class="st-chip ${r.status}">${stName}</span>
+    <h2>${esc(r.behavior)}</h2>
+    <p style="color:var(--dim)">${esc(r.desc)}</p>
+    <div class="prov">
+      <div class="pv"><div class="k">model</div><div class="v">Qwen3.5-2B</div></div>
+      <div class="pv"><div class="k">layer</div><div class="v">${r.layer}</div></div>
+      <div class="pv"><div class="k">feature</div><div class="v">#${r.feat}</div></div>
+      <div class="pv"><div class="k">strength</div><div class="v">${r.str?('+'+r.str.toFixed(1)):'—'}</div></div>
+      <div class="pv"><div class="k">mode</div><div class="v">all_pos</div></div>
+      <div class="pv"><div class="k">status</div><div class="v">${stName}</div></div>
+    </div>
+    <div class="sec-t">before / after</div>
+    <div class="ba">
+      <div class="bapane before"><div class="h">unsteered</div><div class="txt">${esc(r.before)}</div></div>
+      <div class="bapane after"><div class="h">steered</div><div class="txt">${esc(r.after)}</div></div>
+    </div>
+    <div class="sec-t">control story</div>
+    ${ctrls}
+    <div class="sec-t">verdict</div>
+    <p class="reason" style="margin-top:0">${esc(r.verdict)}</p>
+    <div class="row" style="margin-top:20px">
+      <button class="btn" data-act="exportRecipe">Export Markdown</button>
+      <button class="btn ghost" data-act="steerFromRecipe" data-arg="${r.feat}">Load into Steer</button>
+    </div>
+  </div>`;
+}
+
+/* ============================== RENDER: INSPECTOR ============================== */
+function renderInspector(){
+  const ins=$("#inspector");
+  if(S.mode==="library"){
+    ins.innerHTML=`<div class="ins-h">TIP</div>
+      <div class="ins-empty" style="margin-top:0"><div class="big">▦</div>Recipe cards capture everything needed to reproduce a steer: model, layer, feature, strength, controls, and before/after evidence.</div>`;
+    return;
+  }
+  if(!S.pinned){
+    ins.innerHTML=`<div class="ins-h">INSPECTOR</div>
+      <div class="ins-empty"><div class="big">⊕</div>Pin a feature to carry it across Explore, Steer, and Measure.</div>`;
+    return;
+  }
+  const id=S.pinned,f=FEATURES[id];
+  const ctaLabel = S.mode==="steer" ? "Send to Measure →" : "Steer with this →";
+  const ctaAct   = S.mode==="steer" ? 'data-act="sendMeasure"' : 'data-act="steerWith"';
+  ins.innerHTML=`
+    <div class="ins-h">${S.mode==='steer'?'ARMED FEATURE':'PINNED FEATURE'}</div>
+    <div class="ins-feat">
+      <div class="fid">#${id}</div>
+      <div class="lab ${f.label?'':'un'}">${f.label?esc(f.label):'unlabeled'}</div>
+    </div>
+    <div class="chips">${f.fires.map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div>
+    <div class="ins-block"><div class="t">ACTIVATION FINGERPRINT</div><div class="spark">${sparkSVG(f.spark, f.label?'var(--brand)':'var(--faint)')}</div></div>
+    <div class="ins-block"><div class="t">TOP-ACTIVATING TOKENS</div>${f.tokens.map(t=>`<span class="toktag">${esc(t)}</span>`).join("")}</div>
+    <div class="ins-block"><div class="t">NOTEBOOK</div>
+      <textarea class="note" id="featNote" placeholder="what does this feature seem to do?">${esc(f.note)}</textarea></div>
+    <button class="ins-cta" ${ctaAct}>${ctaLabel}</button>
+    ${S.mode!=='measure'?`<button class="ins-sub" data-act="mode" data-arg="measure">Open Measure</button>`:''}
+  `;
+}
+
+/* ============================== EVENTS ============================== */
+document.body.addEventListener("click",e=>{
+  const el=e.target.closest("[data-act]");if(!el)return;
+  const act=el.dataset.act, arg=el.dataset.arg;
+  switch(act){
+    case"mode": S.mode=arg; S.openRecipe=null; render(); break;
+    case"exploreView":
+      if(arg==="contrast"&&S.exploreView==="contrast"){ /* re-compare: keep */ }
+      S.exploreView=arg; renderStage(); break;
+    case"inspect": { const v=$("#promptInput"); if(v)S.prompt=v.value; S.selToken=0; renderStage(); break; }
+    case"token": S.selToken=+arg; renderStage(); break;
+    case"pin": {
+      const id=+arg; S.pinned=id; const f=FEATURES[id];
+      toast("Pinned #"+id+(f&&f.label?" · "+f.label:""));
+      renderInspector();
+      // reflect pinned state in atlas cards without losing search box focus
+      document.querySelectorAll(".fcard").forEach(c=>c.classList.toggle("pinned",c.dataset.arg===arg));
+      break;
+    }
+    case"steerWith": S.mode="steer"; render(); toast("Armed #"+S.pinned+" in the studio"); break;
+    case"sendMeasure": { const v=$("#steerPrompt"); if(v)S.steerPrompt=v.value; S.mode="measure"; render(); break; }
+    case"setStrength": S.strength=+arg; { const sl=$("#strengthSlider"); if(sl)sl.value=arg; } syncDial(); break;
+    case"runAutopilot": runAutopilot(); break;
+    case"recipe": S.openRecipe=arg; renderStage(); renderInspector(); break;
+    case"libBack": S.openRecipe=null; renderStage(); break;
+    case"libFilter": S.libFilter=arg; renderStage(); break;
+    case"exportRecipe": toast("Exported recipe.md (mock)"); break;
+    case"steerFromRecipe": S.pinned=+arg; S.mode="steer"; S.openRecipe=null; render(); toast("Loaded #"+arg+" into Steer"); break;
+  }
+});
+document.body.addEventListener("input",e=>{
+  if(e.target.id==="strengthSlider"){S.strength=parseFloat(e.target.value);syncDial();}
+  else if(e.target.id==="atlasSearch"){const g=$("#atlasGrid");if(g)g.innerHTML=atlasCards(e.target.value);}
+  else if(e.target.id==="featNote"&&S.pinned){FEATURES[S.pinned].note=e.target.value;}
+  else if(e.target.id==="promptInput"){S.prompt=e.target.value;}
+  else if(e.target.id==="steerPrompt"){S.steerPrompt=e.target.value;}
+});
+function runAutopilot(){
+  const steps=["examples","candidates","bench","sweep","recipe"];
+  let i=0; S.apRan=false; renderStage();
+  const host=$("#stage");
+  // build a temporary live stepper into the autopilot panel
+  const panel=document.querySelectorAll(".panel")[1];
+  if(panel){
+    const body=panel.querySelector(".panel-h").nextElementSibling;
+    panel.insertAdjacentHTML("beforeend",`<div class="stepper" id="apLive" style="margin-top:14px">${steps.map(s=>`<span class="st" data-s="${s}"><span class="d"></span>${s}</span>`).join('<span class="dash">──</span>')}</div><p class="muted" id="apMsg" style="margin-top:4px">searching candidate features…</p>`);
+  }
+  const tick=()=>{
+    const live=$("#apLive");if(!live){return;}
+    const spans=live.querySelectorAll(".st");
+    spans.forEach((sp,k)=>{sp.classList.toggle("done",k<i);sp.classList.toggle("active",k===i);});
+    const msgs=["reading examples…","ranking candidates by activation contrast…","benchmarking vs 7 controls…","sweeping strength incl. 0…","writing recipe card…"];
+    const m=$("#apMsg");if(m&&i<msgs.length)m.textContent=msgs[i];
+    i++;
+    if(i<=steps.length){setTimeout(tick,640);}
+    else{S.apRan=true;renderStage();toast("Autopilot found #49012 · candidate");}
+  };
+  setTimeout(tick,300);
+}
+
+/* ============================== BOOT ============================== */
+render();
+</script>
+</body>
+</html>

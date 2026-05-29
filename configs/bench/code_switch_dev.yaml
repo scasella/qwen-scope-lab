@@ -1,0 +1,3 @@
+prompt_set: data/prompt_sets/concise_dev.jsonl
+objective: maximize_rule_score
+prompt_only_instruction: "Answer directly and avoid unnecessary code switching. Prompt: {prompt}"
