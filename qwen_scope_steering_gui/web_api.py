@@ -378,6 +378,13 @@ class JailbreakDetectionReq(BaseModel):
     use_judge: bool = False
 
 
+class JailbreakHardeningReq(BaseModel):
+    layer: int | None = None
+    top_k: int = 3
+    target_fpr: float = 0.1
+    use_judge: bool = False
+
+
 async def _guard(fn, *args, **kwargs):
     try:
         return await run_in_threadpool(fn, *args, **kwargs)
@@ -675,6 +682,10 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         return service.jailbreak_detection(layer=p.get("layer"), top_k=p.get("top_k", 3),
                                            target_fpr=p.get("target_fpr", 0.1), use_judge=p.get("use_judge", False))
 
+    def op_jailbreak_hardening(p: dict) -> dict:
+        return service.jailbreak_hardening(layer=p.get("layer"), top_k=p.get("top_k", 3),
+                                           target_fpr=p.get("target_fpr", 0.1), use_judge=p.get("use_judge", False))
+
     OPS = {"inspect": op_inspect, "compare": op_compare, "atlas": op_atlas, "steer": op_steer, "sweep": op_sweep,
            "benchmark": op_benchmark, "autopilot": op_autopilot, "manifold_fit": op_manifold_fit,
            "manifold_steer": op_manifold_steer, "manifold_compare": op_manifold_compare,
@@ -686,7 +697,7 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
            "steer_direction": op_steer_direction, "caa_vs_sae": op_caa_vs_sae,
            "method_atlas": op_method_atlas, "emotion_coupling": op_emotion_coupling,
            "safety_geometry": op_safety_geometry, "monitor_stream": op_monitor_stream,
-           "jailbreak_detection": op_jailbreak_detection}
+           "jailbreak_detection": op_jailbreak_detection, "jailbreak_hardening": op_jailbreak_hardening}
 
     def _summarize(op: str, result: Any) -> dict:
         if not isinstance(result, dict):
@@ -758,6 +769,13 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
                     "detects": v.get("detects"), "generalises": v.get("generalises"), "matches_judge": v.get("matches_judge"),
                     "probe_shift_auc": pt.get("shift_auc"), "probe_auc_drop": pt.get("auc_drop"),
                     "sae_shift_auc": st.get("shift_auc")}
+        if op == "jailbreak_hardening":
+            v = result.get("verdict", {})
+            return {"status": v.get("status"), "realistic_auc": v.get("realistic_auc"),
+                    "hard_negative_fpr_at_thr": v.get("hard_negative_fpr_at_thr"),
+                    "adaptive_evasion_recall_at_thr": v.get("adaptive_evasion_recall_at_thr"),
+                    "probe_auc_on_hard": v.get("probe_auc_on_hard"), "judge_auc_on_hard": v.get("judge_auc_on_hard"),
+                    "weakest_axis": v.get("weakest_axis")}
         if op == "emotion_coupling":
             v = result.get("verdict", {})
             return {"emotion": result.get("emotion"), "emotion_probe_auc": result.get("emotion_probe_auc"),
@@ -949,6 +967,13 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         params = req.model_dump()
         result = await _guard_gpu(op_jailbreak_detection, params)
         _log_experiment("jailbreak_detection", params, "done", result=result)
+        return result
+
+    @app.post("/api/jailbreak_hardening")
+    async def jailbreak_hardening(req: JailbreakHardeningReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_jailbreak_hardening, params)
+        _log_experiment("jailbreak_hardening", params, "done", result=result)
         return result
 
     @app.post("/api/monitor/stream")

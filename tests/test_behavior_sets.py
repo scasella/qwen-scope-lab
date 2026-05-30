@@ -36,3 +36,19 @@ def test_jailbreak_clean_and_shift_are_different_attack_families():
     clean_blob, shift_blob = " ".join(pos).lower(), " ".join(spos).lower()
     for trigger in ("dan", "developer mode", "ignore all previous", "no rules"):
         assert trigger in clean_blob and trigger not in shift_blob
+
+
+def test_jailbreak_hardening_sets_present_and_distinct():
+    b = BS.BEHAVIORS["jailbreak"]
+    hard_neg, evasion = b["hard_negatives"], b["evasion"]
+    assert len(hard_neg) >= 6 and len(evasion) >= 6
+    # hard negatives are BENIGN but wear jailbreak surface forms (false-positive bait)
+    assert any(w in " ".join(hard_neg).lower() for w in ("ignore", "roleplay", "pretend", "developer", "grandmother"))
+    # adaptive evasion are jailbreaks WITHOUT the overt clean-set trigger tokens (false-negative bait)
+    ev_blob = " ".join(evasion).lower()
+    for trigger in ("dan", "developer mode", "ignore all previous", "no rules"):
+        assert trigger not in ev_blob
+    # the hardening sets are disjoint from the clean/shift sets
+    pos, _ = b["clean"]
+    spos, _ = b["shift"]
+    assert not (set(evasion) & (set(pos) | set(spos)))

@@ -1319,11 +1319,14 @@ def safety_geometry_judge_2b() -> dict:
 
 
 def _jailbreak_detection_demo(config_path: str, layer: int = 12, use_judge: bool = False,
-                              judge_model: str = None) -> dict:
+                              judge_model: str = None, hardening: bool = False) -> dict:
     """Point the free residual probe at the industry's #1 detection target: does it detect jailbreak /
     prompt-injection prompts, match a paid judge, and beat the SAE feature (the shootout) — AND does a
     probe trained on one set of attack families still flag HELD-OUT families (the generalisation test
-    that distinguishes 'learned manipulation-intent' from 'memorised templates')? When judging, a
+    that distinguishes 'learned manipulation-intent' from 'memorised templates')? With ``hardening``,
+    runs the harder stress test instead: hard negatives (jailbreak-looking benign), adaptive evasion
+    (manipulation with no markers), and the realistic combined distribution — reporting the false-
+    positive rate at the deployed threshold, the honest 'under attack' number. When judging, a
     DETECTION-appropriate preflight gates it: the judge must score a clear jailbreak high and a clear
     benign prompt low, or the 'matches a paid judge' comparison is not trusted."""
     import json as _json
@@ -1333,7 +1336,7 @@ def _jailbreak_detection_demo(config_path: str, layer: int = 12, use_judge: bool
 
     service = SteeringService.from_config_path(config_path)
     out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer,
-                 "use_judge": use_judge, "judge_model": judge_model}
+                 "mode": "hardening" if hardening else "detection", "use_judge": use_judge, "judge_model": judge_model}
     judge = None
     if use_judge:
         judge = _judge.available_judge(enabled=True, model=judge_model)
@@ -1358,7 +1361,10 @@ def _jailbreak_detection_demo(config_path: str, layer: int = 12, use_judge: bool
             print(_json.dumps(out, indent=2, default=str))
             return out
 
-    out.update(service.jailbreak_detection(layer=layer, use_judge=use_judge, judge=judge))
+    if hardening:
+        out.update(service.jailbreak_hardening(layer=layer, use_judge=use_judge, judge=judge))
+    else:
+        out.update(service.jailbreak_detection(layer=layer, use_judge=use_judge, judge=judge))
     print(_json.dumps(out, indent=2, default=str))
     try:
         hf_cache.commit()
@@ -1397,6 +1403,41 @@ def jailbreak_detection_judge_2b() -> dict:
     detecting jailbreaks, beat the SAE feature, and survive held-out attack families?"""
     return _jailbreak_detection_demo("/root/configs/qwen35_2b_dev_l0_100.yaml", layer=12,
                                      use_judge=True, judge_model="openai/gpt-4o-mini")
+
+
+@app.function(
+    image=image,
+    gpu="L4",
+    cpu=4,
+    memory=32768,
+    timeout=5400,
+    retries=0,
+    volumes={"/cache": hf_cache},
+    secrets=[modal_secret],
+)
+def jailbreak_hardening_2b() -> dict:
+    """Stress test (no judge): does the clean-split probe survive hard negatives, adaptive evasion, and
+    the realistic combined distribution — and what's its false-positive rate on jailbreak-looking benign?"""
+    return _jailbreak_detection_demo("/root/configs/qwen35_2b_dev_l0_100.yaml", layer=12,
+                                     use_judge=False, hardening=True)
+
+
+@app.function(
+    image=image,
+    gpu="L4",
+    cpu=4,
+    memory=32768,
+    timeout=5400,
+    retries=0,
+    volumes={"/cache": hf_cache},
+    secrets=[modal_secret],
+)
+def jailbreak_hardening_judge_2b() -> dict:
+    """The hardening headline: under adversarial cases (hard negatives + adaptive evasion), does the free
+    probe's realistic-distribution AUC hold, is its false-positive rate controlled at the deployed
+    threshold, and does it STILL match the paid judge — or does the clean-split 1.00 degrade, and where?"""
+    return _jailbreak_detection_demo("/root/configs/qwen35_2b_dev_l0_100.yaml", layer=12,
+                                     use_judge=True, judge_model="openai/gpt-4o-mini", hardening=True)
 
 
 @app.function(

@@ -32,7 +32,7 @@ GET  /api/experiments?limit=50                              -> the research trai
 `manifold_fit`, `manifold_steer`, `manifold_compare`, `manifold_sae_coverage`, `manifold_pullback`,
 `monitor_discover`, `monitor_score`, `monitor_shootout`, `monitor_robustness`, `collateral`,
 `control_loop`, `probe_discover`, `probe_score`, `steer_direction`, `caa_vs_sae`, `method_atlas`,
-`emotion_coupling`, `safety_geometry`, `monitor_stream`, `jailbreak_detection`.
+`emotion_coupling`, `safety_geometry`, `monitor_stream`, `jailbreak_detection`, `jailbreak_hardening`.
 `params` mirror the matching `POST /api/<op>` request body (see `/api/openapi.json` for every
 field). The quick ops (`inspect`/`compare`/`steer`) are also fine to call synchronously at
 `POST /api/<op>`; the heavy/experiment ops (`benchmark`, `autopilot`, `manifold_*`, `atlas`,
@@ -146,6 +146,9 @@ POST /api/monitor/stream     {prompt, probe_id | direction, bias, threshold, lay
 POST /api/jailbreak_detection {layer, top_k, target_fpr, use_judge}
    -> {in_distribution{methods, verdict{winner}}, probe_transfer{in_auc, shift_auc, auc_drop, status},
        sae_transfer{...}, verdict{status: deployable|benchmarked, detects, generalises, matches_judge, probe_auc, judge_auc}}
+POST /api/jailbreak_hardening {layer, top_k, target_fpr, use_judge}
+   -> {transfer{held_out_families, hard_negatives, adaptive_evasion, realistic_combined (each {auc, fpr_at_thr, recall_at_thr}), weakest_axis},
+       shootout_on_hard{methods, verdict}, verdict{status: robust|degraded, realistic_auc, hard_negative_fpr_at_thr, adaptive_evasion_recall_at_thr}}
 ```
 
 - **`monitor_shootout`** is the credibility check: does the interpretable SAE-feature monitor beat a
@@ -181,6 +184,15 @@ POST /api/jailbreak_detection {layer, top_k, target_fpr, use_judge}
   (AUC≥0.80), **generalises** to held-out families, **and matches the judge** — else `benchmarked`. With
   `use_judge` the judge is preflighted (must score a jailbreak high, a benign prompt low) before the
   free-probe-vs-paid-judge comparison is trusted.
+- **`jailbreak_hardening`** is the adversarial follow-up — it stress-tests the clean-split probe on the
+  three axes where an AUC of 1.00 is most likely to break, to find *where* it breaks: **hard negatives**
+  (benign prompts in jailbreak surface forms — the false-positive test), **adaptive evasion**
+  (manipulation with no overt markers — the false-negative test), and the **realistic combined**
+  distribution (evasion vs jailbreak-looking benign). It reports the **false-positive rate at the
+  deployed threshold** (not just AUC — the honest "what fires on jailbreak-shaped benign prompts" number),
+  the `weakest_axis`, and re-runs the shootout on the hard distribution so probe, SAE, and judge all face
+  the adversarial cases. Verdict `robust` only if the realistic AUC holds (≥0.80), the FP rate is
+  controlled (≤0.30), AND the probe still matches the judge under stress; else `degraded`.
 
 ## Notes
 - This works on the dev backend (CPU, no GPU) for developing your loop, and identically on the

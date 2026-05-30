@@ -666,3 +666,22 @@ def test_jailbreak_detection_shootout_and_probe_transfer(tmp_path):
     v = b["verdict"]
     assert v["status"] in {"deployable", "benchmarked"}
     assert isinstance(v["detects"], bool) and isinstance(v["generalises"], bool) and isinstance(v["matches_judge"], bool)
+
+
+def test_jailbreak_hardening_stress_tests_three_axes(tmp_path):
+    r = _client().post("/api/jailbreak_hardening", json={"layer": 3, "top_k": 3, "target_fpr": 0.1})
+    assert r.status_code == 200
+    b = r.json()
+    assert b["behavior"] == "jailbreak_hard"
+    t = b["transfer"]
+    # all three adversarial axes + the baseline are measured, each with an FPR at the deployed threshold
+    for axis in ("held_out_families", "hard_negatives", "adaptive_evasion", "realistic_combined"):
+        assert {"auc", "fpr_at_thr", "recall_at_thr"} <= set(t[axis])
+        assert -0.01 <= t[axis]["fpr_at_thr"] <= 1.01
+    assert t["weakest_axis"]["axis"] in {"hard_negatives", "adaptive_evasion", "realistic_combined"}
+    # the shootout is re-run on the HARD distribution (probe vs SAE vs random all face adversarial cases)
+    assert {"sae_monitor", "residual_diffmeans", "random_control"} <= set(b["shootout_on_hard"]["methods"])
+    v = b["verdict"]
+    assert v["status"] in {"robust", "degraded"}
+    assert {"transfer_holds", "fp_controlled", "matches_judge_hard", "realistic_auc",
+            "hard_negative_fpr_at_thr", "adaptive_evasion_recall_at_thr"} <= set(v)
