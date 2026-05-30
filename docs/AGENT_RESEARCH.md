@@ -30,7 +30,8 @@ GET  /api/experiments?limit=50                              -> the research trai
 
 `op` is one of: `inspect`, `compare`, `atlas`, `steer`, `sweep`, `benchmark`, `autopilot`,
 `manifold_fit`, `manifold_steer`, `manifold_compare`, `manifold_sae_coverage`, `manifold_pullback`,
-`monitor_discover`, `monitor_score`.
+`monitor_discover`, `monitor_score`, `monitor_shootout`, `monitor_robustness`, `collateral`,
+`control_loop`, `probe_discover`, `probe_score`, `steer_direction`, `caa_vs_sae`, `method_atlas`.
 `params` mirror the matching `POST /api/<op>` request body (see `/api/openapi.json` for every
 field). The quick ops (`inspect`/`compare`/`steer`) are also fine to call synchronously at
 `POST /api/<op>`; the heavy/experiment ops (`benchmark`, `autopilot`, `manifold_*`, `atlas`,
@@ -121,6 +122,38 @@ features), and reports **held-out** metrics plus a **random-feature control**. R
 `validation_decision` exactly as for steering: `validated` only if the detector clears a strict
 gate *and* beats the random-feature control — else `benchmarked`. The control is your defense
 against a chance separation looking real. Submit `monitor_discover` as a job for fire-and-poll.
+
+## The control half: does white-box detect-and-suppress actually work?
+
+The bench's newest layer answers the questions the interpretability field is currently stuck on —
+all with the same honest-controls discipline. Every op runs on dev (CPU) and identically on the real
+model.
+
+```
+POST /api/monitor/shootout   {behavior, positive_examples, negative_examples, layer, top_k, target_fpr}
+   -> {methods{sae_monitor, residual_diffmeans, residual_logistic, random_control}, verdict{winner, margin, ...}}
+POST /api/monitor/robustness {positive_examples, negative_examples, shift_positive_examples, shift_negative_examples, layer, top_k}
+   -> {in_distribution, shifted, auc_drop, robustness{status: robust|fragile, reason}}
+POST /api/collateral         {feature_id, strength, layer, ppl_bound, safety_tol}
+   -> {perplexity_ratio, safety_regression, unsteered/steered_compliance_rate, verdict{status: clean|damaged}}
+POST /api/control_loop       {positive_examples, negative_examples, test_prompts, layer, suppress_strength, ...}
+   -> {fires{fire_rate_unsteered, suppression_rate, ...}, collateral, rows, verdict{status: validated|benchmarked}}
+```
+
+- **`monitor_shootout`** is the credibility check: does the interpretable SAE-feature monitor beat a
+  *raw-residual linear probe* (the baseline SAEs are accused of not beating, arXiv 2502.16681) and the
+  random control? `winner` is `sae_monitor`, `residual_probe`, `tie`, or `inconclusive`. A `tie` /
+  `residual_probe` win is an honest negative, not a bug — report it.
+- **`monitor_robustness`** discovers on a clean set and evaluates on paraphrases: `fragile` means the
+  detector memorised its training distribution (the "looks fine in standard evals, fails under shift"
+  failure mode).
+- **`collateral`** is the Rogue-Scalpel check (arXiv 2509.22067): a steer that achieves its goal can
+  still erode refusals or fluency. `damaged` if compliance on held-out harmful prompts rose, or neutral
+  perplexity blew up.
+- **`control_loop`** ties it together: discover → suppress the detector's own top feature → re-score
+  every generation → measure collateral → one verdict. `validated` requires the behavior to have been
+  present, removed, **and** clean. Read `verdict.status`; a perfect-suppression-but-damaged run is
+  honestly `benchmarked`.
 
 ## Notes
 - This works on the dev backend (CPU, no GPU) for developing your loop, and identically on the

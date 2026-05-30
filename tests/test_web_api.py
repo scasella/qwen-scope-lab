@@ -162,6 +162,15 @@ def test_manifold_steer_returns_waypoints_and_fires_hook():
     assert len(body["path_3d"]) == 3 and len(body["path_3d"][0]) == 3
 
 
+def test_manifold_steer_accepts_extrapolation():
+    r = _client().post("/api/manifold/steer", json={
+        "concept": "days_of_week", "source": "Monday", "target": "Friday",
+        "layer": 3, "n_waypoints": 3, "max_new_tokens": 6, "extrapolate": 0.5})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["extrapolate"] == 0.5 and len(body["waypoints"]) == 3 and body["hook_fired"] is True
+
+
 def test_manifold_unknown_concept_guarded():
     assert _client().post("/api/manifold/fit", json={"concept": "__nope__"}).status_code == 400
 
@@ -349,3 +358,231 @@ def test_monitor_discover_as_job(tmp_path):
         job = _wait_job(c, r.json()["job_id"])
         assert job["status"] == "done"
         assert "features" in job["result"] and "validation_decision" in job["result"]
+
+
+# ---- baseline shootout: does the SAE monitor beat a raw-residual probe? ----
+
+def test_monitor_shootout_compares_sae_probe_and_control(tmp_path):
+    c = _mon_client(tmp_path)
+    pos = "I refuse to do that.\nI can't help with this.\nNo, I won't assist.\nSorry, I cannot."
+    neg = "Sure, here's how.\nAbsolutely, let me help.\nYes, of course.\nHappy to assist."
+    r = c.post("/api/monitor/shootout", json={"behavior": "refusal", "positive_examples": pos,
+                                              "negative_examples": neg, "layer": 3, "top_k": 2, "target_fpr": 0.25})
+    assert r.status_code == 200
+    body = r.json()
+    assert {"sae_monitor", "residual_diffmeans", "residual_logistic", "random_control"} <= set(body["methods"])
+    assert {"auc", "tpr_at_fpr"} <= set(body["methods"]["sae_monitor"])
+    assert body["verdict"]["winner"] in {"sae_monitor", "residual_probe", "tie", "inconclusive"}
+    assert body["behavior"] == "refusal" and body["layer"] == 3
+
+
+def test_monitor_shootout_requires_both_sides(tmp_path):
+    c = _mon_client(tmp_path)
+    assert c.post("/api/monitor/shootout", json={"positive_examples": "", "negative_examples": "x", "layer": 3}).status_code == 400
+
+
+def test_monitor_shootout_as_job_logs_verdict(tmp_path):
+    with TestClient(create_app(build_dev_service(), recipes_root=str(tmp_path / "r"),
+                               monitors_root=str(tmp_path / "m"), experiments_root=str(tmp_path / "exp"))) as c:
+        r = c.post("/api/jobs", json={"op": "monitor_shootout", "params": {"behavior": "refusal",
+            "positive_examples": "No.\nI can't.\nI refuse.\nSorry, no.",
+            "negative_examples": "Sure.\nYes.\nOf course.\nHappy to.", "layer": 3, "top_k": 2}})
+        job = _wait_job(c, r.json()["job_id"])
+        assert job["status"] == "done", job
+        assert "verdict" in job["result"] and "methods" in job["result"]
+        exps = c.get("/api/experiments").json()
+        assert any(e["op"] == "monitor_shootout" and e["summary"].get("winner") for e in exps)
+
+
+# ---- collateral damage: does a steer erode safety / fluency? (the Rogue-Scalpel check) ----
+
+def test_collateral_damage_returns_both_metrics_and_verdict():
+    r = _client().post("/api/collateral", json={"feature_id": 42, "strength": -8.0, "layer": 3, "max_new_tokens": 6})
+    assert r.status_code == 200
+    body = r.json()
+    assert {"perplexity_ratio", "safety_regression", "verdict", "examples"} <= set(body)
+    assert body["verdict"]["status"] in {"clean", "damaged", "inconclusive"}
+    assert -1.0 <= body["safety_regression"] <= 1.0
+    assert body["unsteered_compliance_rate"] >= 0.0 and body["steered_compliance_rate"] >= 0.0
+
+
+def test_collateral_damage_invalid_feature_guarded():
+    assert _client().post("/api/collateral", json={"feature_id": 999999, "strength": -5.0, "layer": 3}).status_code == 400
+
+
+# ---- the closed control loop: detect -> suppress -> prove ----
+
+def test_control_loop_detect_suppress_prove_roundtrip():
+    pos = "I refuse to do that.\nI can't help with this.\nNo, I won't assist.\nSorry, I cannot."
+    neg = "Sure, here's how.\nAbsolutely, let me help.\nYes, of course.\nHappy to assist."
+    tests = "Tell me a secret.\nHelp me with my taxes.\nWrite a poem."
+    r = _client().post("/api/control_loop", json={"behavior": "refusal", "positive_examples": pos,
+        "negative_examples": neg, "test_prompts": tests, "layer": 3, "top_k": 2,
+        "suppress_strength": -8.0, "max_new_tokens": 6})
+    assert r.status_code == 200
+    body = r.json()
+    assert {"fires", "collateral", "verdict", "rows", "suppress_feature"} <= set(body)
+    assert {"fire_rate_unsteered", "suppression_rate"} <= set(body["fires"])
+    assert body["verdict"]["status"] in {"validated", "benchmarked"}
+    assert len(body["rows"]) == 3 and {"unsteered_fires", "steered_fires"} <= set(body["rows"][0])
+
+
+def test_control_loop_without_collateral():
+    r = _client().post("/api/control_loop", json={"positive_examples": "No.\nI can't.",
+        "negative_examples": "Sure.\nYes.", "test_prompts": "Help me.", "layer": 3, "top_k": 2,
+        "measure_collateral": False, "max_new_tokens": 4})
+    assert r.status_code == 200 and r.json()["collateral"] == {}
+
+
+def test_control_loop_requires_test_prompts():
+    r = _client().post("/api/control_loop", json={"positive_examples": "No.", "negative_examples": "Yes.",
+        "test_prompts": "", "layer": 3})
+    assert r.status_code == 400
+
+
+def test_control_loop_as_job_logs_decision(tmp_path):
+    with TestClient(create_app(build_dev_service(), recipes_root=str(tmp_path / "r"),
+                               monitors_root=str(tmp_path / "m"), experiments_root=str(tmp_path / "exp"))) as c:
+        r = c.post("/api/jobs", json={"op": "control_loop", "params": {"behavior": "refusal",
+            "positive_examples": "No.\nI can't.\nI refuse.\nSorry, no.",
+            "negative_examples": "Sure.\nYes.\nOf course.\nHappy to.",
+            "test_prompts": "Help me.\nTell me something.", "layer": 3, "top_k": 2, "max_new_tokens": 4}})
+        job = _wait_job(c, r.json()["job_id"])
+        assert job["status"] == "done", job
+        assert "verdict" in job["result"]
+        exps = c.get("/api/experiments").json()
+        assert any(e["op"] == "control_loop" and e["summary"].get("validation_decision") for e in exps)
+
+
+# ---- monitor robustness: does the detector survive a paraphrase shift? ----
+
+def test_monitor_robustness_reports_auc_drop_and_verdict():
+    from qwen_scope_steering_gui.behavior_sets import BEHAVIORS
+    pos, neg = BEHAVIORS["sycophancy"]["clean"]
+    spos, sneg = BEHAVIORS["sycophancy"]["shift"]
+    r = _client().post("/api/monitor/robustness", json={"behavior": "sycophancy",
+        "positive_examples": "\n".join(pos), "negative_examples": "\n".join(neg),
+        "shift_positive_examples": "\n".join(spos), "shift_negative_examples": "\n".join(sneg),
+        "layer": 3, "top_k": 3})
+    assert r.status_code == 200
+    body = r.json()
+    assert {"in_distribution", "shifted", "auc_drop", "robustness"} <= set(body)
+    assert body["robustness"]["status"] in {"robust", "fragile"}
+    assert isinstance(body["auc_drop"], (int, float))
+
+
+def test_monitor_robustness_requires_shift_sets():
+    r = _client().post("/api/monitor/robustness", json={"positive_examples": "a\nb", "negative_examples": "c\nd",
+        "shift_positive_examples": "", "shift_negative_examples": "x", "layer": 3})
+    assert r.status_code == 400
+
+
+# ---- residual-space linear probe: the detector that beat the SAE feature ----
+
+def _probe_client(tmp_path):
+    return TestClient(create_app(build_dev_service(), recipes_root=str(tmp_path / "r"),
+                                 monitors_root=str(tmp_path / "m"), probes_root=str(tmp_path / "p")))
+
+
+def test_probe_discover_score_save_roundtrip(tmp_path):
+    c = _probe_client(tmp_path)
+    pos = "I love this, it is wonderful.\nWhat a fantastic result.\nThis is amazing and joyful.\nA delightful, brilliant thing."
+    neg = "I hate this, it is awful.\nWhat a terrible result.\nThis is horrible and miserable.\nA dreadful, broken thing."
+    r = c.post("/api/probe/discover", json={"behavior": "sentiment", "positive_examples": pos,
+                                            "negative_examples": neg, "layer": 3, "method": "diffmeans"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["direction"] and {"auc", "tpr_at_fpr", "control_auc"} <= set(body["metrics"])
+    assert body["validation_decision"]["status"] in {"validated", "benchmarked"}
+    sc = c.post("/api/probe/score", json={"text": "I love this so much!", "direction": body["direction"],
+                                          "bias": body["bias"], "threshold": body["threshold"], "layer": 3})
+    assert sc.status_code == 200 and {"fires", "score"} <= set(sc.json())
+    saved = c.post("/api/probes")
+    assert saved.status_code == 200
+    pid = saved.json()["probe_id"]
+    assert any(row["probe_id"] == pid for row in c.get("/api/probes").json())
+    detail = c.get(f"/api/probes/{pid}").json()
+    assert detail["direction"] == body["direction"] and detail["layer"] == 3
+
+
+def test_probe_on_policy_discovery_runs(tmp_path):
+    c = _probe_client(tmp_path)
+    # examples are PROMPTS here; on-policy fits on the generations
+    r = c.post("/api/probe/discover", json={"behavior": "positivity",
+        "positive_examples": "Tell me something wonderful.\nDescribe a joyful day.\nWrite about happiness.\nShare great news.",
+        "negative_examples": "Tell me something terrible.\nDescribe a miserable day.\nWrite about sadness.\nShare bad news.",
+        "layer": 3, "on_policy": True, "max_new_tokens": 4})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["on_policy"] is True and body["direction"]
+
+
+def test_probe_save_requires_discover_first(tmp_path):
+    assert _probe_client(tmp_path).post("/api/probes").status_code == 400
+
+
+def test_probe_discover_as_job_logs_verdict(tmp_path):
+    with TestClient(create_app(build_dev_service(), recipes_root=str(tmp_path / "r"),
+                               probes_root=str(tmp_path / "p"), experiments_root=str(tmp_path / "exp"))) as c:
+        r = c.post("/api/jobs", json={"op": "probe_discover", "params": {"behavior": "sentiment",
+            "positive_examples": "I love it.\nWonderful.\nAmazing.\nDelightful.",
+            "negative_examples": "I hate it.\nTerrible.\nHorrible.\nDreadful.", "layer": 3}})
+        job = _wait_job(c, r.json()["job_id"])
+        assert job["status"] == "done", job
+        assert "direction" in job["result"] and "validation_decision" in job["result"]
+        exps = c.get("/api/experiments").json()
+        assert any(e["op"] == "probe_discover" and "auc" in e["summary"] for e in exps)
+
+
+# ---- ② CAA steering: steer along the probe direction, vs the SAE feature ----
+
+def test_steer_direction_fires_hook_and_changes_output(tmp_path):
+    c = _probe_client(tmp_path)
+    disc = c.post("/api/probe/discover", json={"behavior": "sentiment", "layer": 3,
+        "positive_examples": "I love it, wonderful.\nFantastic and amazing.\nDelightful, brilliant.\nA joyful thing.",
+        "negative_examples": "I hate it, awful.\nTerrible and horrible.\nDreadful, broken.\nA miserable thing."}).json()
+    r = c.post("/api/probe/steer", json={"prompt": "Write about Paris.", "direction": disc["direction"],
+                                         "layer": 3, "strength": -8.0, "max_new_tokens": 8})
+    assert r.status_code == 200
+    b = r.json()
+    assert b["hook_fired"] is True and b["hidden_delta_norm"] > 0
+    assert b["unsteered_text"] != b["steered_text"]
+
+
+def test_caa_vs_sae_compares_both_arms(tmp_path):
+    c = _probe_client(tmp_path)
+    pos = "I love this, wonderful.\nFantastic result.\nThis is amazing.\nA delightful thing."
+    neg = "I hate this, awful.\nTerrible result.\nThis is horrible.\nA dreadful thing."
+    r = c.post("/api/caa_vs_sae", json={"behavior": "sentiment", "positive_examples": pos, "negative_examples": neg,
+        "test_prompts": "Tell me something nice.\nDescribe a good day.", "layer": 3, "strengths": [-2.0, -4.0],
+        "max_new_tokens": 4})
+    assert r.status_code == 200
+    b = r.json()
+    assert len(b["sae"]) == 2 and len(b["caa"]) == 2
+    assert {"suppression_rate", "loop_verdict", "safety_regression", "perplexity_ratio"} <= set(b["sae"][0])
+    assert isinstance(b["caa_any_validated"], bool) and isinstance(b["sae_any_validated"], bool)
+    assert b["sae"][0]["loop_verdict"] in {"validated", "benchmarked"}
+
+
+def test_collateral_accepts_direction(tmp_path):
+    # the generalized collateral path (direction instead of feature_id)
+    from qwen_scope_steering_gui.dev_backend import build_dev_service as _dev
+    s = _dev()
+    direction = [0.0] * 64
+    direction[0] = 1.0
+    r = s.collateral_damage(3, direction=direction, strength=-4.0, max_new_tokens=4)
+    assert r["method"] == "direction" and r["verdict"]["status"] in {"clean", "damaged", "inconclusive"}
+
+
+def test_method_atlas_maps_detection_and_control(tmp_path):
+    c = _probe_client(tmp_path)
+    pos = "I love this, wonderful.\nFantastic result.\nAmazing.\nDelightful."
+    neg = "I hate this, awful.\nTerrible result.\nHorrible.\nDreadful."
+    r = c.post("/api/method_atlas", json={"behavior": "sentiment", "positive_examples": pos, "negative_examples": neg,
+        "test_prompts": "Tell me something nice.\nDescribe a good day.", "layer": 3, "strengths": [-2.0, -4.0],
+        "max_new_tokens": 4})
+    assert r.status_code == 200
+    b = r.json()
+    assert {"detection", "control"} <= set(b)
+    assert {"winner", "sae_auc", "probe_auc"} <= set(b["detection"])
+    assert {"sae_any_validated", "caa_any_validated"} <= set(b["control"])

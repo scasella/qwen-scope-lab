@@ -25,6 +25,8 @@ from .benchmark_metrics import score_for_objective
 from .experiment_log import ExperimentLog
 from .monitor_schema import BehaviorMonitor
 from .monitor_store import MonitorStore
+from .probe_schema import LinearProbe
+from .probe_store import ProbeStore
 from .prompt_sets import parse_prompt_text
 from .recipe_schema import FeatureRecipe, ManifoldSpec, ModelMetadata, TargetBehavior
 from .recipe_store import RecipeStore
@@ -94,6 +96,22 @@ def build_monitor(service: Any, behavior_name: str, result: dict[str, Any], n_po
                                   top_k=result.get("top_k", 3), combine=result.get("combine", "max"),
                                   evaluation=evaluation, discovery={"n_pos": n_pos, "n_neg": n_neg},
                                   status=(result.get("validation_decision") or {}).get("status", "benchmarked"))
+
+
+def build_probe(service: Any, behavior_name: str, result: dict[str, Any]) -> LinearProbe:
+    """Snapshot a probe discovery into a saveable LinearProbe."""
+    cfg = service.config
+    name = behavior_name or "monitored_behavior"
+    kind = "on-policy " if result.get("on_policy") else ""
+    behavior = TargetBehavior(name=name, description=f"Detect '{name}' via a {kind}residual-stream linear probe.")
+    model = ModelMetadata(model_id=cfg.model_id, sae_id=cfg.sae_id or "",
+                          dtype=str(getattr(cfg, "dtype", "")), config_name=str(getattr(service, "config_path", "")))
+    evaluation = {**result.get("metrics", {}), "validation_decision": result.get("validation_decision")}
+    return LinearProbe.create(behavior, model, layer=result.get("layer", cfg.default_layer),
+                              direction=result.get("direction", []), bias=result.get("bias", 0.0),
+                              threshold=result.get("threshold", 0.0), method=result.get("method", "diffmeans"),
+                              on_policy=bool(result.get("on_policy")), evaluation=evaluation,
+                              status=(result.get("validation_decision") or {}).get("status", "benchmarked"))
 
 
 class InspectReq(BaseModel):
@@ -175,6 +193,7 @@ class ManifoldSteerReq(BaseModel):
     max_new_tokens: int = 24
     temperature: float = 0.0
     path: str = "manifold"
+    extrapolate: float = 0.0
 
 
 class ManifoldCompareReq(BaseModel):
@@ -234,6 +253,96 @@ class MonitorScoreReq(BaseModel):
     threshold: float = 0.0
 
 
+class MonitorShootoutReq(BaseModel):
+    behavior: str = "monitored_behavior"
+    positive_examples: str = ""
+    negative_examples: str = ""
+    layer: int | None = None
+    top_k: int = 3
+    target_fpr: float = 0.1
+    use_judge: bool = False
+
+
+class CollateralReq(BaseModel):
+    feature_id: int
+    strength: float
+    layer: int | None = None
+    max_new_tokens: int | None = None
+    temperature: float = 0.0
+    ppl_bound: float = 1.5
+    safety_tol: float = 0.05
+
+
+class ControlLoopReq(BaseModel):
+    behavior: str = "monitored_behavior"
+    positive_examples: str = ""
+    negative_examples: str = ""
+    test_prompts: str = ""
+    layer: int | None = None
+    top_k: int = 3
+    suppress_strength: float = -8.0
+    feature_id: int | None = None
+    max_new_tokens: int | None = None
+    temperature: float = 0.0
+    min_fire: float = 0.5
+    min_suppression: float = 0.5
+    ppl_bound: float = 1.5
+    safety_tol: float = 0.05
+    measure_collateral: bool = True
+
+
+class MonitorRobustnessReq(BaseModel):
+    behavior: str = "monitored_behavior"
+    positive_examples: str = ""
+    negative_examples: str = ""
+    shift_positive_examples: str = ""
+    shift_negative_examples: str = ""
+    layer: int | None = None
+    top_k: int = 3
+
+
+class ProbeDiscoverReq(BaseModel):
+    behavior: str = "monitored_behavior"
+    positive_examples: str = ""
+    negative_examples: str = ""
+    layer: int | None = None
+    method: str = "diffmeans"
+    target_fpr: float = 0.1
+    on_policy: bool = False
+    max_new_tokens: int | None = None
+
+
+class ProbeScoreReq(BaseModel):
+    text: str
+    probe_id: str | None = None
+    direction: list[float] = []
+    bias: float = 0.0
+    threshold: float = 0.0
+    layer: int | None = None
+
+
+class SteerDirectionReq(BaseModel):
+    prompt: str
+    probe_id: str | None = None
+    direction: list[float] = []
+    layer: int | None = None
+    strength: float = -6.0
+    max_new_tokens: int | None = None
+    temperature: float = 0.7
+
+
+class CaaVsSaeReq(BaseModel):
+    behavior: str = "monitored_behavior"
+    positive_examples: str = ""
+    negative_examples: str = ""
+    test_prompts: str = ""
+    layer: int | None = None
+    top_k: int = 3
+    strengths: list[float] = [-2.0, -4.0, -6.0]
+    max_new_tokens: int | None = None
+    temperature: float = 0.0
+
+
 async def _guard(fn, *args, **kwargs):
     try:
         return await run_in_threadpool(fn, *args, **kwargs)
@@ -243,14 +352,17 @@ async def _guard(fn, *args, **kwargs):
 
 def create_app(service: Any, recipes_root: str | Path = "recipes",
                experiments_root: str | Path | None = None,
-               monitors_root: str | Path = "monitors") -> FastAPI:
+               monitors_root: str | Path = "monitors",
+               probes_root: str | Path = "probes") -> FastAPI:
     app = FastAPI(title="Qwen Scope Steering", docs_url="/api/docs", openapi_url="/api/openapi.json")
     store = RecipeStore(recipes_root)
     monitor_store = MonitorStore(monitors_root)
+    probe_store = ProbeStore(probes_root)
     exp_log = ExperimentLog(experiments_root) if experiments_root else None
     last_bench: dict = {}
     last_manifold: dict = {}
     last_monitor: dict = {}
+    last_probe: dict = {}
     gpu_lock = asyncio.Lock()  # one GPU: serialize model-touching work so concurrent calls queue, not 500
     jobs: dict[str, dict] = {}
 
@@ -375,7 +487,8 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
 
     def op_manifold_steer(p: dict) -> dict:
         return service.manifold_steer(p["concept"], p["target"], p.get("layer"), p.get("source"), p.get("prompt"),
-                                      p.get("n_waypoints", 5), p.get("max_new_tokens"), p.get("temperature", 0.7), p.get("path", "manifold"))
+                                      p.get("n_waypoints", 5), p.get("max_new_tokens"), p.get("temperature", 0.7),
+                                      p.get("path", "manifold"), extrapolate=p.get("extrapolate", 0.0))
 
     def op_manifold_compare(p: dict) -> dict:
         return service.manifold_compare(p["concept"], p["target"], p.get("layer"), p.get("source"), p.get("prompt"),
@@ -417,11 +530,100 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
             raise ValueError("provide a monitor_id or a non-empty features list")
         return service.score_monitor(p["text"], features, layer, threshold)
 
+    def op_monitor_shootout(p: dict) -> dict:
+        pos, neg = _split_examples(p.get("positive_examples")), _split_examples(p.get("negative_examples"))
+        result = service.monitor_shootout(pos, neg, p.get("layer"), p.get("top_k", 3), p.get("target_fpr", 0.1),
+                                          use_judge=p.get("use_judge", False),
+                                          behavior=p.get("behavior") or "monitored_behavior")
+        result["behavior"] = p.get("behavior") or "monitored_behavior"
+        return result
+
+    def op_collateral(p: dict) -> dict:
+        return service.collateral_damage(p.get("layer"), p["feature_id"], p["strength"],
+                                         max_new_tokens=p.get("max_new_tokens"), temperature=p.get("temperature", 0.0),
+                                         ppl_bound=p.get("ppl_bound", 1.5), safety_tol=p.get("safety_tol", 0.05))
+
+    def op_control_loop(p: dict) -> dict:
+        pos, neg = _split_examples(p.get("positive_examples")), _split_examples(p.get("negative_examples"))
+        tests = _split_examples(p.get("test_prompts"))
+        result = service.control_loop(pos, neg, tests, layer=p.get("layer"), top_k=p.get("top_k", 3),
+                                      suppress_strength=p.get("suppress_strength", -8.0), feature_id=p.get("feature_id"),
+                                      max_new_tokens=p.get("max_new_tokens"), temperature=p.get("temperature", 0.0),
+                                      min_fire=p.get("min_fire", 0.5), min_suppression=p.get("min_suppression", 0.5),
+                                      ppl_bound=p.get("ppl_bound", 1.5), safety_tol=p.get("safety_tol", 0.05),
+                                      measure_collateral=p.get("measure_collateral", True))
+        result["behavior"] = p.get("behavior") or "monitored_behavior"
+        return result
+
+    def op_monitor_robustness(p: dict) -> dict:
+        result = service.monitor_robustness(
+            _split_examples(p.get("positive_examples")), _split_examples(p.get("negative_examples")),
+            _split_examples(p.get("shift_positive_examples")), _split_examples(p.get("shift_negative_examples")),
+            p.get("layer"), p.get("top_k", 3))
+        result["behavior"] = p.get("behavior") or "monitored_behavior"
+        return result
+
+    def op_probe_discover(p: dict) -> dict:
+        pos, neg = _split_examples(p.get("positive_examples")), _split_examples(p.get("negative_examples"))
+        result = service.discover_probe(pos, neg, layer=p.get("layer"), method=p.get("method", "diffmeans"),
+                                        target_fpr=p.get("target_fpr", 0.1), on_policy=p.get("on_policy", False),
+                                        max_new_tokens=p.get("max_new_tokens"))
+        result["behavior"] = p.get("behavior") or "monitored_behavior"
+        try:  # snapshot a saveable probe (discovery IS the probe benchmark)
+            last_probe["probe"] = build_probe(service, result["behavior"], result)
+        except Exception:
+            last_probe.clear()
+        return result
+
+    def op_probe_score(p: dict) -> dict:
+        if p.get("probe_id"):
+            pr = probe_store.load(p["probe_id"])
+            direction, bias, threshold, layer = pr.direction, pr.bias, pr.threshold, pr.layer
+        else:
+            direction, bias, threshold, layer = p.get("direction", []), p.get("bias", 0.0), p.get("threshold", 0.0), p.get("layer")
+        if not direction:
+            raise ValueError("provide a probe_id or a non-empty direction")
+        return service.score_probe(p["text"], direction, bias, threshold, layer)
+
+    def op_steer_direction(p: dict) -> dict:
+        if p.get("probe_id"):
+            pr = probe_store.load(p["probe_id"])
+            direction, layer = pr.direction, pr.layer if p.get("layer") is None else p.get("layer")
+        else:
+            direction, layer = p.get("direction", []), p.get("layer")
+        if not direction:
+            raise ValueError("provide a probe_id or a non-empty direction")
+        return service.steer_direction(p["prompt"], layer, direction, p.get("strength", -6.0),
+                                       p.get("max_new_tokens"), p.get("temperature", 0.7))
+
+    def op_caa_vs_sae(p: dict) -> dict:
+        pos, neg = _split_examples(p.get("positive_examples")), _split_examples(p.get("negative_examples"))
+        tests = _split_examples(p.get("test_prompts"))
+        result = service.caa_vs_sae(pos, neg, tests, layer=p.get("layer"), top_k=p.get("top_k", 3),
+                                    strengths=tuple(p.get("strengths") or (-2.0, -4.0, -6.0)),
+                                    max_new_tokens=p.get("max_new_tokens"), temperature=p.get("temperature", 0.0))
+        result["behavior"] = p.get("behavior") or "monitored_behavior"
+        return result
+
+    def op_method_atlas(p: dict) -> dict:
+        pos, neg = _split_examples(p.get("positive_examples")), _split_examples(p.get("negative_examples"))
+        tests = _split_examples(p.get("test_prompts"))
+        result = service.method_atlas(pos, neg, tests, layer=p.get("layer"), top_k=p.get("top_k", 3),
+                                      strengths=tuple(p.get("strengths") or (-2.0, -4.0, -6.0)),
+                                      max_new_tokens=p.get("max_new_tokens"), temperature=p.get("temperature", 0.0))
+        result["behavior"] = p.get("behavior") or "monitored_behavior"
+        return result
+
     OPS = {"inspect": op_inspect, "compare": op_compare, "atlas": op_atlas, "steer": op_steer, "sweep": op_sweep,
            "benchmark": op_benchmark, "autopilot": op_autopilot, "manifold_fit": op_manifold_fit,
            "manifold_steer": op_manifold_steer, "manifold_compare": op_manifold_compare,
            "manifold_sae_coverage": op_manifold_sae_coverage, "manifold_pullback": op_manifold_pullback,
-           "monitor_discover": op_monitor_discover, "monitor_score": op_monitor_score}
+           "monitor_discover": op_monitor_discover, "monitor_score": op_monitor_score,
+           "monitor_shootout": op_monitor_shootout, "collateral": op_collateral,
+           "control_loop": op_control_loop, "monitor_robustness": op_monitor_robustness,
+           "probe_discover": op_probe_discover, "probe_score": op_probe_score,
+           "steer_direction": op_steer_direction, "caa_vs_sae": op_caa_vs_sae,
+           "method_atlas": op_method_atlas}
 
     def _summarize(op: str, result: Any) -> dict:
         if not isinstance(result, dict):
@@ -446,6 +648,39 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
             return {"behavior": result.get("behavior"), "features": result.get("features"),
                     "auc": mx.get("auc"), "f1": mx.get("f1"), "control_auc": mx.get("control_auc"),
                     "validation_decision": result.get("validation_decision")}
+        if op == "monitor_shootout":
+            v = result.get("verdict", {})
+            return {"behavior": result.get("behavior"), "winner": v.get("winner"), "margin": v.get("margin"),
+                    "sae_auc": v.get("sae_auc"), "best_probe_auc": v.get("best_probe_auc"),
+                    "control_auc": v.get("control_auc"), "judge_auc": v.get("judge_auc")}
+        if op == "collateral":
+            return {"feature_id": result.get("feature_id"), "strength": result.get("strength"),
+                    "perplexity_ratio": result.get("perplexity_ratio"), "safety_regression": result.get("safety_regression"),
+                    "verdict": (result.get("verdict") or {}).get("status")}
+        if op == "control_loop":
+            f = result.get("fires", {})
+            return {"behavior": result.get("behavior"), "suppress_feature": result.get("suppress_feature"),
+                    "fire_rate_unsteered": f.get("fire_rate_unsteered"), "suppression_rate": f.get("suppression_rate"),
+                    "safety_regression": (result.get("collateral") or {}).get("safety_regression"),
+                    "validation_decision": result.get("verdict")}
+        if op == "monitor_robustness":
+            return {"behavior": result.get("behavior"), "auc_drop": result.get("auc_drop"),
+                    "in_dist_auc": (result.get("in_distribution") or {}).get("auc"),
+                    "shifted_auc": (result.get("shifted") or {}).get("auc"),
+                    "robustness": (result.get("robustness") or {}).get("status")}
+        if op == "probe_discover":
+            mx = result.get("metrics", {})
+            return {"behavior": result.get("behavior"), "method": result.get("method"), "on_policy": result.get("on_policy"),
+                    "auc": mx.get("auc"), "f1": mx.get("f1"), "tpr_at_fpr": mx.get("tpr_at_fpr"),
+                    "control_auc": mx.get("control_auc"), "validation_decision": result.get("validation_decision")}
+        if op == "caa_vs_sae":
+            return {"behavior": result.get("behavior"), "detector_probe_auc": result.get("detector_probe_auc"),
+                    "sae_any_validated": result.get("sae_any_validated"), "caa_any_validated": result.get("caa_any_validated")}
+        if op == "method_atlas":
+            d, c = result.get("detection", {}), result.get("control", {})
+            return {"behavior": result.get("behavior"), "detection_winner": d.get("winner"),
+                    "probe_auc": d.get("probe_auc"), "sae_auc": d.get("sae_auc"),
+                    "caa_any_validated": c.get("caa_any_validated"), "sae_any_validated": c.get("sae_any_validated")}
         return {}
 
     def _log_experiment(op: str, params: dict, status: str, result: Any = None, error: str | None = None) -> None:
@@ -526,6 +761,90 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
     @app.post("/api/monitor/score")
     async def monitor_score(req: MonitorScoreReq) -> dict:
         return await _guard_gpu(op_monitor_score, req.model_dump())
+
+    @app.post("/api/monitor/shootout")
+    async def monitor_shootout(req: MonitorShootoutReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_monitor_shootout, params)
+        _log_experiment("monitor_shootout", params, "done", result=result)
+        return result
+
+    @app.post("/api/collateral")
+    async def collateral(req: CollateralReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_collateral, params)
+        _log_experiment("collateral", params, "done", result=result)
+        return result
+
+    @app.post("/api/control_loop")
+    async def control_loop(req: ControlLoopReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_control_loop, params)
+        _log_experiment("control_loop", params, "done", result=result)
+        return result
+
+    @app.post("/api/monitor/robustness")
+    async def monitor_robustness(req: MonitorRobustnessReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_monitor_robustness, params)
+        _log_experiment("monitor_robustness", params, "done", result=result)
+        return result
+
+    @app.post("/api/probe/discover")
+    async def probe_discover(req: ProbeDiscoverReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_probe_discover, params)
+        _log_experiment("probe_discover", params, "done", result=result)
+        return result
+
+    @app.post("/api/probe/score")
+    async def probe_score(req: ProbeScoreReq) -> dict:
+        return await _guard_gpu(op_probe_score, req.model_dump())
+
+    @app.post("/api/probes")
+    async def save_probe() -> dict:
+        def _save() -> dict:
+            if "probe" not in last_probe:
+                raise ValueError("discover a probe before saving")
+            pr = last_probe["probe"]
+            probe_store.save(pr)
+            return {"probe_id": pr.probe_id, "status": pr.status}
+
+        return await _guard(_save)
+
+    @app.get("/api/probes")
+    async def probes_list() -> list[dict]:
+        return await _guard(probe_store.search, "", "all")
+
+    @app.get("/api/probes/{probe_id}")
+    async def probe_detail(probe_id: str) -> dict:
+        def _load() -> dict:
+            return probe_store.load(probe_id).to_dict()
+
+        try:
+            return await run_in_threadpool(_load)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=f"probe {probe_id} not found") from exc
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/api/probe/steer")
+    async def steer_direction(req: SteerDirectionReq) -> dict:
+        return await _guard_gpu(op_steer_direction, req.model_dump())
+
+    @app.post("/api/caa_vs_sae")
+    async def caa_vs_sae(req: CaaVsSaeReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_caa_vs_sae, params)
+        _log_experiment("caa_vs_sae", params, "done", result=result)
+        return result
+
+    @app.post("/api/method_atlas")
+    async def method_atlas(req: CaaVsSaeReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_method_atlas, params)
+        _log_experiment("method_atlas", params, "done", result=result)
+        return result
 
     @app.post("/api/steer")
     async def steer(req: SteerReq) -> dict:

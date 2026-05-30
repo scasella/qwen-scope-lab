@@ -41,6 +41,16 @@ def generate_text(
     return _decode_new_text(tokenizer, input_ids.shape[1], generated), input_ids
 
 
+def _ppl_from_logits(logits: torch.Tensor, full_ids: torch.Tensor, p_len: int) -> float | None:
+    vocab = logits.shape[-1]
+    logprobs = torch.log_softmax(logits[:-1], dim=-1)               # predicts token at pos+1
+    targets = full_ids[0, 1:].clamp(max=vocab - 1)                  # clamp guards toy-model OOV ids
+    cont = logprobs[p_len - 1:].gather(1, targets[p_len - 1:].unsqueeze(1)).squeeze(1)
+    if cont.numel() == 0:
+        return None
+    return float(torch.exp(-cont.mean()).item())
+
+
 def sequence_perplexity(bundle: ModelBundle, prompt: str, continuation: str) -> float | None:
     """Perplexity of `continuation` given `prompt` (one scoring forward pass). Lower =
     more fluent/natural — our proxy for the paper's off-manifold "naturalness" energy."""
@@ -53,13 +63,29 @@ def sequence_perplexity(bundle: ModelBundle, prompt: str, continuation: str) -> 
         return None
     with torch.no_grad():
         logits = bundle.model(input_ids=full_ids).logits[0].float()  # [seq, vocab]
-    vocab = logits.shape[-1]
-    logprobs = torch.log_softmax(logits[:-1], dim=-1)               # predicts token at pos+1
-    targets = full_ids[0, 1:].clamp(max=vocab - 1)                  # clamp guards toy-model OOV ids
-    cont = logprobs[p_len - 1:].gather(1, targets[p_len - 1:].unsqueeze(1)).squeeze(1)
-    if cont.numel() == 0:
+    return _ppl_from_logits(logits, full_ids, p_len)
+
+
+def steered_perplexity(bundle: ModelBundle, prompt: str, continuation: str, layer: int,
+                       steering_vector: torch.Tensor, strength: float, mode: str = "all_positions") -> float | None:
+    """Perplexity of fixed neutral ``continuation`` while the feature-steering hook is active.
+    Compared against the unsteered ``sequence_perplexity``, the ratio is our capability-damage
+    proxy: a steer that lobotomises the model makes unrelated natural text far less likely."""
+    if not continuation:
         return None
-    return float(torch.exp(-cont.mean()).item())
+    tokenizer = bundle.tokenizer
+    full_ids = tokenizer(prompt + continuation, return_tensors="pt")["input_ids"].to(bundle.device)
+    p_len = tokenizer(prompt, return_tensors="pt")["input_ids"].shape[1]
+    if full_ids.shape[1] <= p_len:
+        return None
+    trace = HookTrace()
+    handle = register_steering_hook(bundle.model, layer, steering_vector, strength, mode, trace)
+    try:
+        with torch.no_grad():
+            logits = bundle.model(input_ids=full_ids).logits[0].float()
+    finally:
+        handle.remove()
+    return _ppl_from_logits(logits, full_ids, p_len)
 
 
 def logits_delta_norm(

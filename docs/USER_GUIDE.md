@@ -386,7 +386,44 @@ control is the point: an AUC of 1.00 means little unless it clearly beats a rand
 
 ---
 
-# 6 · Library — your saved recipes
+# 6 · Control — detect, suppress, and prove it, honestly
+
+The capstone: it joins the detection half (Monitor) and the control half (Steer) and answers the
+questions the interpretability field is currently stuck on. Three panels, one behavior (pre-filled
+with **sycophancy** — telling the user what they want to hear).
+
+**Try it**
+1. Open **Control**. The **Behavior** box is pre-filled with sycophantic positives ("You're
+   absolutely right, I completely agree!") and honest negatives ("The evidence points the other
+   way."). Set behavior / layer / top-k.
+2. **① Baseline shootout → Run shootout.** This is the credibility test: it pits the **SAE-feature
+   monitor** against a **raw-residual linear probe** (diff-of-means *and* logistic regression) and the
+   **random-feature control**, on a shared held-out split, reporting each method's AUC and its
+   **TPR at a fixed false-positive rate** (how a real safety monitor is tuned). The verdict says
+   `SAE MONITOR WINS`, `PROBE WINS`, or `TIE`. **This is the honest answer to "do SAE features even
+   beat a cheap probe?"** — and a `PROBE WINS` is a real, publishable finding, not a failure.
+3. **② Robustness under shift → Test robustness.** It discovers the detector on the clean examples,
+   then evaluates it on **paraphrases it never saw**, and reports the AUC drop with a
+   `ROBUST` / `FRAGILE` verdict. `FRAGILE` means the detector memorized its training wording — the
+   failure mode that standard evals hide.
+4. **③ Closed loop → Run control loop.** The headline. The bench discovers a monitor, **suppresses
+   the behavior by steering the detector's own top feature**, re-scores every generation with that
+   monitor (does it still fire?), and measures **collateral damage**: the *fluency* chip (neutral-text
+   perplexity, steered vs unsteered) and the *safety Δ* chip (change in compliance on held-out harmful
+   prompts — the "Rogue Scalpel" effect, where a benign steer silently breaks refusals). The verdict
+   is `VALIDATED` **only if** the behavior was present, the steer removed it, **and** nothing broke.
+
+**How to read it:** the whole point is that **suppression alone is not success**. A run can suppress
+the behavior 100% and still land `BENCHMARKED` because the steer lobotomized fluency or eroded safety
+— and the before/after example rows show exactly what happened. **[real model]** on the dev model
+everything is `BENCHMARKED`/noisy (random weights); the real verdicts come from the 2B Modal probe
+(`control_loop_demo_2b`). *Caveat:* the safety-Δ heuristic is refusal-string matching, and it is only
+meaningful when the suppressed behavior is **not** itself refusal (suppressing refusal *should* raise
+compliance — that's the goal, not damage).
+
+---
+
+# 7 · Library — your saved recipes
 
 Every benchmarked experiment — feature steer *or* manifold steer — becomes a reproducible card.
 (Saved **monitors** have their own gallery inside the Monitor mode.) Recipes are written to disk
@@ -482,6 +519,22 @@ combine. **[real model]** — the *findings* need the real model; the dev model 
   feature 0.62; top-3 combined 1.00) because emails/SSNs/cards light different features. Lesson:
   coherent behavior → one feature; heterogeneous → raise **top-k**.
 - **Why it's interesting:** the guardrail/DLP use case, proven with held-out metrics *and* a control.
+
+### 6 · Does the interpretable monitor actually beat a dumb probe? (and does suppression break safety?)
+- **Question:** the field's two hardest questions — (a) do SAE features beat a raw-residual linear
+  probe at *detecting* a behavior, and (b) when you *suppress* a behavior by steering, do you silently
+  break the model's safety or fluency?
+- **How:** **Control** → keep the **sycophancy** examples → **① Run shootout** (SAE monitor vs.
+  residual probe vs. random control) → **② Test robustness** (paraphrase shift) → **③ Run control
+  loop** (suppress + collateral check). Or fire `control_loop_demo_2b` on Modal for the real 2B.
+- **What to read:** the shootout `winner` — a `PROBE WINS` or `TIE` is the honest, field-relevant
+  result (interpretability isn't buying detection power here); the robustness `auc_drop` (does it
+  survive paraphrases?); and the loop verdict, where a **100%-suppressed but `BENCHMARKED`** run is the
+  whole point — the *fluency* and *safety Δ* chips show the steer's hidden cost. On the dev model the
+  numbers are noise (random weights); the real verdicts come from the Modal probe.
+- **Why it's interesting:** it's the AI-control loop (detect → suppress → prove) with the rigor the
+  field usually skips — answering "is the white-box method worth it?" against real baselines, and
+  catching the "Rogue Scalpel" failure where a benign steer quietly erodes refusals.
 
 ---
 

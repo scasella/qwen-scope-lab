@@ -58,6 +58,12 @@ def _metrics_at(features: list[int], thr: float, pos_maps: list[dict], neg_maps:
             "f1": round(f1, 4), "accuracy": round(acc, 4), "fpr": round(fpr, 4)}
 
 
+def evaluate(features: list[int], threshold: float, pos_maps: list[dict], neg_maps: list[dict]) -> dict[str, float]:
+    """Metrics for a fixed detector (features + threshold) on a new labeled set — used to
+    test whether a discovered monitor still works on a shifted/paraphrased distribution."""
+    return _metrics_at([int(f) for f in features], float(threshold), pos_maps, neg_maps)
+
+
 def _best_threshold(features: list[int], pos_maps: list[dict], neg_maps: list[dict]) -> float:
     """Threshold on the combined score that maximizes F1 on the given (train) set."""
     vals = sorted({_combined(features, m) for m in pos_maps + neg_maps})
