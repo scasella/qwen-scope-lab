@@ -354,6 +354,23 @@ class EmotionCouplingReq(BaseModel):
     temperature: float = 0.0
 
 
+class SafetyGeometryReq(BaseModel):
+    layer: int | None = None
+    strength: float = 6.0
+    max_new_tokens: int | None = None
+    use_judge: bool = False
+
+
+class MonitorStreamReq(BaseModel):
+    prompt: str
+    probe_id: str | None = None
+    direction: list[float] = []
+    bias: float = 0.0
+    threshold: float = 0.0
+    layer: int | None = None
+    max_new_tokens: int | None = None
+
+
 async def _guard(fn, *args, **kwargs):
     try:
         return await run_in_threadpool(fn, *args, **kwargs)
@@ -633,6 +650,20 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         result["emotion"] = p.get("emotion") or "emotion"
         return result
 
+    def op_safety_geometry(p: dict) -> dict:
+        return service.safety_geometry(layer=p.get("layer"), strength=p.get("strength", 6.0),
+                                       max_new_tokens=p.get("max_new_tokens"), use_judge=p.get("use_judge", False))
+
+    def op_monitor_stream(p: dict) -> dict:
+        if p.get("probe_id"):
+            pr = probe_store.load(p["probe_id"])
+            direction, bias, threshold, layer = pr.direction, pr.bias, pr.threshold, pr.layer if p.get("layer") is None else p.get("layer")
+        else:
+            direction, bias, threshold, layer = p.get("direction", []), p.get("bias", 0.0), p.get("threshold", 0.0), p.get("layer")
+        if not direction:
+            raise ValueError("provide a probe_id or a non-empty direction")
+        return service.monitor_stream(p["prompt"], direction, bias, threshold, layer, p.get("max_new_tokens"))
+
     OPS = {"inspect": op_inspect, "compare": op_compare, "atlas": op_atlas, "steer": op_steer, "sweep": op_sweep,
            "benchmark": op_benchmark, "autopilot": op_autopilot, "manifold_fit": op_manifold_fit,
            "manifold_steer": op_manifold_steer, "manifold_compare": op_manifold_compare,
@@ -642,7 +673,8 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
            "control_loop": op_control_loop, "monitor_robustness": op_monitor_robustness,
            "probe_discover": op_probe_discover, "probe_score": op_probe_score,
            "steer_direction": op_steer_direction, "caa_vs_sae": op_caa_vs_sae,
-           "method_atlas": op_method_atlas, "emotion_coupling": op_emotion_coupling}
+           "method_atlas": op_method_atlas, "emotion_coupling": op_emotion_coupling,
+           "safety_geometry": op_safety_geometry, "monitor_stream": op_monitor_stream}
 
     def _summarize(op: str, result: Any) -> dict:
         if not isinstance(result, dict):
@@ -700,6 +732,14 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
             return {"behavior": result.get("behavior"), "detection_winner": d.get("winner"),
                     "probe_auc": d.get("probe_auc"), "sae_auc": d.get("sae_auc"),
                     "caa_any_validated": c.get("caa_any_validated"), "sae_any_validated": c.get("sae_any_validated")}
+        if op == "safety_geometry":
+            return {"predictor_corr": result.get("predictor_corr"),
+                    "fix_reduces_collateral": result.get("fix_reduces_collateral"),
+                    "mean_collateral_reduction": result.get("mean_collateral_reduction"),
+                    "n_behaviors": len(result.get("rows", []))}
+        if op == "monitor_stream":
+            return {"flagged_at_step": result.get("flagged_at_step"), "final_fires": result.get("final_fires"),
+                    "n_steps": len(result.get("trajectory", []))}
         if op == "emotion_coupling":
             v = result.get("verdict", {})
             return {"emotion": result.get("emotion"), "emotion_probe_auc": result.get("emotion_probe_auc"),
@@ -878,6 +918,17 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         result = await _guard_gpu(op_emotion_coupling, params)
         _log_experiment("emotion_coupling", params, "done", result=result)
         return result
+
+    @app.post("/api/safety_geometry")
+    async def safety_geometry(req: SafetyGeometryReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_safety_geometry, params)
+        _log_experiment("safety_geometry", params, "done", result=result)
+        return result
+
+    @app.post("/api/monitor/stream")
+    async def monitor_stream(req: MonitorStreamReq) -> dict:
+        return await _guard_gpu(op_monitor_stream, req.model_dump())
 
     @app.post("/api/steer")
     async def steer(req: SteerReq) -> dict:

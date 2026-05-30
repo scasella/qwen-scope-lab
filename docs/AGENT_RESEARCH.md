@@ -32,7 +32,7 @@ GET  /api/experiments?limit=50                              -> the research trai
 `manifold_fit`, `manifold_steer`, `manifold_compare`, `manifold_sae_coverage`, `manifold_pullback`,
 `monitor_discover`, `monitor_score`, `monitor_shootout`, `monitor_robustness`, `collateral`,
 `control_loop`, `probe_discover`, `probe_score`, `steer_direction`, `caa_vs_sae`, `method_atlas`,
-`emotion_coupling`.
+`emotion_coupling`, `safety_geometry`, `monitor_stream`.
 `params` mirror the matching `POST /api/<op>` request body (see `/api/openapi.json` for every
 field). The quick ops (`inspect`/`compare`/`steer`) are also fine to call synchronously at
 `POST /api/<op>`; the heavy/experiment ops (`benchmark`, `autopilot`, `manifold_*`, `atlas`,
@@ -139,6 +139,10 @@ POST /api/collateral         {feature_id, strength, layer, ppl_bound, safety_tol
    -> {perplexity_ratio, safety_regression, unsteered/steered_compliance_rate, verdict{status: clean|damaged}}
 POST /api/control_loop       {positive_examples, negative_examples, test_prompts, layer, suppress_strength, ...}
    -> {fires{fire_rate_unsteered, suppression_rate, ...}, collateral, rows, verdict{status: validated|benchmarked}}
+POST /api/safety_geometry    {layer, strength, max_new_tokens, use_judge}
+   -> {rows[{behavior, cos_with_refusal, collateral_raw, collateral_orth, ppl_raw, ppl_orth}], predictor_corr, fix_reduces_collateral}
+POST /api/monitor/stream     {prompt, probe_id | direction, bias, threshold, layer, max_new_tokens}
+   -> {generation, trajectory[{step, score, fires, text}], flagged_at_step, final_fires}
 ```
 
 - **`monitor_shootout`** is the credibility check: does the interpretable SAE-feature monitor beat a
@@ -155,6 +159,16 @@ POST /api/control_loop       {positive_examples, negative_examples, test_prompts
   every generation → measure collateral → one verdict. `validated` requires the behavior to have been
   present, removed, **and** clean. Read `verdict.status`; a perfect-suppression-but-damaged run is
   honestly `benchmarked`.
+- **`safety_geometry`** asks *why* a steer causes collateral and *how to avoid it*: it discovers a
+  refusal probe and a probe for each behavior, and tests whether the **cosine between them predicts
+  the safety regression** of steering that behavior (`predictor_corr`). Then it re-measures collateral
+  with the steer **projected orthogonal to the refusal direction** — `fix_reduces_collateral` is the
+  honest test of whether null-space steering actually helps here. The geometric predictor is the piece
+  the null-space-steering literature (AlphaSteer / NullSteer) skips. Use `use_judge` for credible
+  collateral (string-matching manufactured a false positive in the emotion arc — preflight the judge).
+- **`monitor/stream`** runs a residual probe **token-by-token** over a single generation, returning the
+  per-step score trajectory and the step at which it first crosses threshold — an online guardrail that
+  flags mid-stream rather than after the fact.
 
 ## Notes
 - This works on the dev backend (CPU, no GPU) for developing your loop, and identically on the

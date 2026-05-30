@@ -608,3 +608,39 @@ def test_emotion_coupling_measures_both_arms_and_verdict(tmp_path):
 def test_emotion_coupling_requires_examples(tmp_path):
     c = _probe_client(tmp_path)
     assert c.post("/api/emotion_coupling", json={"positive_examples": "", "negative_examples": "x", "layer": 3}).status_code == 400
+
+
+# ---- ① probe geometry: does the behavior↔refusal cosine predict steering collateral, and does
+#         orthogonalizing the steer to the refusal direction reduce it? ----
+
+def test_safety_geometry_predictor_and_orthogonal_fix(tmp_path):
+    r = _client().post("/api/safety_geometry", json={"layer": 3, "strength": 6.0, "max_new_tokens": 4})
+    assert r.status_code == 200
+    b = r.json()
+    assert "rows" in b and len(b["rows"]) >= 3
+    assert {"behavior", "cos_with_refusal", "collateral_raw", "collateral_orth", "ppl_raw", "ppl_orth"} <= set(b["rows"][0])
+    assert isinstance(b["fix_reduces_collateral"], str) and "/" in b["fix_reduces_collateral"]
+    assert b["predictor_corr"] is None or -1.0 <= b["predictor_corr"] <= 1.0
+    # the cosine is a real number in [-1, 1]
+    assert all(-1.0 <= row["cos_with_refusal"] <= 1.0 for row in b["rows"])
+
+
+# ---- ④ streaming probe-monitor: per-token online detection ----
+
+def test_monitor_stream_returns_per_token_trajectory(tmp_path):
+    c = _probe_client(tmp_path)
+    disc = c.post("/api/probe/discover", json={"behavior": "sentiment", "layer": 3,
+        "positive_examples": "I love it, wonderful.\nFantastic and amazing.\nDelightful, brilliant.\nA joyful thing.",
+        "negative_examples": "I hate it, awful.\nTerrible and horrible.\nDreadful, broken.\nA miserable thing."}).json()
+    r = c.post("/api/monitor/stream", json={"prompt": "Write about your day.", "direction": disc["direction"],
+                                            "bias": disc["bias"], "threshold": disc["threshold"], "layer": 3,
+                                            "max_new_tokens": 5})
+    assert r.status_code == 200
+    b = r.json()
+    assert len(b["trajectory"]) >= 1 and {"step", "score", "fires"} <= set(b["trajectory"][0])
+    assert b["flagged_at_step"] is None or isinstance(b["flagged_at_step"], int)
+    assert isinstance(b["final_fires"], bool)
+
+
+def test_monitor_stream_requires_probe(tmp_path):
+    assert _probe_client(tmp_path).post("/api/monitor/stream", json={"prompt": "x", "layer": 3}).status_code == 400

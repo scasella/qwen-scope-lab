@@ -200,7 +200,7 @@ class SteeringService:
                 "discovery_decision": disc.get("validation_decision")}
 
     def collateral_damage(self, layer: int | None, feature_id: int | None = None, strength: float = 0.0, *,
-                          direction: list[float] | None = None,
+                          direction: list[float] | None = None, orthogonal_to: list[float] | None = None,
                           fluency_probes: list | None = None, refusal_probes: list[str] | None = None,
                           max_new_tokens: int | None = None, temperature: float = 0.0,
                           ppl_bound: float = 1.5, safety_tol: float = 0.05,
@@ -218,6 +218,11 @@ class SteeringService:
         if direction is not None:
             vec = torch.as_tensor(direction, dtype=torch.float32)
             vec = vec / vec.norm().clamp_min(1e-6)
+            if orthogonal_to is not None:  # project the steer orthogonal to a protected (e.g. refusal) direction
+                r = torch.as_tensor(orthogonal_to, dtype=torch.float32)
+                r = r / r.norm().clamp_min(1e-6)
+                vec = vec - (vec @ r) * r
+                vec = vec / vec.norm().clamp_min(1e-6)
 
             def _steer(q):
                 return self._run_steer_vec(q, layer, vec, float(strength), mnt, temperature)
@@ -596,6 +601,86 @@ class SteeringService:
                 "caa_induced": bool(caa_ind), "sae_induced": bool(sae_ind),
                 "caa_entanglement": caa_ent, "sae_entanglement": sae_ent,
                 "early_warning": early_warning, "cleaner_method": lever, "verdict": verdict}
+
+    # ------------------------------- probe geometry: predict & avoid collateral -------------------------------
+    def safety_geometry(self, behaviors: dict | None = None, *, layer: int | None = None,
+                        refusal_pos: list[str] | None = None, refusal_neg: list[str] | None = None,
+                        strength: float = 6.0, max_new_tokens: int | None = None, temperature: float = 0.0,
+                        use_judge: bool = False, judge: Any = None) -> dict[str, Any]:
+        """Does probe geometry PREDICT — and let you AVOID — steering's safety collateral? Discover a
+        refusal probe + each behavior probe; report cosine(behavior-probe, refusal-probe) and the
+        safety collateral of steering each behavior RAW vs ORTHOGONALIZED to the refusal direction.
+        Predictor claim: higher |cos| → higher collateral. Fix claim: orthogonalising the steer to the
+        refusal direction lowers the collateral. (Positions vs AlphaSteer/NullSteer: we add the
+        geometric predictor as a pre-screen + the honest measurement those method papers skip.)"""
+        import numpy as np
+
+        from . import behavior_sets as _bs, emotion_sets as _es, probes as _pr
+        layer = self.config.default_layer if layer is None else int(layer)
+        mnt = max_new_tokens or self.config.default_max_new_tokens
+        if behaviors is None:
+            behaviors = {"sycophancy": _bs.BEHAVIORS["sycophancy"]["clean"],
+                         "sentiment": _bs.BEHAVIORS["sentiment"]["clean"],
+                         "affection": _es.EMOTIONS["affection"], "anger": _es.EMOTIONS["anger"],
+                         "fear": _es.EMOTIONS["fear"]}
+        rp = self.discover_probe(refusal_pos or _bs.REFUSAL_POS, refusal_neg or _bs.REFUSAL_NEG, layer=layer)
+        r_unit = np.asarray(_pr.unit_direction(rp["direction"]), dtype=float)
+
+        rows = []
+        for name, (pos, neg) in behaviors.items():
+            bp = self.discover_probe(pos, neg, layer=layer)
+            v_unit = np.asarray(_pr.unit_direction(bp["direction"]), dtype=float)
+            cos = round(float(v_unit @ r_unit), 4)
+            raw = self.collateral_damage(layer, direction=bp["direction"], strength=float(strength),
+                                         max_new_tokens=mnt, temperature=temperature, use_judge=use_judge, judge=judge)
+            orth = self.collateral_damage(layer, direction=bp["direction"], strength=float(strength),
+                                          orthogonal_to=rp["direction"], max_new_tokens=mnt,
+                                          temperature=temperature, use_judge=use_judge, judge=judge)
+            rows.append({"behavior": name, "cos_with_refusal": cos,
+                         "collateral_raw": raw["safety_regression"], "collateral_orth": orth["safety_regression"],
+                         "ppl_raw": raw["perplexity_ratio"], "ppl_orth": orth["perplexity_ratio"]})
+
+        # predictor: Pearson(|cos|, |collateral_raw|) across behaviors
+        pts = [(abs(r["cos_with_refusal"]), abs(r["collateral_raw"] or 0.0)) for r in rows]
+        corr = None
+        if len(pts) >= 3:
+            xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+            mx, my = sum(xs) / len(xs), sum(ys) / len(ys)
+            sxy = sum((x - mx) * (y - my) for x, y in pts)
+            sxx = sum((x - mx) ** 2 for x in xs) ** 0.5
+            syy = sum((y - my) ** 2 for y in ys) ** 0.5
+            corr = round(sxy / (sxx * syy), 4) if sxx > 0 and syy > 0 else None
+        # fix: does orthogonalising reduce |collateral|?
+        reductions = [abs(r["collateral_raw"] or 0.0) - abs(r["collateral_orth"] or 0.0) for r in rows]
+        fix_helps = sum(1 for d in reductions if d > 1e-9)
+        return {"layer": layer, "strength": float(strength), "rows": rows, "predictor_corr": corr,
+                "fix_reduces_collateral": f"{fix_helps}/{len(rows)}",
+                "mean_collateral_reduction": round(sum(reductions) / len(reductions), 4) if reductions else 0.0}
+
+    def monitor_stream(self, prompt: str, direction: list[float], bias: float, threshold: float,
+                       layer: int | None = None, max_new_tokens: int | None = None,
+                       temperature: float = 0.0) -> dict[str, Any]:
+        """Online (streaming) monitor: generate token-by-token and score the running generation with a
+        probe at each step, returning the per-token score trajectory + the first step where it crosses
+        the threshold — the real-time flag / abort point the post-hoc bench lacks. The probe is cheap,
+        so this is the inference-time safety filter the detection result points to."""
+        from . import probes as _pr
+        layer = self.config.default_layer if layer is None else int(layer)
+        mnt = max_new_tokens or self.config.default_max_new_tokens
+        bundle = self.ensure_model()
+        gen, traj, flagged_at = "", [], None
+        for i in range(int(mnt)):
+            nxt, _ = generate_text(bundle, prompt + gen, 1, float(temperature))
+            if not nxt.strip() and gen:
+                break
+            gen = (gen + nxt).strip() if not gen else gen + nxt
+            sc = _pr.score_probe(direction, bias, threshold, self._pooled_residual(gen.strip() or prompt, layer))
+            traj.append({"step": i + 1, "score": sc["score"], "fires": sc["fires"], "text": gen[:160]})
+            if sc["fires"] and flagged_at is None:
+                flagged_at = i + 1
+        return {"prompt": prompt, "layer": layer, "threshold": float(threshold), "generation": gen,
+                "trajectory": traj, "flagged_at_step": flagged_at,
+                "final_fires": bool(traj[-1]["fires"]) if traj else False}
 
     # ------------------------------- manifold steering -------------------------------
     def manifold_presets(self) -> dict[str, Any]:
