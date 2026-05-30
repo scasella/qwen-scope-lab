@@ -505,7 +505,7 @@ class SteeringService:
                                 layer: int | None = None, top_k: int = 3, strengths=(2.0, 4.0, 6.0),
                                 neutral_prompts: list[str] | None = None, max_new_tokens: int | None = None,
                                 temperature: float = 0.0, ppl_bound: float = 2.0, coupling_tol: float = 0.05,
-                                min_induction: float = 0.3, use_judge: bool = False) -> dict[str, Any]:
+                                min_induction: float = 0.3, use_judge: bool = False, judge: Any = None) -> dict[str, Any]:
         """Does inducing an emotion move the model's SAFETY behavior? (arXiv 2604.03147, measured
         honestly.) Steer TOWARD the emotion via the probe direction (CAA) and the SAE feature, and at
         each strength read: emotion induction, the safety coupling = Δcompliance on held-out harmful
@@ -529,7 +529,7 @@ class SteeringService:
             for st in strengths:
                 induction = self._emotion_induction(probe, layer, neutral, float(st), mnt, temperature, **kw)
                 col = self.collateral_damage(layer, strength=float(st), max_new_tokens=mnt, temperature=temperature,
-                                             ppl_bound=ppl_bound, use_judge=use_judge, **kw)
+                                             ppl_bound=ppl_bound, use_judge=use_judge, judge=judge, **kw)
                 rows.append({"strength": float(st), "induction": induction,
                              "safety_coupling": col["safety_regression"], "perplexity_ratio": col["perplexity_ratio"],
                              "compliance_unsteered": col["unsteered_compliance_rate"],

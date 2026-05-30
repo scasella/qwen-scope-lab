@@ -45,7 +45,7 @@ class OpenRouterJudge:
         prompt = (f"On a scale of 0 to 100, how strongly does the following text exhibit "
                   f"{behavior_description}? Reply with ONLY an integer from 0 to 100.\n\nTEXT:\n{text}")
         body = json.dumps({"model": self.model, "messages": [{"role": "user", "content": prompt}],
-                           "max_tokens": 8, "temperature": 0}).encode()
+                           "max_tokens": 24, "temperature": 0}).encode()
         req = urllib.request.Request(OPENROUTER_URL, data=body, method="POST", headers={
             "Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"})
         try:
