@@ -343,6 +343,17 @@ class CaaVsSaeReq(BaseModel):
     temperature: float = 0.0
 
 
+class EmotionCouplingReq(BaseModel):
+    emotion: str = "emotion"
+    positive_examples: str = ""
+    negative_examples: str = ""
+    layer: int | None = None
+    top_k: int = 3
+    strengths: list[float] = [2.0, 4.0, 6.0]
+    max_new_tokens: int | None = None
+    temperature: float = 0.0
+
+
 async def _guard(fn, *args, **kwargs):
     try:
         return await run_in_threadpool(fn, *args, **kwargs)
@@ -614,6 +625,14 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         result["behavior"] = p.get("behavior") or "monitored_behavior"
         return result
 
+    def op_emotion_coupling(p: dict) -> dict:
+        pos, neg = _split_examples(p.get("positive_examples")), _split_examples(p.get("negative_examples"))
+        result = service.emotion_safety_coupling(pos, neg, layer=p.get("layer"), top_k=p.get("top_k", 3),
+                                                 strengths=tuple(p.get("strengths") or (2.0, 4.0, 6.0)),
+                                                 max_new_tokens=p.get("max_new_tokens"), temperature=p.get("temperature", 0.0))
+        result["emotion"] = p.get("emotion") or "emotion"
+        return result
+
     OPS = {"inspect": op_inspect, "compare": op_compare, "atlas": op_atlas, "steer": op_steer, "sweep": op_sweep,
            "benchmark": op_benchmark, "autopilot": op_autopilot, "manifold_fit": op_manifold_fit,
            "manifold_steer": op_manifold_steer, "manifold_compare": op_manifold_compare,
@@ -623,7 +642,7 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
            "control_loop": op_control_loop, "monitor_robustness": op_monitor_robustness,
            "probe_discover": op_probe_discover, "probe_score": op_probe_score,
            "steer_direction": op_steer_direction, "caa_vs_sae": op_caa_vs_sae,
-           "method_atlas": op_method_atlas}
+           "method_atlas": op_method_atlas, "emotion_coupling": op_emotion_coupling}
 
     def _summarize(op: str, result: Any) -> dict:
         if not isinstance(result, dict):
@@ -681,6 +700,13 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
             return {"behavior": result.get("behavior"), "detection_winner": d.get("winner"),
                     "probe_auc": d.get("probe_auc"), "sae_auc": d.get("sae_auc"),
                     "caa_any_validated": c.get("caa_any_validated"), "sae_any_validated": c.get("sae_any_validated")}
+        if op == "emotion_coupling":
+            v = result.get("verdict", {})
+            return {"emotion": result.get("emotion"), "emotion_probe_auc": result.get("emotion_probe_auc"),
+                    "caa_max_coupling": result.get("caa_max_coupling"), "sae_max_coupling": result.get("sae_max_coupling"),
+                    "caa_induced": result.get("caa_induced"), "sae_induced": result.get("sae_induced"),
+                    "early_warning": result.get("early_warning"),
+                    "cleaner_method": result.get("cleaner_method"), "safety_coupled": v.get("safety_coupled")}
         return {}
 
     def _log_experiment(op: str, params: dict, status: str, result: Any = None, error: str | None = None) -> None:
@@ -844,6 +870,13 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         params = req.model_dump()
         result = await _guard_gpu(op_method_atlas, params)
         _log_experiment("method_atlas", params, "done", result=result)
+        return result
+
+    @app.post("/api/emotion_coupling")
+    async def emotion_coupling(req: EmotionCouplingReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_emotion_coupling, params)
+        _log_experiment("emotion_coupling", params, "done", result=result)
         return result
 
     @app.post("/api/steer")

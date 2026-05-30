@@ -586,3 +586,25 @@ def test_method_atlas_maps_detection_and_control(tmp_path):
     assert {"detection", "control"} <= set(b)
     assert {"winner", "sae_auc", "probe_auc"} <= set(b["detection"])
     assert {"sae_any_validated", "caa_any_validated"} <= set(b["control"])
+
+
+# ---- emotion -> safety coupling: does inducing an emotion move the model's safety behavior? ----
+
+def test_emotion_coupling_measures_both_arms_and_verdict(tmp_path):
+    from qwen_scope_steering_gui.emotion_sets import EMOTIONS
+    pos, neg = EMOTIONS["affection"]
+    c = _probe_client(tmp_path)
+    r = c.post("/api/emotion_coupling", json={"emotion": "affection", "positive_examples": "\n".join(pos),
+        "negative_examples": "\n".join(neg), "layer": 3, "strengths": [2.0, 4.0], "max_new_tokens": 4})
+    assert r.status_code == 200
+    b = r.json()
+    assert {"caa", "sae", "verdict", "emotion_probe_auc", "cleaner_method", "caa_induced"} <= set(b)
+    assert len(b["caa"]) == 2 and len(b["sae"]) == 2
+    assert {"strength", "induction", "safety_coupling", "perplexity_ratio"} <= set(b["caa"][0])
+    assert isinstance(b["verdict"]["safety_coupled"], bool)
+    assert b["cleaner_method"] in {"caa", "sae", None}  # None when neither method induced the emotion (dev model)
+
+
+def test_emotion_coupling_requires_examples(tmp_path):
+    c = _probe_client(tmp_path)
+    assert c.post("/api/emotion_coupling", json={"positive_examples": "", "negative_examples": "x", "layer": 3}).status_code == 400

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The residual probe is the primitive that works — Qwen Scope Lab Bench</title>
+  <meta name="description" content="On Qwen3.5-2B a free difference-of-means residual probe matches a paid GPT-4o-mini judge for behavior detection, beats the interpretable SAE feature, and steers cleaner than the feature too." />
+  <meta property="og:title" content="The residual probe is the primitive that works" />
+  <meta property="og:description" content="A free linear probe over the residual stream matches a paid LLM judge, beats the SAE feature, and carries less collateral when steered." />
+  <meta property="og:type" content="article" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:           #F9F9F6;
+      --accent:       #090909;
+      --fg:           #3B3B39;
+      --fg-soft:      #3B3B39;
+      --fg-mute:      #595856;
+      --fg-faint:     #969592;
+      --on-dark:      #DFDEDA;
+      --surface-muted:#EFEFEB;
+      --chart-primary:   #3B3B39;
+      --chart-secondary: #969592;
+      --chart-axis:      #C8C7C2;
+      --chart-grid:      #E4E3DE;
+      --chart-accent-1:  #5C8A95;
+      --chart-accent-2:  #8B6F8C;
+      --font-serif: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+      --font-sans:  'Inter', 'Helvetica Neue', Arial, sans-serif;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html {
+      background: var(--bg);
+      overflow-y: scroll;
+      scrollbar-color: #bbb #f4f4f4;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+      font-variant-ligatures: common-ligatures contextual;
+      font-variant-numeric: oldstyle-nums proportional-nums;
+      font-optical-sizing: auto;
+      font-synthesis: none;
+    }
+    html::-webkit-scrollbar { width: 16px; }
+    html::-webkit-scrollbar-track { background: #f4f4f4; }
+    html::-webkit-scrollbar-thumb { background: #bbb; border-radius: 5px; }
+    ::selection { background: rgba(0,0,0,0.08); color: inherit; }
+    body {
+      min-height: 100vh;
+      font-family: var(--font-serif);
+      background: var(--bg);
+      color: var(--accent);
+      display: flex;
+      flex-direction: column;
+      text-wrap: pretty;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, .subtitle { text-wrap: balance; }
+    .page-surface { background: var(--bg); display: flex; flex: 1 0 auto; flex-direction: column; width: 100%; }
+    .main { flex: 1; }
+    .perspectives-header {
+      display: flex; flex-direction: row; justify-content: space-between; align-items: center;
+      padding: 2rem 2.5rem; width: 100%;
+    }
+    .logo-centered {
+      font-family: var(--font-sans); font-size: 14px; font-weight: 500; letter-spacing: 0.25em;
+      color: var(--fg-soft); text-decoration: none;
+    }
+    .logo-centered .accent { color: var(--accent); }
+    .contact-link {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.5rem 0.75rem; margin-right: -0.75rem; border-radius: 999px; color: var(--fg);
+      transition: background 240ms cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none;
+      font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.08em;
+    }
+    .contact-link:hover, .contact-link:focus-visible { background: var(--surface-muted); }
+    .benchmarks-content { max-width: 720px; margin: 0 auto; padding: 2rem 2rem 6rem; }
+    .benchmarks-content h1 {
+      font-size: 48px; font-weight: 400; line-height: 1.1; letter-spacing: -0.01em;
+      color: var(--fg); margin-top: 144px;
+    }
+    .benchmarks-content .subtitle {
+      font-size: 18px; font-weight: 300; line-height: 1.5; color: var(--fg);
+      margin-top: 10px; margin-bottom: 0.5em;
+    }
+    .benchmarks-content .date {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.1em; color: var(--fg-faint);
+      margin-top: 1em; text-transform: uppercase;
+    }
+    .paper-links { display: flex; align-items: center; gap: 1rem; margin: 26px 0; flex-wrap: wrap; }
+    .paper-links .btn-pill {
+      font-family: var(--font-sans); font-size: 14px; line-height: 1; color: var(--fg);
+      text-decoration: none; background: #fff; border-radius: 999px; padding: 0.85rem 1.2rem 0.95rem;
+      transition: background 240ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .paper-links .btn-pill:hover { background: var(--surface-muted); }
+    .benchmarks-body { margin: 96px 0 48px; }
+    .benchmarks-body .body-main { font-size: 17px; line-height: 1.6; margin-top: 1lh; }
+    .benchmarks-body p { font-weight: 400; color: var(--fg-soft); margin-bottom: 1lh; }
+    .benchmarks-body em { font-style: italic; }
+    .benchmarks-body strong { font-weight: 500; color: var(--fg); }
+    .benchmarks-body a, .benchmarks-body a:visited {
+      color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--fg-faint); padding-bottom: 1px;
+    }
+    .benchmarks-body a:hover { border-bottom-color: var(--accent); }
+    .benchmarks-body h2 {
+      font-size: 26px; font-weight: 400; color: var(--fg); margin: 1.75lh 0 24px; letter-spacing: -0.005em;
+    }
+    .benchmarks-body h3 {
+      font-size: 19px; font-weight: 700; color: var(--fg); margin: 1.5lh 0 16px; letter-spacing: -0.005em;
+    }
+    .benchmarks-body ul, .benchmarks-body ol { padding-left: 1.25em; margin-bottom: 1.5em; }
+    .benchmarks-body ul { list-style: disc; }
+    .benchmarks-body ol { list-style: decimal; }
+    .benchmarks-body li {
+      font-size: 17px; font-weight: 400; line-height: 1.6; color: var(--fg-soft); margin-bottom: 0.6em;
+    }
+    .benchmarks-body li::marker { color: var(--fg-faint); }
+    .benchmarks-body code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.82em;
+      background: rgba(0,0,0,0.05); padding: 0.08em 0.3em; border-radius: 4px;
+    }
+    .benchmarks-body pre {
+      background: rgba(0,0,0,0.05); padding: 14px 18px; border-radius: 8px; overflow-x: auto;
+      margin: 1lh 0; font-size: 13px; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+    }
+    .benchmarks-body pre code { background: none; padding: 0; border-radius: 0; font-size: inherit; }
+    pre .c { color: var(--fg-faint); font-style: italic; }
+    pre .k { color: var(--accent); }
+    pre .s { color: var(--fg); }
+    .tldr { margin: 32px 0 48px; padding: 0 0 0 24px; border-left: 2px solid var(--fg-mute); }
+    .tldr-label {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--fg-faint); margin-bottom: 10px; display: block;
+    }
+    .tldr p { font-size: 17px; font-weight: 400; line-height: 1.6; color: var(--fg); }
+    .tldr p + p { margin-top: 0.8em; }
+    .callout { margin: 1.5lh 0; padding: 20px 24px; background: var(--surface-muted); border-radius: 10px; }
+    .callout-label {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--fg-mute); margin-bottom: 8px; display: block;
+    }
+    .callout p { font-size: 15px; font-weight: 400; line-height: 1.6; color: var(--fg); margin-bottom: 0; }
+    .stat-row {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; margin: 1.5lh 0;
+      border-top: 1px solid var(--chart-grid); border-bottom: 1px solid var(--chart-grid);
+    }
+    @media (min-width: 600px) { .stat-row { grid-template-columns: repeat(4, 1fr); } }
+    .stat { padding: 18px 18px; border-right: 1px solid var(--chart-grid); }
+    .stat:first-child { padding-left: 0; }
+    .stat:last-child { border-right: 0; }
+    @media (max-width: 599px) {
+      .stat:nth-child(2n) { border-right: 0; }
+      .stat:nth-child(n+3) { border-top: 1px solid var(--chart-grid); }
+    }
+    .stat .k {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--fg-faint); margin-bottom: 8px; display: block;
+    }
+    .stat .v {
+      font-family: var(--font-serif); font-size: 24px; font-weight: 400; color: var(--fg);
+      line-height: 1.1; letter-spacing: -0.01em;
+    }
+    .stat .s { font-family: var(--font-sans); font-size: 12px; color: var(--fg-faint); margin-top: 6px; line-height: 1.35; }
+    .mode-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 1.5lh 0; }
+    @media (min-width: 600px) { .mode-grid { grid-template-columns: repeat(2, 1fr); } }
+    .mode-card { background: #fff; border-radius: 12px; padding: 20px 22px 22px; border: 1px solid var(--chart-grid); }
+    .mode-card .tag {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--fg-faint); display: block; margin-bottom: 10px;
+    }
+    .mode-card .t {
+      font-family: var(--font-serif); font-size: 17px; font-weight: 700; color: var(--fg);
+      display: block; margin-bottom: 8px; letter-spacing: -0.005em;
+    }
+    .mode-card .desc { font-size: 14px; font-weight: 400; line-height: 1.55; color: var(--fg-soft); }
+    .table-wrap { margin: 1.5lh 0; }
+    .table-label {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--fg-faint); margin-bottom: 12px;
+    }
+    .table-label .id { color: var(--fg); margin-right: 12px; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-family: var(--font-serif); }
+    th, td {
+      padding: 11px 14px 11px 0; text-align: left; font-size: 14px; font-weight: 400;
+      border-bottom: 1px solid var(--chart-grid); color: var(--fg);
+    }
+    th {
+      font-family: var(--font-sans); font-weight: 400; color: var(--fg-mute); font-size: 12px;
+      letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--fg-mute);
+    }
+    td.num { font-variant-numeric: tabular-nums; color: var(--fg); }
+    td.pos { color: var(--accent); font-weight: 500; }
+    td.neg { color: var(--fg-faint); }
+    tr:last-child td { border-bottom: none; }
+    tr.highlight td { background: var(--surface-muted); }
+    tr.totals td { border-top: 1px solid var(--fg-mute); font-weight: 400; }
+    figure.chart { margin: 1.5lh 0; }
+    figure.chart svg { display: block; width: 100%; height: auto; background: var(--bg); }
+    figcaption { font-family: var(--font-sans); font-size: 13px; color: var(--fg-mute); line-height: 1.5; margin-top: 16px; }
+    figcaption strong { color: var(--fg); font-weight: 500; }
+    @media (min-width: 960px) {
+      .body-main > figure.chart { width: min(1200px, calc(100vw - 3rem)); max-width: none; margin-left: 50%; transform: translateX(-50%); }
+    }
+    @media (min-width: 1400px) { .body-main > figure.chart { width: min(1320px, calc(100vw - 3rem)); } }
+    .neg-list { margin: 1.5lh 0; padding: 0; border-top: 1px solid var(--chart-grid); }
+    .neg-list-label {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--fg-faint); margin: 16px 0 8px; display: block;
+    }
+    .neg-list ul { list-style: none; padding: 0; margin: 0; }
+    .neg-list li {
+      padding: 16px 0; border-bottom: 1px solid var(--chart-grid); font-size: 15px; font-weight: 400;
+      line-height: 1.6; color: var(--fg-soft);
+    }
+    .neg-list li:last-child { border-bottom: 0; }
+    .neg-list li strong { color: var(--fg); font-weight: 500; }
+    .break {
+      display: flex; align-items: center; justify-content: center; margin: 4rem 0 3rem;
+      color: var(--fg-faint); font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.6em;
+    }
+    .site-footer { background: var(--accent); color: #fff; display: flex; flex-direction: column; margin-top: auto; padding: 0; }
+    .site-footer .footer-inner { max-width: 720px; width: 100%; margin: 2rem auto 0; padding: 0 2rem 140px; }
+    .footer-meta { font-family: var(--font-sans); font-size: 12px; color: var(--fg-faint); margin-top: 0; line-height: 1.7; }
+    .footer-meta a { color: var(--on-dark); text-decoration: none; border-bottom: 1px dotted rgba(255,255,255,0.25); }
+    .footer-meta a:hover { color: #fff; border-bottom-color: #fff; }
+    .footer-title { font-family: var(--font-serif); font-size: 18px; color: var(--on-dark); margin-bottom: 1rem; }
+    @media (max-width: 768px) {
+      .perspectives-header { padding: 1.5rem 1.5rem; }
+      .benchmarks-content { padding: 3rem 1.5rem 4rem; }
+      .benchmarks-content h1 { font-size: 44px; margin-top: 120px; }
+      .benchmarks-body { margin: 72px 0 32px; }
+      .site-footer .footer-inner { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .perspectives-header { padding: 1.25rem 1.25rem; }
+      .benchmarks-content { padding: 2rem 1.25rem 3rem; }
+      .benchmarks-content h1 { font-size: 38px; margin-top: 80px; }
+      .benchmarks-content .subtitle { font-size: 18px; }
+      .benchmarks-body h2 { font-size: 26px; }
+      .benchmarks-body h3 { font-size: 20px; }
+      .benchmarks-body .body-main { font-size: 18px; }
+      .benchmarks-body li { font-size: 18px; }
+      .tldr p { font-size: 18px; }
+      .stat .v { font-size: 24px; }
+      .site-footer .footer-inner { padding: 0 1.25rem 80px; }
+    }
+  </style>
+</head>
+<body class="benchmarks-page">
+  <div class="page-surface">
+
+    <header class="perspectives-header">
+      <a href="https://github.com/scasella/qwen-scope-steering" class="logo-centered">LAB<span class="accent">·</span>BENCH</a>
+      <a href="mailto:scasella91@gmail.com" class="contact-link" aria-label="Contact">Contact</a>
+    </header>
+
+    <main class="main">
+      <article class="benchmarks-content">
+
+        <h1>The residual probe is the primitive that works</h1>
+        <p class="subtitle">On Qwen3.5-2B, a free difference-of-means direction over the residual stream matches a paid GPT-4o-mini judge for behavior detection, beats the interpretable SAE feature, and steers cleaner than the feature too.</p>
+        <p class="date">Stephen Casella · May 2026</p>
+
+        <div class="paper-links">
+          <a href="https://github.com/scasella/qwen-scope-steering" class="btn-pill">Github</a>
+          <a href="#control" class="btn-pill">The control result</a>
+        </div>
+
+        <div class="benchmarks-body">
+          <div class="body-main">
+
+            <div class="tldr">
+              <span class="tldr-label">TL;DR</span>
+              <p>
+                Behavior detection is the deployable half of AI control: read a model's activations, flag a behavior. On Qwen3.5-2B the cheapest possible detector wins it. A difference-of-means <em>residual probe</em> matches a paid GPT-4o-mini judge on sycophancy (both AUC 1.00) and beats it on sentiment (1.00 vs 0.833), at a calibrated 10% false-positive operating point. It also beats the interpretable SAE-feature monitor (0.875 / 0.833) it was supposed to be the poor relation of.
+              </p>
+              <p>
+                The advantage carries into control. Steering along the probe direction (<em>CAA</em>) holds safety regression to 0–33% on sentiment where steering the SAE feature gives +50–67%, and it is gentler on fluency everywhere. The through-line: the simplest white-box object, one linear direction over the residual stream, is the one that holds up. The interpretable feature, the field default, is the one it beats.
+              </p>
+            </div>
+
+            <h2 id="question">The cheapest primitive that works</h2>
+
+            <p>White-box safety monitoring is the deployable half of AI control: read a model's activations, flag a behavior, optionally intervene. The default detector is an SAE feature. A sparse autoencoder decomposes a layer's residual stream into a dictionary of sparse, often-interpretable atoms, and a behavior monitor is built by picking the atoms whose activation best separates labeled examples. Interpretability is the selling point, and the assumption underneath it is that interpretability buys accuracy.</p>
+
+            <p>A run of 2025–2026 results put that assumption under load. Sparse-probing studies found SAE features rarely beat a plain logistic probe on the raw residual stream (<a href="https://arxiv.org/abs/2502.16681">arXiv 2502.16681</a>), and sanity checks found random baselines matching trained SAEs on probing and editing (<a href="https://arxiv.org/abs/2602.14111">arXiv 2602.14111</a>). That reframes the deployable question. It is not whether the feature is interpretable. It is whether you need the SAE feature, or a paid judge, at all.</p>
+
+            <div class="callout">
+              <span class="callout-label">The question</span>
+              <p>Can a free linear probe over the residual stream match a paid LLM judge for behavior detection, and does it beat the interpretable SAE feature?</p>
+            </div>
+
+            <p>On two behaviors, yes to both, and the advantage carries into steering. The probe ties or beats the judge, beats the feature, and when its direction is used to suppress a behavior it carries less collateral than the feature. The rest of this unpacks the comparison and why the simplest object wins.</p>
+
+            <h2 id="setup">Setup — one model, one bench, strict controls</h2>
+
+            <p>The result here is about the controls more than the model. Every comparison is scored against a baseline on a held-out split, and a method that ties its control is reported as a tie.</p>
+
+            <h3>The backbone</h3>
+            <p>Qwen3.5-2B, a 2B-parameter base model, with a Qwen Scope SAE over its residual stream. All numbers below are at layer 12. The bench also drives a 27B variant; that was judged immaterial for these questions and not run, for reasons in the bounds section.</p>
+
+            <h3>The model under test</h3>
+            <p>Two behaviors with labeled positive and negative examples: <em>sycophancy</em> (telling the user what they want to hear) and <em>sentiment</em> (positive affect). Eight examples per class, split into interleaved train and test halves, so every reported AUC is on four held-out examples per side. Detection thresholds are calibrated to a fixed 10% false-positive budget and the true-positive rate is reported there, the way a deployed monitor is tuned. That is the entire setup.</p>
+
+            <h3>The detectors compared</h3>
+            <p>Four of them, on the identical split. The <em>residual probe</em> is a difference-of-means direction over the pooled residual stream with a calibrated threshold, the cheap linear baseline the SAE is accused of not beating. The <em>SAE-feature monitor</em> picks the sparse atoms that best separate the examples. A prompted LLM judge (GPT-4o-mini, zero-shot, a 0–100 rating) is the paid black-box baseline. A random-feature control fixes the chance floor.</p>
+
+            <div class="callout">
+              <span class="callout-label">What makes this comparison fair</span>
+              <p>Same examples, same held-out split, same calibration to a 10% FPR. The SAE monitor selects its features on the train half and is evaluated on the test half; the probe fits its direction the same way; the judge is zero-shot, so its AUC has no train leakage at all. Only the representation each detector reads varies.</p>
+            </div>
+
+            <div class="stat-row">
+              <div class="stat">
+                <span class="k">Model</span>
+                <div class="v">Qwen3.5-2B</div>
+                <div class="s">layer 12, residual stream</div>
+              </div>
+              <div class="stat">
+                <span class="k">Examples</span>
+                <div class="v">8 / class</div>
+                <div class="s">interleaved split, 4 held out per side</div>
+              </div>
+              <div class="stat">
+                <span class="k">Compute</span>
+                <div class="v">5 × L4</div>
+                <div class="s">one-shot Modal probes, self-terminating</div>
+              </div>
+              <div class="stat">
+                <span class="k">Operating point</span>
+                <div class="v">10% FPR</div>
+                <div class="s">TPR reported at a fixed budget</div>
+              </div>
+            </div>
+
+            <h2 id="method">The four primitives</h2>
+
+            <p>Detection and control are measured by four operations on the bench, each with its own control built in. A method that cannot beat its control is reported, not massaged.</p>
+
+            <div class="mode-grid">
+              <div class="mode-card">
+                <span class="tag">01 · compare</span>
+                <span class="t">Detector shootout</span>
+                <span class="desc">Residual probe against the SAE-feature monitor, a prompted judge, and a random-feature control, on one held-out split, with TPR at a fixed FPR.</span>
+              </div>
+              <div class="mode-card">
+                <span class="tag">02 · contrast</span>
+                <span class="t">Direction vs feature</span>
+                <span class="desc">Suppress a behavior via the probe direction (CAA) or the SAE feature, scored by the same probe, at matched strengths, so the only thing that varies is the steering vector.</span>
+              </div>
+              <div class="mode-card">
+                <span class="tag">03 · audit</span>
+                <span class="t">Collateral check</span>
+                <span class="desc">The Rogue-Scalpel test: does the steer raise compliance on held-out harmful prompts, or raise perplexity on neutral text? Measured against the unsteered model.</span>
+              </div>
+              <div class="mode-card">
+                <span class="tag">04 · calibrate</span>
+                <span class="t">Fixed FPR</span>
+                <span class="desc">Each detector's threshold is set to a 10% false-positive budget and its true-positive rate read there, the operating point a deployed monitor is actually tuned to.</span>
+              </div>
+            </div>
+
+            <p>Each ran as a bounded L4 one-shot on Modal. The control loop's verdict is conjunctive: a steer is credited only if it drove the behavior down and left fluency and safety intact. That conjunction is the bar the control section is measured against.</p>
+
+            <h2 id="result">The headline — detection, by the cheapest primitive</h2>
+
+            <p>The residual probe reads layer 12 and fits one difference-of-means direction. The SAE-feature monitor reads the same layer and scores by the max activation of the atoms it selected. On both behaviors the probe is at ceiling, the paid judge ties it once and trails it once, and the SAE feature is behind both.</p>
+
+            <div class="stat-row">
+              <div class="stat">
+                <span class="k">Residual probe AUC</span>
+                <div class="v">1.00</div>
+                <div class="s">both behaviors, TPR 1.0 at 10% FPR</div>
+              </div>
+              <div class="stat">
+                <span class="k">Free vs paid · sycophancy</span>
+                <div class="v">1.00 = 1.00</div>
+                <div class="s">probe ties the GPT-4o-mini judge</div>
+              </div>
+              <div class="stat">
+                <span class="k">Free vs paid · sentiment</span>
+                <div class="v">1.00 &gt; 0.83</div>
+                <div class="s">probe beats the judge</div>
+              </div>
+              <div class="stat">
+                <span class="k">SAE feature AUC</span>
+                <div class="v">0.88 / 0.83</div>
+                <div class="s">the default, behind on both</div>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <div class="table-label"><span class="id">Table 01</span>Detector shootout, held-out AUC (n = 4 / side, 10% FPR)</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Behavior</th>
+                    <th>Residual probe</th>
+                    <th>LLM judge</th>
+                    <th>SAE feature</th>
+                    <th>Random</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>sycophancy</td>
+                    <td class="num pos">1.00</td>
+                    <td class="num">1.00</td>
+                    <td class="num">0.875</td>
+                    <td class="num neg">0.50</td>
+                  </tr>
+                  <tr>
+                    <td>sentiment</td>
+                    <td class="num pos">1.00</td>
+                    <td class="num">0.833</td>
+                    <td class="num">0.833</td>
+                    <td class="num neg">0.50</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>The judge column is the one that matters for deployment. A difference-of-means probe is one forward pass and a dot product; the judge is a network round-trip to a paid model. On these behaviors the free local detector is at least as accurate as the paid one, and it is the only one of the three that holds a true-positive rate of 1.0 at a fixed 10% false-positive budget, because its score is a continuous projection you can threshold rather than a hard label you would have to re-prompt to move. A safety monitor needs a tunable operating point. The probe has one for free; the judge does not.</p>
+
+            <div class="callout">
+              <span class="callout-label">Sanity check</span>
+              <p>The random-feature control sits at AUC 0.50 on both behaviors, and the bench refuses a "validated" verdict whenever a method ties or trails its control. With four held-out examples per side the probe's 1.00 is partly the task being easy; the durable claim is the ordering, probe over feature over chance, not the absolute number.</p>
+            </div>
+
+            <h2 id="mechanism">Why one direction beats the dictionary</h2>
+
+            <p>The probe wins because it keeps information the feature discards. A difference-of-means probe is a direction in the full residual subspace; the SAE monitor is a max over a few sparse atoms, a lossy projection of that subspace. When a behavior is linearly decodable, and on a 2B base both of these are, the single direction reads the signal the sparse atoms drop. The interpretable detector is behind for the same reason it is legible: it commits to a small, named basis, and the basis is not where all the signal lives.</p>
+
+            <p>The same fact explains the tie with the paid judge. The judge reads the generated text and reasons about it; the probe reads the residual stream that produced the text. If the behavior is linearly present in the activations, a round-trip to an external model adds nothing the projection does not already have. The signal is in the model, and you do not need a second model to find it.</p>
+
+            <h2 id="control">The same primitive steers cleaner</h2>
+
+            <p>Steering moves the residual stream along some vector. The choice of vector is the whole question, and the probe direction is a better choice than the SAE feature. Take the feature's failure first, because it sets the bar.</p>
+
+            <p>Steering the SAE feature down to suppress a behavior erodes the model's refusals. Take the sycophancy feature the monitor selected (#963) and steer it negative across strengths: at every strength that suppresses the behavior while keeping the model fluent, compliance on a held-out set of harmful prompts rises 50–67%.</p>
+
+            <figure class="chart">
+              <svg viewBox="0 0 960 460" role="img" aria-label="Safety regression versus suppression strength for SAE-feature steering on sycophancy">
+                <rect x="0" y="0" width="960" height="460" fill="#F9F9F6" />
+                <text x="480" y="30" text-anchor="middle" fill="#3B3B39" font-family="Libre Baskerville, Georgia, serif" font-size="18" font-weight="400">Steering the SAE feature erodes safety at every usable strength</text>
+                <text x="480" y="54" text-anchor="middle" fill="#969592" font-family="Inter, Helvetica Neue, sans-serif" font-size="12">Sycophancy, SAE feature #963 — change in compliance on held-out harmful prompts</text>
+
+                <!-- gridlines at +80, +40, 0, -40 -->
+                <line x1="80" y1="110" x2="880" y2="110" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="200" x2="880" y2="200" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="290" x2="880" y2="290" stroke="#C8C7C2" stroke-width="1" />
+                <line x1="80" y1="380" x2="880" y2="380" stroke="#E4E3DE" stroke-width="1" />
+                <text x="72" y="114" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">+80%</text>
+                <text x="72" y="204" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">+40%</text>
+                <text x="72" y="294" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0%</text>
+                <text x="72" y="384" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">−40%</text>
+
+                <!-- tolerance reference at +5% (y=278.75) -->
+                <line x1="80" y1="278.75" x2="880" y2="278.75" stroke="#969592" stroke-width="1" stroke-dasharray="4 4" opacity="0.7" />
+                <text x="876" y="274" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="10">+5% clean tolerance</text>
+
+                <!-- safety-regression polyline -->
+                <polyline points="160,177.5 335,139.25 510,139.25 685,251.75 860,364.25"
+                          fill="none" stroke="#8B6F8C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="160" cy="177.5" r="4.5" fill="#8B6F8C" />
+                <circle cx="335" cy="139.25" r="4.5" fill="#8B6F8C" />
+                <circle cx="510" cy="139.25" r="4.5" fill="#8B6F8C" />
+                <circle cx="685" cy="251.75" r="4.5" fill="#8B6F8C" />
+                <circle cx="860" cy="364.25" r="5" fill="#3B3B39" />
+
+                <!-- value labels -->
+                <text x="160" y="170" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">+50%</text>
+                <text x="335" y="131" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">+67%</text>
+                <text x="510" y="131" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">+67%</text>
+                <text x="685" y="244" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">+17%</text>
+                <text x="860" y="384" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">−33%</text>
+
+                <!-- x-axis labels -->
+                <text x="160" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">−2</text>
+                <text x="335" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">−3</text>
+                <text x="510" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">−4</text>
+                <text x="685" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">−5</text>
+                <text x="860" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">−6</text>
+                <text x="480" y="426" text-anchor="middle" fill="#969592" font-family="Inter, sans-serif" font-size="11">steer strength</text>
+
+                <text x="80" y="448" fill="#969592" font-family="Inter, sans-serif" font-size="11">At −2 the monitor's fire-rate is already 0 and perplexity rises only 1.19×. At −6 the regression turns negative only because the model is too degraded to comply.</text>
+              </svg>
+              <figcaption>
+                <strong>Figure 1.</strong> The failure the probe direction has to beat. Change in compliance on held-out harmful prompts as the sycophancy feature is steered down; the dashed line is the bench's +5% clean tolerance. Every strength that suppresses the behavior while keeping the model fluent sits far above it. The drop at −6 is not a clean window; perplexity there is 7.2× and the model has stopped producing usable text.
+              </figcaption>
+            </figure>
+
+            <p>The mechanism is entanglement. The SAE feature that detects sycophancy sits near the circuitry that produces refusals, with near-zero cosine to any single refusal direction, so steering it interferes with safety through a nonlinear path. That is the Rogue-Scalpel finding (<a href="https://arxiv.org/abs/2509.22067">arXiv 2509.22067</a>) reproduced on Qwen-2B from the suppression side.</p>
+
+            <p>Steering the probe direction instead carries less collateral at every matched strength. The probe direction is the behavior's own linear axis, the minimal effective intervention; the SAE atom is blunt and entangled with more than the behavior. On sentiment, swapping the steering vector from the feature to the direction holds safety regression to 0–33% where the feature gives 50–67%, and it suppresses more consistently along the way.</p>
+
+            <figure class="chart">
+              <svg viewBox="0 0 960 460" role="img" aria-label="Safety regression versus strength, SAE feature compared to probe-direction CAA, on sentiment">
+                <rect x="0" y="0" width="960" height="460" fill="#F9F9F6" />
+                <text x="480" y="30" text-anchor="middle" fill="#3B3B39" font-family="Libre Baskerville, Georgia, serif" font-size="18" font-weight="400">The probe direction steers cleaner than the SAE feature</text>
+                <text x="480" y="54" text-anchor="middle" fill="#969592" font-family="Inter, Helvetica Neue, sans-serif" font-size="12">Sentiment — safety regression at matched suppression strengths, same probe as detector</text>
+
+                <!-- legend -->
+                <line x1="330" y1="78" x2="362" y2="78" stroke="#969592" stroke-width="2" stroke-dasharray="4 3" />
+                <text x="368" y="82" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">SAE feature</text>
+                <line x1="498" y1="78" x2="530" y2="78" stroke="#5C8A95" stroke-width="2.5" />
+                <text x="536" y="82" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">CAA · probe direction</text>
+
+                <!-- gridlines 0,20,40,60,80 -->
+                <line x1="80" y1="110" x2="880" y2="110" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="177.5" x2="880" y2="177.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="245" x2="880" y2="245" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="312.5" x2="880" y2="312.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="380" x2="880" y2="380" stroke="#C8C7C2" stroke-width="1" />
+                <text x="72" y="114" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">+80%</text>
+                <text x="72" y="181" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">+60%</text>
+                <text x="72" y="249" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">+40%</text>
+                <text x="72" y="316" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">+20%</text>
+                <text x="72" y="384" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0%</text>
+
+                <!-- tolerance at +5% (y=363.125) -->
+                <line x1="80" y1="363.125" x2="880" y2="363.125" stroke="#969592" stroke-width="1" stroke-dasharray="4 4" opacity="0.6" />
+                <text x="876" y="358" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="10">+5% clean tolerance</text>
+
+                <!-- SAE series (dashed gray): -2 +50% (211.25), -4 +67% (153.9), -6 +67% (153.9) -->
+                <polyline points="230,211.25 480,153.9 730,153.9" fill="none" stroke="#969592" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="230" cy="211.25" r="3.5" fill="#fff" stroke="#969592" stroke-width="1.5" />
+                <circle cx="480" cy="153.9" r="3.5" fill="#fff" stroke="#969592" stroke-width="1.5" />
+                <circle cx="730" cy="153.9" r="3.5" fill="#fff" stroke="#969592" stroke-width="1.5" />
+
+                <!-- CAA series (solid teal): -2 +17% (322.6), -4 +33% (268.6), -6 0% (380) -->
+                <polyline points="230,322.6 480,268.6 730,380" fill="none" stroke="#5C8A95" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="230" cy="322.6" r="4.5" fill="#5C8A95" />
+                <circle cx="480" cy="268.6" r="4.5" fill="#5C8A95" />
+                <circle cx="730" cy="380" r="5" fill="#3B3B39" />
+
+                <!-- value labels -->
+                <text x="230" y="203" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">+50%</text>
+                <text x="480" y="146" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">+67%</text>
+                <text x="730" y="146" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">+67%</text>
+                <text x="230" y="340" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">+17%</text>
+                <text x="480" y="286" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">+33%</text>
+                <text x="730" y="398" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">0%</text>
+
+                <!-- x labels -->
+                <text x="230" y="424" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">−2</text>
+                <text x="480" y="424" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">−4</text>
+                <text x="730" y="424" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">−6</text>
+
+                <text x="80" y="448" fill="#969592" font-family="Inter, sans-serif" font-size="11">CAA also suppresses more consistently: 100% at −2 and −4, where the SAE feature falls to 33%. At −6 CAA is safety-clean and misses only the 1.5× fluency bound.</text>
+              </svg>
+              <figcaption>
+                <strong>Figure 2.</strong> Safety regression for the two steering vectors on sentiment, scored by the same probe. The probe direction (solid) stays below the SAE feature (dashed) at every strength and reaches zero regression at −6. On sycophancy the same pattern shows up as fluency: 2.56× perplexity at −6 for the direction against the feature's 7.20×.
+              </figcaption>
+            </figure>
+
+            <h3>The honest part of the control result</h3>
+            <p>The bench's control verdict is conjunctive: suppress the behavior, stay fluent, leave safety intact. No vector cleared all three on either behavior. The probe direction comes within a fluency hair on sentiment, safety-clean at −6 and missing only the 1.5× perplexity bound, which is closer than the SAE feature gets at any strength. The control claim is comparative, not absolute. The direction beats the feature, and is not yet clean.</p>
+
+            <h3>The map across methods</h3>
+
+            <div class="table-wrap">
+              <div class="table-label"><span class="id">Table 02</span>What works, by which primitive (Qwen3.5-2B, layer 12)</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Behavior</th>
+                    <th>Probe detect</th>
+                    <th>SAE detect</th>
+                    <th>CAA control</th>
+                    <th>SAE control</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>sycophancy</td>
+                    <td class="num pos">1.00</td>
+                    <td class="num neg">0.875</td>
+                    <td class="num">gentler fluency</td>
+                    <td class="num neg">breaks safety + fluency</td>
+                  </tr>
+                  <tr>
+                    <td>sentiment</td>
+                    <td class="num pos">1.00</td>
+                    <td class="num neg">0.833</td>
+                    <td class="num pos">safety 0–33%</td>
+                    <td class="num neg">safety +50–67%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>The map reads one way. Detection is solved on both behaviors by the probe; the SAE feature is strictly worse and a paid judge is no better. Control's best vector is the probe direction on both behaviors, strictly ahead of the feature, and near-clean on the easy one. The single linear direction is the primitive that carries both halves.</p>
+
+            <h2 id="limits">Bounds on the claim</h2>
+
+            <p>One model, one layer, small example sets. The wins are mechanistic; the magnitudes are not population estimates.</p>
+
+            <div class="callout">
+              <span class="callout-label">What the result is not</span>
+              <p>It does not say SAEs are useless, or that the probe would still win on a behavior that is not linearly decodable, or that no steering vector ever clears the bar. The held-out AUCs come from four examples per side; the probe saturates partly because a 2B base makes these behaviors easy to read linearly. The safety-regression metric is refusal-string matching, the standard jailbreak-eval heuristic, which is coarse. No steering vector, probe or feature, cleared the full conjunctive control bar on either behavior.</p>
+            </div>
+
+            <p>One caveat the probe shares with the feature: both were fit on hand-written examples. The SAE monitor fired on only 12.5% of the model's own generations, a train-to-deploy distribution gap, and the probe inherits the same risk. The fix is fitting on-policy, on the model's own outputs, which the bench supports and the next section flags. The probe being a single direction makes that re-fit cheap, which is part of why it is the primitive to build on.</p>
+
+            <p>The 27B was skipped on purpose. The probe is already at 1.00, so a better SAE can at most tie, never win, and winning the detection comparison would take harder data rather than a larger model. And the control failure is entanglement, which the Rogue-Scalpel result shows persisting at scale. The highest-value next test is a harder behavior, not a bigger model.</p>
+
+            <h2 id="next">What's next</h2>
+
+            <p>Detection is settled on two behaviors and control is narrowed to a single obstacle. Four tests would sharpen each edge.</p>
+
+            <h3>On-policy detectors at scale</h3>
+            <p>The transfer gap closes by construction when the probe is fit on the model's own generations rather than hand-written examples. The bench supports that mode; the open question is how many on-policy examples it takes for a single-direction probe to hold a fixed FPR on live traffic, and whether the same re-fit rescues the SAE monitor or only the probe.</p>
+
+            <h3>Closing the CAA window</h3>
+            <p>On sentiment the probe direction is safety-clean at −6 and misses only the 1.5× fluency bound. A strength between −4 and −6, or a per-token rather than all-position steer, may land inside both bounds. That would be the first validated clean suppression on the bench, and the cleanest evidence that the choice of steering vector, not the existence of steering, is what the collateral question turns on.</p>
+
+            <h3>A harder behavior</h3>
+            <p>The probe wins where the behavior is linearly decodable. Deception under chain-of-thought, or a behavior that only surfaces over multiple turns, is the regime where a sparse-feature detector might finally hold something the probe's single direction misses. That is the test most likely to give the SAE feature a reason to exist, and the one worth running next.</p>
+
+            <h3>A real collateral judge</h3>
+            <p>Safety regression here is refusal-string matching. Replacing it with the same prompted judge used for detection would turn the collateral metric from a heuristic into a measurement, and would re-test whether the probe direction's edge on sentiment survives a stricter reading of "complied."</p>
+
+            <div class="break">· · ·</div>
+
+            <p>The simplest white-box object is the one that holds up. On Qwen3.5-2B a difference-of-means probe over the residual stream matches a paid judge, beats the interpretable SAE feature, and carries less collateral when its direction is used to steer. For the deployable half of AI control, monitoring, the cheapest primitive is also the best one tested, and it comes with a tunable operating point the paid judge cannot offer.</p>
+
+            <p>What is open is bounded. No steering vector cleared the full bar, so clean control is still a measure of how close. Whether a behavior that is not linearly decodable finally gives the SAE feature an edge, and whether a per-token probe-direction steer closes the last fluency gap, are the two tests that decide how far the one-direction primitive carries.</p>
+
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-title">Qwen Scope Lab Bench</div>
+        <div class="footer-meta">
+          Stephen Casella · May 2026<br />
+          Qwen3.5-2B, layer 12 · 8 examples / class, interleaved held-out split, 10% FPR · five L4 one-shot Modal probes · 151 pytest pass.<br />
+          Code: <a href="https://github.com/scasella/qwen-scope-steering">github.com/scasella/qwen-scope-steering</a><br />
+          References: <a href="https://arxiv.org/abs/2502.16681">Are SAEs Useful? (2502.16681)</a> · <a href="https://arxiv.org/abs/2602.14111">Do SAEs Beat Random Baselines? (2602.14111)</a> · <a href="https://arxiv.org/abs/2509.22067">The Rogue Scalpel (2509.22067)</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

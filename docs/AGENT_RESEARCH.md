@@ -31,7 +31,8 @@ GET  /api/experiments?limit=50                              -> the research trai
 `op` is one of: `inspect`, `compare`, `atlas`, `steer`, `sweep`, `benchmark`, `autopilot`,
 `manifold_fit`, `manifold_steer`, `manifold_compare`, `manifold_sae_coverage`, `manifold_pullback`,
 `monitor_discover`, `monitor_score`, `monitor_shootout`, `monitor_robustness`, `collateral`,
-`control_loop`, `probe_discover`, `probe_score`, `steer_direction`, `caa_vs_sae`, `method_atlas`.
+`control_loop`, `probe_discover`, `probe_score`, `steer_direction`, `caa_vs_sae`, `method_atlas`,
+`emotion_coupling`.
 `params` mirror the matching `POST /api/<op>` request body (see `/api/openapi.json` for every
 field). The quick ops (`inspect`/`compare`/`steer`) are also fine to call synchronously at
 `POST /api/<op>`; the heavy/experiment ops (`benchmark`, `autopilot`, `manifold_*`, `atlas`,
