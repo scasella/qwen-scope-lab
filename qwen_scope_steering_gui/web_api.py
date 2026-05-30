@@ -371,6 +371,13 @@ class MonitorStreamReq(BaseModel):
     max_new_tokens: int | None = None
 
 
+class JailbreakDetectionReq(BaseModel):
+    layer: int | None = None
+    top_k: int = 3
+    target_fpr: float = 0.1
+    use_judge: bool = False
+
+
 async def _guard(fn, *args, **kwargs):
     try:
         return await run_in_threadpool(fn, *args, **kwargs)
@@ -664,6 +671,10 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
             raise ValueError("provide a probe_id or a non-empty direction")
         return service.monitor_stream(p["prompt"], direction, bias, threshold, layer, p.get("max_new_tokens"))
 
+    def op_jailbreak_detection(p: dict) -> dict:
+        return service.jailbreak_detection(layer=p.get("layer"), top_k=p.get("top_k", 3),
+                                           target_fpr=p.get("target_fpr", 0.1), use_judge=p.get("use_judge", False))
+
     OPS = {"inspect": op_inspect, "compare": op_compare, "atlas": op_atlas, "steer": op_steer, "sweep": op_sweep,
            "benchmark": op_benchmark, "autopilot": op_autopilot, "manifold_fit": op_manifold_fit,
            "manifold_steer": op_manifold_steer, "manifold_compare": op_manifold_compare,
@@ -674,7 +685,8 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
            "probe_discover": op_probe_discover, "probe_score": op_probe_score,
            "steer_direction": op_steer_direction, "caa_vs_sae": op_caa_vs_sae,
            "method_atlas": op_method_atlas, "emotion_coupling": op_emotion_coupling,
-           "safety_geometry": op_safety_geometry, "monitor_stream": op_monitor_stream}
+           "safety_geometry": op_safety_geometry, "monitor_stream": op_monitor_stream,
+           "jailbreak_detection": op_jailbreak_detection}
 
     def _summarize(op: str, result: Any) -> dict:
         if not isinstance(result, dict):
@@ -740,6 +752,12 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         if op == "monitor_stream":
             return {"flagged_at_step": result.get("flagged_at_step"), "final_fires": result.get("final_fires"),
                     "n_steps": len(result.get("trajectory", []))}
+        if op == "jailbreak_detection":
+            v, pt, st = result.get("verdict", {}), result.get("probe_transfer", {}), result.get("sae_transfer", {})
+            return {"status": v.get("status"), "probe_auc": v.get("probe_auc"), "judge_auc": v.get("judge_auc"),
+                    "detects": v.get("detects"), "generalises": v.get("generalises"), "matches_judge": v.get("matches_judge"),
+                    "probe_shift_auc": pt.get("shift_auc"), "probe_auc_drop": pt.get("auc_drop"),
+                    "sae_shift_auc": st.get("shift_auc")}
         if op == "emotion_coupling":
             v = result.get("verdict", {})
             return {"emotion": result.get("emotion"), "emotion_probe_auc": result.get("emotion_probe_auc"),
@@ -924,6 +942,13 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         params = req.model_dump()
         result = await _guard_gpu(op_safety_geometry, params)
         _log_experiment("safety_geometry", params, "done", result=result)
+        return result
+
+    @app.post("/api/jailbreak_detection")
+    async def jailbreak_detection(req: JailbreakDetectionReq) -> dict:
+        params = req.model_dump()
+        result = await _guard_gpu(op_jailbreak_detection, params)
+        _log_experiment("jailbreak_detection", params, "done", result=result)
         return result
 
     @app.post("/api/monitor/stream")

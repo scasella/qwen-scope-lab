@@ -644,3 +644,25 @@ def test_monitor_stream_returns_per_token_trajectory(tmp_path):
 
 def test_monitor_stream_requires_probe(tmp_path):
     assert _probe_client(tmp_path).post("/api/monitor/stream", json={"prompt": "x", "layer": 3}).status_code == 400
+
+
+# ---- jailbreak detection: probe vs SAE vs judge, + held-out-family generalisation ----
+
+def test_jailbreak_detection_shootout_and_probe_transfer(tmp_path):
+    r = _client().post("/api/jailbreak_detection", json={"layer": 3, "top_k": 3, "target_fpr": 0.1})
+    assert r.status_code == 200
+    b = r.json()
+    assert b["behavior"] == "jailbreak"
+    # in-distribution shootout ran every comparator
+    methods = b["in_distribution"]["methods"]
+    assert {"sae_monitor", "residual_diffmeans", "residual_logistic", "random_control"} <= set(methods)
+    assert b["in_distribution"]["verdict"]["winner"] in {"sae_monitor", "residual_probe", "tie", "inconclusive"}
+    # probe generalisation test: discovered on clean families, evaluated on held-out families
+    pt = b["probe_transfer"]
+    assert {"in_auc", "shift_auc", "auc_drop", "status"} <= set(pt)
+    assert pt["status"] in {"robust", "fragile"}
+    assert -1.0 <= pt["auc_drop"] <= 1.0
+    # honest conjunctive verdict — valid value on the random dev model, not necessarily deployable
+    v = b["verdict"]
+    assert v["status"] in {"deployable", "benchmarked"}
+    assert isinstance(v["detects"], bool) and isinstance(v["generalises"], bool) and isinstance(v["matches_judge"], bool)

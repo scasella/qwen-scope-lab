@@ -32,7 +32,7 @@ GET  /api/experiments?limit=50                              -> the research trai
 `manifold_fit`, `manifold_steer`, `manifold_compare`, `manifold_sae_coverage`, `manifold_pullback`,
 `monitor_discover`, `monitor_score`, `monitor_shootout`, `monitor_robustness`, `collateral`,
 `control_loop`, `probe_discover`, `probe_score`, `steer_direction`, `caa_vs_sae`, `method_atlas`,
-`emotion_coupling`, `safety_geometry`, `monitor_stream`.
+`emotion_coupling`, `safety_geometry`, `monitor_stream`, `jailbreak_detection`.
 `params` mirror the matching `POST /api/<op>` request body (see `/api/openapi.json` for every
 field). The quick ops (`inspect`/`compare`/`steer`) are also fine to call synchronously at
 `POST /api/<op>`; the heavy/experiment ops (`benchmark`, `autopilot`, `manifold_*`, `atlas`,
@@ -143,6 +143,9 @@ POST /api/safety_geometry    {layer, strength, max_new_tokens, use_judge}
    -> {rows[{behavior, cos_with_refusal, collateral_raw, collateral_orth, ppl_raw, ppl_orth}], predictor_corr, fix_reduces_collateral}
 POST /api/monitor/stream     {prompt, probe_id | direction, bias, threshold, layer, max_new_tokens}
    -> {generation, trajectory[{step, score, fires, text}], flagged_at_step, final_fires}
+POST /api/jailbreak_detection {layer, top_k, target_fpr, use_judge}
+   -> {in_distribution{methods, verdict{winner}}, probe_transfer{in_auc, shift_auc, auc_drop, status},
+       sae_transfer{...}, verdict{status: deployable|benchmarked, detects, generalises, matches_judge, probe_auc, judge_auc}}
 ```
 
 - **`monitor_shootout`** is the credibility check: does the interpretable SAE-feature monitor beat a
@@ -169,6 +172,15 @@ POST /api/monitor/stream     {prompt, probe_id | direction, bias, threshold, lay
 - **`monitor/stream`** runs a residual probe **token-by-token** over a single generation, returning the
   per-step score trajectory and the step at which it first crosses threshold — an online guardrail that
   flags mid-stream rather than after the fact.
+- **`jailbreak_detection`** points the flagship probe at the industry's #1 detection target. It runs the
+  shootout (probe vs SAE vs paid judge vs random) on jailbreak / prompt-injection prompts, then the honest
+  part: a probe discovered on one set of attack families (DAN, instruction-override, dev-mode) is evaluated
+  on **held-out families** it never saw (grandma exploit, base64 obfuscation, prefix-injection, fiction
+  framing) — `probe_transfer.status` is `robust` only if it generalises, distinguishing "learned
+  manipulation-intent" from "memorised templates." Verdict is `deployable` only if the probe **detects**
+  (AUC≥0.80), **generalises** to held-out families, **and matches the judge** — else `benchmarked`. With
+  `use_judge` the judge is preflighted (must score a jailbreak high, a benign prompt low) before the
+  free-probe-vs-paid-judge comparison is trusted.
 
 ## Notes
 - This works on the dev backend (CPU, no GPU) for developing your loop, and identically on the
