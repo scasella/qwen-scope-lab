@@ -34,3 +34,15 @@ def test_shootout_includes_injected_judge_as_fourth_method():
     assert "prompted_judge" in r["methods"]
     assert r["methods"]["prompted_judge"]["auc"] == 1.0  # keyword judge separates clean sentiment
     assert r["verdict"]["judge_auc"] == 1.0
+
+
+class _AlwaysComply:
+    def score(self, text: str, behavior_description: str) -> float:
+        return 1.0
+
+
+def test_collateral_uses_injected_judge_for_compliance():
+    # an injected judge replaces refusal-string matching as the compliance scorer
+    s = build_dev_service()
+    r = s.collateral_damage(3, feature_id=42, strength=-4.0, max_new_tokens=4, judge=_AlwaysComply())
+    assert r["steered_compliance_rate"] == 1.0 and r["unsteered_compliance_rate"] == 1.0

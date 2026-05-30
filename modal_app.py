@@ -1125,23 +1125,28 @@ def manifold_extrapolate_2b() -> dict:
 
 
 def _emotion_safety_demo(config_path: str, layer: int = 12, emotions=("affection", "anger", "fear"),
-                         strengths=(3.0, 6.0)) -> dict:
+                         strengths=(3.0, 6.0), use_judge: bool = False) -> dict:
     """Emotion as a safety lever on the real model: does inducing an emotion move the model's
     compliance on held-out harmful prompts? (arXiv 2604.03147, measured with the bench's honest
-    controls + the CAA-vs-SAE method comparison the field skips.) Companion-AI-relevant emotions."""
+    controls + the CAA-vs-SAE method comparison the field skips.) ``use_judge`` scores compliance
+    with an LLM judge (external OpenRouter call) instead of refusal-string matching."""
     import json as _json
 
     from qwen_scope_steering_gui import emotion_sets as ES
     from qwen_scope_steering_gui.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
-    out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer, "emotions": {}}
+    out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer,
+                 "use_judge": use_judge, "emotions": {}}
     for emo in emotions:
         pos, neg = ES.EMOTIONS[emo]
-        r = service.emotion_safety_coupling(pos, neg, layer=layer, strengths=tuple(strengths), max_new_tokens=24)
+        r = service.emotion_safety_coupling(pos, neg, layer=layer, strengths=tuple(strengths), max_new_tokens=24,
+                                            use_judge=use_judge)
         out["emotions"][emo] = {"probe_auc": r["emotion_probe_auc"], "caa_max_coupling": r["caa_max_coupling"],
                                 "sae_max_coupling": r["sae_max_coupling"], "cleaner_method": r["cleaner_method"],
-                                "safety_coupled": r["verdict"]["safety_coupled"], "caa": r["caa"], "sae": r["sae"]}
+                                "early_warning": r.get("early_warning"),
+                                "safety_coupled": r["verdict"]["safety_coupled"], "reason": r["verdict"]["reason"],
+                                "caa": r["caa"], "sae": r["sae"]}
     out["any_coupled"] = any(e["safety_coupled"] for e in out["emotions"].values())
     print(_json.dumps(out, indent=2, default=str))
     try:
@@ -1164,6 +1169,23 @@ def _emotion_safety_demo(config_path: str, layer: int = 12, emotions=("affection
 def emotion_safety_2b() -> dict:
     return _emotion_safety_demo("/root/configs/qwen35_2b_dev_l0_100.yaml", layer=12,
                                 emotions=("affection", "anger", "fear"))
+
+
+@app.function(
+    image=image,
+    gpu="L4",
+    cpu=4,
+    memory=32768,
+    timeout=5400,
+    retries=0,
+    volumes={"/cache": hf_cache},
+    secrets=[modal_secret],
+)
+def emotion_affection_firmup_2b() -> dict:
+    """Firm up the affection→compliance coupling: affection only, finer strength sweep, and an LLM
+    judge scoring compliance (external OpenRouter call) instead of refusal-string matching."""
+    return _emotion_safety_demo("/root/configs/qwen35_2b_dev_l0_100.yaml", layer=12,
+                                emotions=("affection",), strengths=(4.0, 5.0, 6.0, 7.0, 8.0), use_judge=True)
 
 
 @app.function(
