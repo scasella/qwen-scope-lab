@@ -294,8 +294,8 @@ def _manifold_metrics(X, labels, n_items: int, kind: str, k_pca: int = 8, seed: 
 # the last sub-token carries it). Multiple templates -> per-class centroids over varied
 # contexts, matching causalab's centroid construction. Includes a negative control whose
 # ordinal index is arbitrary (the ordering metric should come back ~0). Shared: the live
-# _residual_manifold_sweep below uses this; the archived _residual_manifold_probe (see
-# archive/research_probes.py) also referenced it.
+# _residual_manifold_sweep below uses this; the now-removed _residual_manifold_probe (kept
+# in git history) also referenced it.
 _CONCEPTS_V2 = [
     {"name": "integers_0_20", "kind": "ordinal", "items": [str(i) for i in range(21)],
      "templates": ["The number is {item}", "I counted {item}", "There were {item}",

@@ -40,8 +40,8 @@ all on the real model, all negative:
 | conditional couplings (Ising / L1-logistic) | `manifold_probe_2b` | coupling silhouette ≈ **0.005 < the marginal control 0.064**; `go_no_go = DEAD` |
 
 **Conclusion:** neither decoder geometry, co-activation, nor the paper's SOTA coupling method
-gives this SAE a "geography of meaning." The map idea is dead. All of this code is preserved
-in `archive/research_probes.py` + `archive/latent_map_engine.py` (see `archive/README.md`).
+gives this SAE a "geography of meaning." The map idea is dead. All of this code was removed
+from the public tree but is preserved in git history.
 
 ---
 
@@ -176,8 +176,8 @@ locally on the real 2B via the MLX backend** — `serve_web.py --mlx … --mlx-s
 the pullback's L-BFGS optimisation becomes an `mx.value_and_grad` + Adam loop on-device (see `MLX.md`).
 The 27B remains Modal-only.
 
-The dead-end probes that produced §2's negatives are archived in `archive/research_probes.py`
-(preserved, not runnable).
+The dead-end probes that produced §2's negatives were removed from the public tree but are
+preserved in git history.
 
 ## 9. References
 - arXiv 2604.28119 — Do Sparse Autoencoders Capture Concept Manifolds?
