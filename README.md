@@ -1,14 +1,14 @@
-# Qwen Scope Lab Bench
+# Qwen Scope Lab
 
 **A local, browser-based SAE interpretability lab. Inspect, steer, monitor, and control a real language model from a visual GUI — running entirely on your Mac via MLX. No GPU, no cloud, no notebooks.**
 
-[![CI](https://github.com/scasella/qwen-scope-lab-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/scasella/qwen-scope-lab-bench/actions/workflows/ci.yml)
+[![CI](https://github.com/scasella/qwen-scope-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/scasella/qwen-scope-lab/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-![The Lab Bench — token-level SAE feature inspection on the real Qwen3.5-2B, running on-device via MLX](docs/assets/lab-explore.png)
+![The Lab — token-level SAE feature inspection on the real Qwen3.5-2B, running on-device via MLX](docs/assets/lab-explore.png)
 
-The Lab Bench is a comprehensive Sparse-Autoencoder interpretability workbench over [Qwen Scope](https://huggingface.co/Qwen) that you drive entirely from a **point-and-click web GUI** — no notebooks, no scripting. It runs the **whole pipeline on-device via [MLX](https://github.com/ml-explore/mlx)** — the real model **and** its SAE — on **any Apple-Silicon Mac (M1–M4)**, so you can inspect features, steer generation, fit concept manifolds in 3D, train behavior detectors, and run an honest detect→suppress→prove control loop just by clicking through your browser, all locally and offline. A GPU-free dev backend lets you explore the whole interface with no downloads; an optional Modal/CUDA path scales to the 27B and shareable hosted demos.
+The Lab is a comprehensive Sparse-Autoencoder interpretability workbench over [Qwen Scope](https://huggingface.co/Qwen) that you drive entirely from a **point-and-click web GUI** — no notebooks, no scripting. It runs the **whole pipeline on-device via [MLX](https://github.com/ml-explore/mlx)** — the real model **and** its SAE — on **any Apple-Silicon Mac (M1–M4)**, so you can inspect features, steer generation, fit concept manifolds in 3D, train behavior detectors, and run an honest detect→suppress→prove control loop just by clicking through your browser, all locally and offline. A GPU-free dev backend lets you explore the whole interface with no downloads; an optional Modal/CUDA path scales to the 27B and shareable hosted demos.
 
 ## Quickstart — the full lab on your Mac
 
@@ -86,4 +86,4 @@ The base install is deliberately slim (torch + the web layer); the heavy and clo
 
 Contributions welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md). The house rules: keep new capabilities testable GPU-free on the dev backend, build in an honest control from the start, and add tests. Licensed under the Apache License 2.0 — see [`LICENSE`](LICENSE).
 
-<sub>A legacy tabbed Gradio app (`app.py`, installed with `pip install -e ".[gradio]"`) predates the Lab Bench web UI and remains available as an alternative front end.</sub>
+<sub>A legacy tabbed Gradio app (`app.py`, installed with `pip install -e ".[gradio]"`) predates the Lab web UI and remains available as an alternative front end.</sub>

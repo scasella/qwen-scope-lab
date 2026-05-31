@@ -1,6 +1,6 @@
 import pytest
 
-from qwen_scope_lab_bench import probes as P
+from qwen_scope_lab import probes as P
 
 
 def _separable(n=8, d=6):

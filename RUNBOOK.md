@@ -31,7 +31,7 @@ Never print `.env`, serialize secrets into recipe cards, or commit credentials.
 
 ```bash
 pytest
-python -m compileall -q qwen_scope_lab_bench app.py modal_app.py scripts
+python -m compileall -q qwen_scope_lab app.py modal_app.py scripts
 ```
 
 ## Local GUI
@@ -42,9 +42,9 @@ python app.py --config configs/qwen35_2b_dev_l0_100.yaml
 
 Open the printed Gradio URL. The 2B model loads lazily on first model-backed action. If the machine has no suitable CUDA device, use the Modal commands below.
 
-## Lab Bench Web UI
+## Lab Web UI
 
-The Lab Bench is a richer single-page workbench (`web/`) served over FastAPI (`qwen_scope_lab_bench/web_api.py`) wrapping the same `SteeringService`.
+The Lab is a richer single-page workbench (`web/`) served over FastAPI (`qwen_scope_lab/web_api.py`) wrapping the same `SteeringService`.
 
 ```bash
 # GPU-free dev backend (tiny CPU model, no downloads) -- verify the UI/wiring locally:
@@ -61,7 +61,7 @@ python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml
 python serve_web.py --config configs/qwen35_27b_l0_100.yaml
 ```
 
-Defaults to `http://127.0.0.1:7870`; override with `--host/--port`. JSON API under `/api/*`, schema at `/api/docs`. The `--dev` backend (`qwen_scope_lab_bench/dev_backend.py`) runs the real activation/contrast/steering code paths against a fake CPU model, so its generations are intentionally toy but the wiring is real. The `--mlx` backend (`qwen_scope_lab_bench/mlx_backend.py`) runs the **real** 2B + SAE on-device on Apple Silicon — bf16 (not 4-bit) for fidelity; results replicate the Modal/CUDA findings qualitatively, not bit-for-bit. Web-API tests: `pytest tests/test_web_api.py`; MLX tests: `pytest tests/test_mlx_backend.py` (the real-model layer skips unless `mlx_lm` + a cached model are present).
+Defaults to `http://127.0.0.1:7870`; override with `--host/--port`. JSON API under `/api/*`, schema at `/api/docs`. The `--dev` backend (`qwen_scope_lab/dev_backend.py`) runs the real activation/contrast/steering code paths against a fake CPU model, so its generations are intentionally toy but the wiring is real. The `--mlx` backend (`qwen_scope_lab/mlx_backend.py`) runs the **real** 2B + SAE on-device on Apple Silicon — bf16 (not 4-bit) for fidelity; results replicate the Modal/CUDA findings qualitatively, not bit-for-bit. Web-API tests: `pytest tests/test_web_api.py`; MLX tests: `pytest tests/test_mlx_backend.py` (the real-model layer skips unless `mlx_lm` + a cached model are present).
 
 ## Core Scripts
 
@@ -140,12 +140,12 @@ GPU choices:
 - `autopilot_smoke_2b`: `L4`, timeout 3600 seconds, retries 0, `/cache` Volume.
 - `bench_smoke_27b`: `H100`, timeout 5400 seconds, retries 0, `/cache` Volume.
 - `autopilot_smoke_27b`: `H100`, timeout 5400 seconds, retries 0, `/cache` Volume.
-- `gradio_gui` and `web_gui`: both selected by `QWEN_GUI_TARGET`, timeout 7200 seconds, `/cache` Volume, one Modal container with concurrent ASGI request handling, 300 second scaledown window. `gradio_gui` is the classic tabbed app; `web_gui` is the Lab Bench web UI over the same backend. Default target is `2b-l4` on `L4`; explicit targets are `27b-a100` on `A100-80GB` and `27b-h100` on `H100`.
+- `gradio_gui` and `web_gui`: both selected by `QWEN_GUI_TARGET`, timeout 7200 seconds, `/cache` Volume, one Modal container with concurrent ASGI request handling, 300 second scaledown window. `gradio_gui` is the classic tabbed app; `web_gui` is the Lab web UI over the same backend. Default target is `2b-l4` on `L4`; explicit targets are `27b-a100` on `A100-80GB` and `27b-h100` on `H100`.
 
 Each smoke is intentionally short, with tiny prompts, low `max_new_tokens`, and one active SAE layer. Stop unexpected long-running apps with the Modal dashboard or:
 
 ```bash
-modal app stop qwen-scope-lab-bench
+modal app stop qwen-scope-lab
 ```
 
 ## Modal Commands
@@ -167,7 +167,7 @@ modal run modal_app.py::control_loop_demo_2b
 modal serve modal_app.py
 ```
 
-`web_parity_2b` (L4, timeout 3600s, `/cache` Volume) loads the real 2B and drives every Lab Bench web endpoint through a FastAPI `TestClient`, prints a JSON parity summary, and exits — a one-shot, so no app is left warm.
+`web_parity_2b` (L4, timeout 3600s, `/cache` Volume) loads the real 2B and drives every Lab web endpoint through a FastAPI `TestClient`, prints a JSON parity summary, and exits — a one-shot, so no app is left warm.
 
 **Manifold steering** (the `Manifold` GUI mode) — LIVE probes, still in `modal_app.py`: `manifold_steer_demo_2b` (L4, layer 14) / `manifold_steer_demo_27b` (A100-80GB, layer 48) fit a concept's activation manifold (`SteeringService.manifold_fit`: residual centroids → PCA → spline) and steer along it (`manifold_steer`: replace the concept token's residual with manifold points across waypoints), printing the behavioral trajectory. `residual_manifold_sweep_2b/_27b` locate the layer where concept manifolds peak (number-line robust everywhere; day-ring cleanest at 2B L14–16 / 27B L48). `manifold_vs_linear_2b` prints manifold-path vs linear-path steering with perplexity (concept-dependent on raw perplexity; manifold wins on behavior-manifold energy). `manifold_naturalness_probe_2b` and `manifold_pullback_probe_2b` back the fluency and pullback findings. `manifold_atlas_2b/_27b` census ~17 candidate continuous concepts → per-concept best layer + metric + verdict (`/api/manifold/compare` and `/api/manifold/sae_coverage` back the GUI's compare + SAE-tiling views). One-shots; no warm GPU. A manifold steer can also be saved as a Library recipe: `POST /api/recipes` with body `{"kind":"manifold"}` after running a pullback (recipe `kind` is `"feature"` or `"manifold"`).
 
@@ -183,7 +183,7 @@ Start the default 2B L4 GUI:
 modal serve modal_app.py
 ```
 
-Two GUI web endpoints are registered per serve process — `gradio_gui` (classic tabbed app) and `web_gui` (Lab Bench) — sharing one warm container and the same target. Choose the target explicitly with `QWEN_GUI_TARGET`:
+Two GUI web endpoints are registered per serve process — `gradio_gui` (classic tabbed app) and `web_gui` (Lab) — sharing one warm container and the same target. Choose the target explicitly with `QWEN_GUI_TARGET`:
 
 ```bash
 QWEN_GUI_TARGET=27b-a100 modal serve modal_app.py
@@ -201,7 +201,7 @@ Aliases are accepted: `2b`, `l4`, `dev`, `27b`, `a100`, `a100-80gb`, and `h100`.
 Closing the browser tab does not stop the Modal app. Stop the server with `Ctrl-C` in the `modal serve` terminal or:
 
 ```bash
-modal app stop qwen-scope-lab-bench
+modal app stop qwen-scope-lab
 ```
 
 The GUI function intentionally uses a 300 second `scaledown_window` so the model stays loaded while moving between tabs during an active session. This means the selected GPU can remain allocated for up to about five idle minutes after the last request unless you stop the app explicitly.

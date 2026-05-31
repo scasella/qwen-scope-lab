@@ -1,4 +1,4 @@
-# Running the Lab Bench locally on Apple Silicon (MLX)
+# Running the Lab locally on Apple Silicon (MLX)
 
 The whole bench — model **and** SAE, every GUI mode, the agent API — runs on an Apple
 Silicon Mac via [MLX](https://github.com/ml-explore/mlx), with **no Modal and no CUDA**.

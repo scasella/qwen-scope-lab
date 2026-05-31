@@ -3,9 +3,9 @@ requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "qwen-scope-lab-bench"
+name = "qwen-scope-lab"
 version = "0.1.0"
-description = "Qwen Scope Lab Bench — a browser-based, MLX-first SAE interpretability GUI that runs on-device on Apple Silicon: activation inspection, residual-stream steering, concept-manifold analysis, and behavior detection/control."
+description = "Qwen Scope Lab — a browser-based, MLX-first SAE interpretability GUI that runs on-device on Apple Silicon: activation inspection, residual-stream steering, concept-manifold analysis, and behavior detection/control."
 readme = "README.md"
 license = "Apache-2.0"
 authors = [{ name = "Stephen Casella" }]
@@ -31,14 +31,14 @@ cuda = ["transformers", "accelerate"]  # load the real model on a CUDA GPU (torc
 modal = ["modal"]                      # the Modal probes + hosted serve (27B and shareable demos)
 gradio = ["gradio", "pandas"]          # the legacy Gradio app (app.py)
 dev = ["pytest"]
-all = ["qwen-scope-lab-bench[mlx,cuda,modal,gradio,dev]"]
+all = ["qwen-scope-lab[mlx,cuda,modal,gradio,dev]"]
 
 [project.urls]
-Homepage = "https://github.com/scasella/qwen-scope-lab-bench"
+Homepage = "https://github.com/scasella/qwen-scope-lab"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["qwen_scope_lab_bench*"]
+include = ["qwen_scope_lab*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

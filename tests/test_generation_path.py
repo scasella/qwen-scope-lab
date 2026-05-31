@@ -1,9 +1,9 @@
 import torch
 
-from qwen_scope_lab_bench.config import load_config
-from qwen_scope_lab_bench.generation import steer_generation
-from qwen_scope_lab_bench.model_loader import ModelBundle
-from qwen_scope_lab_bench.sae_loader import SAELayer
+from qwen_scope_lab.config import load_config
+from qwen_scope_lab.generation import steer_generation
+from qwen_scope_lab.model_loader import ModelBundle
+from qwen_scope_lab.sae_loader import SAELayer
 
 
 class FakeTokenizer:

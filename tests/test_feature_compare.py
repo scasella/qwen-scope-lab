@@ -1,4 +1,4 @@
-from qwen_scope_lab_bench.feature_compare import contrast_features, token_activation_summary
+from qwen_scope_lab.feature_compare import contrast_features, token_activation_summary
 
 
 def inspection(prompt, rows):

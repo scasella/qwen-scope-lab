@@ -1,6 +1,6 @@
 import pytest
 
-from qwen_scope_lab_bench import baselines as B
+from qwen_scope_lab import baselines as B
 
 
 def test_eval_scores_perfect_separation():

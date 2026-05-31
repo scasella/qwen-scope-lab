@@ -1,6 +1,6 @@
 import pytest
 
-from qwen_scope_lab_bench.recipe_schema import FeatureRecipe, Intervention, ManifoldSpec, ModelMetadata, RecipeValidationError, TargetBehavior
+from qwen_scope_lab.recipe_schema import FeatureRecipe, Intervention, ManifoldSpec, ModelMetadata, RecipeValidationError, TargetBehavior
 
 
 def valid_recipe():

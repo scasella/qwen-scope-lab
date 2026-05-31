@@ -7,10 +7,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from qwen_scope_lab_bench.autopilot import run_autopilot_from_files
-from qwen_scope_lab_bench.benchmark import ServiceGenerationBackend
-from qwen_scope_lab_bench.config import load_config
-from qwen_scope_lab_bench.service import SteeringService
+from qwen_scope_lab.autopilot import run_autopilot_from_files
+from qwen_scope_lab.benchmark import ServiceGenerationBackend
+from qwen_scope_lab.config import load_config
+from qwen_scope_lab.service import SteeringService
 
 
 def parse_layers(value: str) -> list[int]:

@@ -1,4 +1,4 @@
-/* The Lab Bench — live frontend over the FastAPI backend. */
+/* The Lab — live frontend over the FastAPI backend. */
 
 /* ----------------------------- state ----------------------------- */
 const S = {
@@ -219,7 +219,7 @@ async function boot() {
 function renderRail() {
   document.querySelectorAll(".navitem").forEach(n => n.classList.toggle("on", n.dataset.arg === S.mode));
   const names = { explore: "Explore", steer: "Steer", measure: "Measure", manifold: "Manifold", monitor: "Monitor", control: "Control", library: "Library" };
-  $("#crumbs").innerHTML = "Lab Bench · <b>" + names[S.mode] + "</b>";
+  $("#crumbs").innerHTML = "Lab · <b>" + names[S.mode] + "</b>";
   const st = S.status; if (!st) return;
   const cfg = st.config;
   $("#ctxModel").textContent = (cfg.model_id || "").split("/").pop();

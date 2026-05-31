@@ -1,8 +1,8 @@
-from qwen_scope_lab_bench.autopilot import run_autopilot
-from qwen_scope_lab_bench.benchmark import EchoGenerationBackend, attach_benchmark_to_recipe, run_benchmark
-from qwen_scope_lab_bench.config import load_config
-from qwen_scope_lab_bench.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, RecipeValidationError, TargetBehavior
-from qwen_scope_lab_bench.recipe_store import RecipeStore
+from qwen_scope_lab.autopilot import run_autopilot
+from qwen_scope_lab.benchmark import EchoGenerationBackend, attach_benchmark_to_recipe, run_benchmark
+from qwen_scope_lab.config import load_config
+from qwen_scope_lab.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, RecipeValidationError, TargetBehavior
+from qwen_scope_lab.recipe_store import RecipeStore
 
 
 def make_recipe():

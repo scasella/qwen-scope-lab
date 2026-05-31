@@ -1,4 +1,4 @@
-from qwen_scope_lab_bench.candidate_search import fake_inspection, rank_candidates_from_inspections
+from qwen_scope_lab.candidate_search import fake_inspection, rank_candidates_from_inspections
 
 
 def inspection(feature_id, activation):

@@ -7,12 +7,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from qwen_scope_lab_bench.benchmark import ServiceGenerationBackend, attach_benchmark_to_recipe, recipe_from_manual, run_benchmark, save_benchmark_result
-from qwen_scope_lab_bench.config import load_config
-from qwen_scope_lab_bench.prompt_sets import load_prompt_set
-from qwen_scope_lab_bench.recipe_schema import FeatureRecipe
-from qwen_scope_lab_bench.recipe_store import RecipeStore
-from qwen_scope_lab_bench.service import SteeringService
+from qwen_scope_lab.benchmark import ServiceGenerationBackend, attach_benchmark_to_recipe, recipe_from_manual, run_benchmark, save_benchmark_result
+from qwen_scope_lab.config import load_config
+from qwen_scope_lab.prompt_sets import load_prompt_set
+from qwen_scope_lab.recipe_schema import FeatureRecipe
+from qwen_scope_lab.recipe_store import RecipeStore
+from qwen_scope_lab.service import SteeringService
 
 
 def main() -> None:

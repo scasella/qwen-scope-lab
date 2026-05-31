@@ -1,5 +1,5 @@
-from qwen_scope_lab_bench.benchmark_controls import build_method_specs, random_feature_id, stable_method_names
-from qwen_scope_lab_bench.recipe_schema import Intervention
+from qwen_scope_lab.benchmark_controls import build_method_specs, random_feature_id, stable_method_names
+from qwen_scope_lab.recipe_schema import Intervention
 
 
 def test_control_methods_are_constructed():

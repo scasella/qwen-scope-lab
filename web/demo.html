@@ -116,7 +116,7 @@ textarea::placeholder{color:var(--faint)}
   <div class="note"><b>Honest note.</b> This runs on a small 2-billion-parameter research model, and the alarm threshold is calibrated on a small sample. The detector's judgment is strong, but in a real deployment you would re-tune the threshold on your own traffic — that's the one piece that isn't plug-and-play.</div>
 
   <div class="foot">
-    The detector is a difference-of-means linear probe over the model's residual stream; the paid judge is OpenAI's GPT-4o-mini. Built on the Qwen Scope Lab Bench.
+    The detector is a difference-of-means linear probe over the model's residual stream; the paid judge is OpenAI's GPT-4o-mini. Built on the Qwen Scope Lab.
     <br />Read the writeup: <a href="/">open the bench</a> · the activation it reads is the same forward pass the model runs to answer, so as a live guardrail the probe adds only the dot product.
   </div>
 </div>

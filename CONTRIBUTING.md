@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in the Qwen Scope Lab Bench.
+Thanks for your interest in the Qwen Scope Lab.
 
 ## Development setup
 

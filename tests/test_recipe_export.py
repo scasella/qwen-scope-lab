@@ -1,4 +1,4 @@
-from qwen_scope_lab_bench.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
+from qwen_scope_lab.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
 
 
 def test_markdown_export_contains_required_review_fields():

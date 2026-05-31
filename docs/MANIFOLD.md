@@ -66,7 +66,7 @@ concept; `manifold_atlas_2b`/`_27b` runs the full census.
 
 ## 4. Architecture (how it works in code)
 
-All of this lives in `qwen_scope_lab_bench/service.py` (the `manifold_*` methods), exposed by
+All of this lives in `qwen_scope_lab/service.py` (the `manifold_*` methods), exposed by
 `web_api.py` and rendered by `web/app.js` + `web/manifold3d.js` (Three.js).
 
 ### 4.1 Fitting the manifold — `manifold_fit` / `_build_manifold`
@@ -170,7 +170,7 @@ Live probes in `modal_app.py` (real model; run with `modal run modal_app.py::<fn
 `residual_manifold_sweep_2b/_27b` (best layer per concept), `manifold_atlas_2b/_27b` (census),
 `manifold_steer_demo_2b/_27b`, `manifold_vs_linear_2b`, `manifold_naturalness_probe_2b`
 (isometry + energy), `manifold_pullback_probe_2b` (pullback). These gated probes are the way to
-produce a recorded real-GPU result; stop the warm GPU with `modal app stop qwen-scope-lab-bench`
+produce a recorded real-GPU result; stop the warm GPU with `modal app stop qwen-scope-lab`
 when done. **The entire manifold mode (fit / steer / compare / pullback / SAE coverage) also runs
 locally on the real 2B via the MLX backend** — `serve_web.py --mlx … --mlx-sae …` — no Modal/CUDA;
 the pullback's L-BFGS optimisation becomes an `mx.value_and_grad` + Adam loop on-device (see `MLX.md`).

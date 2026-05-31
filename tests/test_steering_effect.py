@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from qwen_scope_lab_bench.hooks import apply_steering_to_hidden
+from qwen_scope_lab.hooks import apply_steering_to_hidden
 
 
 def test_strength_zero_equivalent_to_unsteered():

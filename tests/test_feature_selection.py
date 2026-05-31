@@ -1,6 +1,6 @@
 import pytest
 
-from qwen_scope_lab_bench.feature_selection import select_active_feature
+from qwen_scope_lab.feature_selection import select_active_feature
 
 
 def test_select_active_feature_picks_highest_activation():

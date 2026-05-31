@@ -7,9 +7,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from qwen_scope_lab_bench.benchmark import recipe_from_manual
-from qwen_scope_lab_bench.config import load_config
-from qwen_scope_lab_bench.recipe_store import RecipeStore
+from qwen_scope_lab.benchmark import recipe_from_manual
+from qwen_scope_lab.config import load_config
+from qwen_scope_lab.recipe_store import RecipeStore
 
 
 def main() -> None:

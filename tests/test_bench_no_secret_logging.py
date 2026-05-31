@@ -1,7 +1,7 @@
 import logging
 
-from qwen_scope_lab_bench.benchmark import EchoGenerationBackend, run_benchmark
-from qwen_scope_lab_bench.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
+from qwen_scope_lab.benchmark import EchoGenerationBackend, run_benchmark
+from qwen_scope_lab.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
 
 
 def test_bench_does_not_log_secrets(monkeypatch, caplog):

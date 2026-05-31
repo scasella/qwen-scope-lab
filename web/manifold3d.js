@@ -1,4 +1,4 @@
-/* The Lab Bench — 3D concept-manifold renderer (Three.js).
+/* The Lab — 3D concept-manifold renderer (Three.js).
    Exposes window.LabManifold for the classic app.js to drive:
    mount(selector,{onPick}) · render(fit) · setActive(value) · animatePath(path3d,onDone) · dispose(). */
 import * as THREE from "three";
