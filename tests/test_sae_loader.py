@@ -49,16 +49,17 @@ def test_lru_cache_evicts_layers(monkeypatch, tmp_path):
 
 
 def test_download_error_mentions_token_when_missing(monkeypatch):
+    from unittest.mock import MagicMock
+
     from huggingface_hub.utils import HfHubHTTPError
-    from requests import Response
 
     cfg = load_config("configs/fake_test.yaml")
     loader = LazySAELoader(cfg)
 
     def fail_download(**_kwargs):
-        response = Response()
-        response.status_code = 401
-        raise HfHubHTTPError("401", response=response)
+        # Simulate a 401 from the Hub. huggingface_hub changed its HTTP backend
+        # (requests -> httpx) across versions, so build the error backend-agnostically.
+        raise HfHubHTTPError("401 Client Error", response=MagicMock(status_code=401))
 
     monkeypatch.setattr("qwen_scope_lab.sae_loader.hf_hub_download", fail_download)
     monkeypatch.delenv("HF_TOKEN", raising=False)

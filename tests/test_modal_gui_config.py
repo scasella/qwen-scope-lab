@@ -1,3 +1,7 @@
+import pytest
+
+pytest.importorskip("modal")  # Modal is an opt-in extra (`.[modal]`)
+
 import modal_app
 
 

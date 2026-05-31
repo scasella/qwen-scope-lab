@@ -9,7 +9,7 @@ description = "Qwen Scope Lab — a browser-based, MLX-first SAE interpretabilit
 readme = "README.md"
 license = "Apache-2.0"
 authors = [{ name = "Stephen Casella" }]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 # Base = what's needed to import the package and run the GPU-free dev backend, the web layer, and the
 # manifold mode everywhere. torch stays in base: the dev backend is a torch nn.Module and the
 # Qwen-Scope SAE is a torch `.pt` checkpoint. The heavy/cloud deps below are opt-in extras.
@@ -17,6 +17,7 @@ dependencies = [
   "torch",
   "numpy",
   "scipy",
+  "scikit-learn",
   "fastapi",
   "uvicorn",
   "pydantic",

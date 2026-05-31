@@ -1,3 +1,7 @@
+import pytest
+
+pytest.importorskip("gradio")  # the legacy Gradio app is an opt-in extra (`.[gradio]`)
+
 from app import build_demo
 
 

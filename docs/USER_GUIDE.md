@@ -29,7 +29,7 @@ AI agent — see `AGENT_RESEARCH.md`.
 
 ## Getting started
 
-**First time? Install it** (Python ≥ 3.10): `python -m venv .venv && source .venv/bin/activate &&
+**First time? Install it** (Python ≥ 3.11): `python -m venv .venv && source .venv/bin/activate &&
 pip install -e ".[dev]"` (on an Apple Silicon Mac, use `".[mlx]"` to run the real model on-device).
 Full setup + credentials are in `README.md`. Then pick a backend:
 

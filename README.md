@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/scasella/qwen-scope-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/scasella/qwen-scope-lab/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 ![The Lab — token-level SAE feature inspection on the real Qwen3.5-2B, running on-device via MLX](docs/assets/lab-explore.png)
 
