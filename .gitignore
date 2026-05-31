@@ -34,8 +34,8 @@ RESULTS.md
 UAT_REPORT.md
 docs/AGENT_HANDOFF.md
 
-# Local Claude Code settings
-.claude/settings.local.json
+# Local Claude Code settings + agent skills (internal tooling, not part of the public lab)
+.claude/
 
 # Defensive build/cache ignores
 *.egg-info/
