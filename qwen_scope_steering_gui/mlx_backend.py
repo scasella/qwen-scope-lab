@@ -157,6 +157,29 @@ class MlxModel:
         reads. Matches ``service._pooled_residual``'s contract (numpy float32 vector)."""
         return _to_numpy(self._residual_at(text, int(layer)))
 
+    def last_residual(self, text: str, layer: int) -> np.ndarray:
+        """[d_model] residual at the LAST token after block ``layer`` — what the manifold fitter reads."""
+        cap = self._forward_capture(self._encode_ids(text), int(layer))
+        return _to_numpy(cap[0][-1])
+
+    @property
+    def vocab_size(self) -> int:
+        ids = self._mx.array([self._encode_ids("the")])
+        return int(self.model(ids).shape[-1])
+
+    def last_logits(self, text: str, replace: tuple | None = None) -> np.ndarray:
+        """Last-token logits ([vocab]) for ``text``, optionally with a manifold position-replace
+        (``replace`` = (layer, vec, position)) active for the forward — the manifold energy read-out."""
+        mx = self._mx
+        ids = mx.array([self._encode_ids(text)])
+        handle = self.install_replace(*replace) if replace is not None else None
+        try:
+            logits = self.model(ids)[0, -1]
+        finally:
+            if handle is not None:
+                handle.remove()
+        return _to_numpy(logits)
+
     # ------- Phase 2.5: SAE-feature inspection (per-token top features) -------
     def inspect(self, prompt: str, sae: Any, config: Any, layer: int, top_k: int | None = None) -> dict:
         """Per-token SAE feature map — the MLX twin of ``activations.extract_prompt_features``.

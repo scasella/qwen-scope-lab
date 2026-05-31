@@ -113,6 +113,11 @@ class _DevTokenizer:
         tensor = torch.tensor([ids], dtype=torch.long)
         return {"input_ids": tensor, "attention_mask": torch.ones_like(tensor)}
 
+    def encode(self, text: str, add_special_tokens: bool = True, **_kwargs) -> list[int]:
+        # flat id list, matching HF tokenizer.encode + the mlx-lm TokenizerWrapper.encode
+        pieces = re.findall(r"\w+|[^\w\s]", text or "")
+        return [self._word_id(p) for p in pieces] or [self._word_id("<s>")]
+
     def convert_ids_to_tokens(self, ids: list[int]) -> list[str]:
         return [self.id2word.get(int(i), f"<{int(i)}>") for i in ids]
 

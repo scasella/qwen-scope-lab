@@ -890,9 +890,11 @@ class SteeringService:
         return {"presets": preset_summaries(), "default_layer": self.config.default_layer}
 
     def _capture_last_residual(self, prompt: str, layer: int):
+        bundle = self.ensure_model()
+        if getattr(bundle.model, "is_mlx_runtime", False):  # local Apple-Silicon (MLX) backend
+            return bundle.model.last_residual(prompt, int(layer))
         import torch
 
-        bundle = self.ensure_model()
         enc = bundle.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=64)
         input_ids = enc["input_ids"].to(bundle.device)
         attn = enc.get("attention_mask")
@@ -1010,8 +1012,8 @@ class SteeringService:
     @staticmethod
     def _locate_item_position(tokenizer, steer_prompt: str, item: str, prompt: str) -> int:
         prefix = steer_prompt.split("{item}")[0]
-        plen2 = len(tokenizer(prefix + item)["input_ids"])
-        total = len(tokenizer(prompt)["input_ids"])
+        plen2 = len(tokenizer.encode(prefix + item))   # .encode works on both HF + the MLX wrapper
+        total = len(tokenizer.encode(prompt))
         return max(0, min(plen2 - 1, total - 1))
 
     def manifold_steer(self, concept: str, target: str, layer: int | None = None, source: str | None = None,
@@ -1169,17 +1171,27 @@ class SteeringService:
         if cached is not None:
             return cached
         tok = self.ensure_model().tokenizer
-        ids = [int(tok(" " + v, add_special_tokens=False)["input_ids"][0]) for v in concept.items]
+        ids = [int(tok.encode(" " + v, add_special_tokens=False)[0]) for v in concept.items]
         self._behavior_cache[("ids", concept.name)] = ids
         return ids
 
     def _output_distribution(self, prompt, layer, replacement, position, token_ids):
         import numpy as np
+
+        bundle = self.ensure_model()
+        if getattr(bundle.model, "is_mlx_runtime", False):  # local Apple-Silicon (MLX) backend
+            replace = (layer, replacement, position) if replacement is not None else None
+            logits = bundle.model.last_logits(prompt, replace=replace)   # numpy [vocab]
+            e = np.exp(logits - logits.max())
+            probs = e / max(float(e.sum()), 1e-9)
+            vocab = probs.shape[0]
+            sub = np.array([probs[t] if 0 <= t < vocab else 0.0 for t in token_ids], dtype=float)
+            total = sub.sum()
+            return sub / total if total > 0 else np.full(len(token_ids), 1.0 / len(token_ids))
         import torch
 
         from .hooks import HookTrace, register_replace_hook
 
-        bundle = self.ensure_model()
         enc = bundle.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=64)
         input_ids = enc["input_ids"].to(bundle.device)
         attn = enc.get("attention_mask")
@@ -1212,9 +1224,12 @@ class SteeringService:
         tok = bundle.tokenizer
         token_ids = self._concept_token_ids(concept)
         n = len(concept.items)
-        probe = tok("the", return_tensors="pt")["input_ids"].to(bundle.device)
-        with torch.no_grad():
-            vocab = int(bundle.model(input_ids=probe).logits.shape[-1])
+        if getattr(bundle.model, "is_mlx_runtime", False):  # local Apple-Silicon (MLX) backend
+            vocab = bundle.model.vocab_size
+        else:
+            probe = tok("the", return_tensors="pt")["input_ids"].to(bundle.device)
+            with torch.no_grad():
+                vocab = int(bundle.model(input_ids=probe).logits.shape[-1])
         valid_pos = [i for i, t in enumerate(token_ids) if 0 <= t < vocab]   # toy-model guard
         valid_ids = [token_ids[i] for i in valid_pos]
         P = []
