@@ -5,28 +5,33 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "qwen-scope-lab-bench"
 version = "0.1.0"
-description = "Interactive Qwen Scope SAE activation inspection and residual-stream feature steering."
+description = "Qwen Scope Lab Bench — an MLX-first SAE interpretability workbench: activation inspection, residual-stream steering, concept-manifold analysis, and behavior detection/control."
 readme = "README.md"
 license = "Apache-2.0"
 authors = [{ name = "Stephen Casella" }]
 requires-python = ">=3.10"
+# Base = what's needed to import the package and run the GPU-free dev backend, the web layer, and the
+# manifold mode everywhere. torch stays in base: the dev backend is a torch nn.Module and the
+# Qwen-Scope SAE is a torch `.pt` checkpoint. The heavy/cloud deps below are opt-in extras.
 dependencies = [
-  "accelerate",
-  "gradio",
-  "huggingface-hub",
-  "modal",
-  "pandas",
-  "python-dotenv",
-  "pyyaml",
-  "safetensors",
   "torch",
-  "transformers",
+  "numpy",
+  "scipy",
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "huggingface-hub",
+  "pyyaml",
+  "python-dotenv",
 ]
 
 [project.optional-dependencies]
-dev = [
-  "pytest",
-]
+mlx = ["mlx", "mlx-lm"]                # local, on-device on Apple Silicon — the primary path
+cuda = ["transformers", "accelerate"]  # load the real model on a CUDA GPU (torch is already in base)
+modal = ["modal"]                      # the Modal probes + hosted serve (27B and shareable demos)
+gradio = ["gradio", "pandas"]          # the legacy Gradio app (app.py)
+dev = ["pytest"]
+all = ["qwen-scope-lab-bench[mlx,cuda,modal,gradio,dev]"]
 
 [project.urls]
 Homepage = "https://github.com/scasella/qwen-scope-steering"
