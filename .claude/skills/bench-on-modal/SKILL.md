@@ -8,6 +8,9 @@ description: >
   for this project. It encodes the project's hard operational rules — dev backend first; NEVER
   `modal deploy`; `modal run ::fn` for bounded probes vs `modal serve` for the GUIs; ALWAYS stop the
   `qwen-scope-steering-gui` app to halt billing; 2B-on-L4 by default; cost-preflight from RUNBOOK.
+  NOTE: the real 2B now runs locally on Apple Silicon via MLX (`serve_web.py --mlx`, no Modal/CUDA) —
+  prefer that for 2B work on a Mac; use Modal for the 27B, a hosted/shareable demo, a CUDA run, or a
+  recorded gated probe (see `docs/MLX.md`).
   Consult it before issuing any `modal` command for this repo. (Defers generic Modal mechanics to
   the `modal-gpu` skill; this is the project-specific discipline.)
   Triggers on: "run on the real model / real 2B / 27B", "serve the web_gui (or gradio_gui)", "modal
@@ -15,19 +18,32 @@ description: >
   results, not the dev backend", "stop the modal GPU", "which modal function validates X".
 ---
 
-# Running the bench on the real model (Modal)
+# Running the bench on the real model (Modal — and MLX for the 2B)
 
-The real Qwen3.5-2B / 27B is GPU-only and, in this environment, **Modal-only** — there is no local
-CUDA. GPU time costs money, and the two ways to waste it are (a) leaving a container warm and (b)
-deploying something persistent. This skill is the discipline that prevents both. `RUNBOOK.md` is the
-authoritative command + cost reference; read it for the GPU/timeout per function.
+The real **27B** is GPU-only and, in this environment, **Modal-only** — there is no local CUDA for it.
+The real **2B**, however, now runs **locally on Apple Silicon via MLX** with no Modal at all. Reach
+for Modal when you need the **27B**, a **shareable hosted demo** (`modal serve` → a public `web_gui`
+URL), or a CUDA run. GPU time costs money, and the two ways to waste it are (a) leaving a container
+warm and (b) deploying something persistent. This skill is the discipline that prevents both.
+`RUNBOOK.md` is the authoritative command + cost reference; read it for the GPU/timeout per function.
 
 ## Dev backend first
 
 Before reaching for Modal, ask whether the dev backend suffices. `python serve_web.py --dev` runs
 the **real code paths** on a tiny in-memory CPU model — no GPU, no downloads, no token. Use it for
 wiring, UI work, and tests. It shows *mechanics*, not real results (the model is random, so verdicts
-land `BENCHMARKED`). Switch to Modal only when you genuinely need real-model behavior.
+land `BENCHMARKED`). Switch to a real backend only when you genuinely need real-model behavior.
+
+## On a Mac, MLX before Modal (for the 2B)
+
+If you need real **2B** results and you're on Apple Silicon, run it **locally via MLX** before
+reaching for Modal: `python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16 --mlx-sae
+Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100 --mlx-d-sae 32768`. The **whole bench** (every GUI mode + the
+agent `/api/*`) runs on-device — no GPU billing, no cold load, offline. Use bf16 (not 4-bit) for
+fidelity; results replicate the Modal findings qualitatively, not bit-for-bit (re-run + recalibrate).
+Use Modal for the 2B only when you specifically need a CUDA run or a public hosted URL. The gated
+Modal probes (`*_2b`) are still the way to produce a recorded, citable real-GPU result; MLX is for
+interactive local work and the GUI. Full details: `docs/MLX.md`.
 
 ## The rules (the reason this skill exists)
 

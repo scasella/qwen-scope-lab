@@ -46,12 +46,18 @@ The Lab Bench is a richer single-page workbench (`web/`) served over FastAPI (`q
 # GPU-free dev backend (tiny CPU model, no downloads) -- verify the UI/wiring locally:
 python serve_web.py --dev
 
+# Apple Silicon, local, no Modal/CUDA -- the FULL bench on the real 2B via MLX (see docs/MLX.md):
+python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16                       # detection + steering + manifold
+python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16 \
+    --mlx-sae Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100 --mlx-d-sae 32768      # + the SAE-feature path
+# (--mlx-layer N sets the probe/capture layer; first run downloads model ~4.5GB + SAE ~540MB, then cached)
+
 # real model paths (need CUDA):
 python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml
 python serve_web.py --config configs/qwen35_27b_l0_100.yaml
 ```
 
-Defaults to `http://127.0.0.1:7870`; override with `--host/--port`. JSON API under `/api/*`, schema at `/api/docs`. The `--dev` backend (`qwen_scope_steering_gui/dev_backend.py`) runs the real activation/contrast/steering code paths against a fake CPU model, so its generations are intentionally toy but the wiring is real. Web-API tests: `pytest tests/test_web_api.py`.
+Defaults to `http://127.0.0.1:7870`; override with `--host/--port`. JSON API under `/api/*`, schema at `/api/docs`. The `--dev` backend (`qwen_scope_steering_gui/dev_backend.py`) runs the real activation/contrast/steering code paths against a fake CPU model, so its generations are intentionally toy but the wiring is real. The `--mlx` backend (`qwen_scope_steering_gui/mlx_backend.py`) runs the **real** 2B + SAE on-device on Apple Silicon — bf16 (not 4-bit) for fidelity; results replicate the Modal/CUDA findings qualitatively, not bit-for-bit. Web-API tests: `pytest tests/test_web_api.py`; MLX tests: `pytest tests/test_mlx_backend.py` (the real-model layer skips unless `mlx_lm` + a cached model are present).
 
 ## Core Scripts
 
@@ -114,6 +120,11 @@ python scripts/export_recipe_markdown.py --recipe recipes/json_validity_2b_candi
 ```
 
 ## Modal Cost Preflight
+
+> **On an Apple Silicon Mac, the 2B no longer needs Modal.** Run `serve_web.py --mlx` (above /
+> `docs/MLX.md`) for the full bench on-device — no GPU billing, no cold starts, offline. Modal
+> stays the path for the **27B** (won't fit a laptop) and for a **shareable, always-on hosted
+> demo** (`modal serve` → a public `web_gui` URL). Posture: 2B local-first, 27B + hosting on Modal.
 
 Primitive: Modal Functions plus one Modal web server Function.
 

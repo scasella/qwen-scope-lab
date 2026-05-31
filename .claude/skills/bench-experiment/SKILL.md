@@ -96,9 +96,12 @@ Job-able ops (submit via `/api/jobs` or call the sync `/api/<op>`): `inspect`, `
 - **Dev** (`python serve_web.py --dev`, GPU-free, default `http://127.0.0.1:7870`) runs the real code
   paths on a tiny random model — perfect for wiring an experiment and checking plumbing. Expect
   `BENCHMARKED`/chance results; that's the model, not a bug.
-- **Real model** (Qwen3.5-2B/27B) is Modal-only — see the **bench-on-modal** skill. Point
-  `BENCH_URL` at the served `web_gui` URL and reuse `bench_client.py`. Real findings need the real
-  model.
+- **Real 2B, locally on a Mac** (`python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16 [--mlx-sae
+  <repo> --mlx-d-sae N]`, no Modal/CUDA) runs the real model + SAE on-device — the preferred path for
+  real 2B findings on Apple Silicon. Point `BENCH_URL` at it like any other server. See `docs/MLX.md`.
+- **Real model via GPU** (the **27B**, or a recorded real-GPU run) is Modal — see the **bench-on-modal**
+  skill. Point `BENCH_URL` at the served `web_gui` URL and reuse `bench_client.py`. Real findings need a
+  real model (MLX or Modal), not the dev backend.
 
 ## Reporting
 

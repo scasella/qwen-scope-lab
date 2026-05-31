@@ -169,8 +169,12 @@ Saved recipes appear in the Library with the energy legs + a **Load into Manifol
 Live probes in `modal_app.py` (real model; run with `modal run modal_app.py::<fn>`):
 `residual_manifold_sweep_2b/_27b` (best layer per concept), `manifold_atlas_2b/_27b` (census),
 `manifold_steer_demo_2b/_27b`, `manifold_vs_linear_2b`, `manifold_naturalness_probe_2b`
-(isometry + energy), `manifold_pullback_probe_2b` (pullback). The real model is **Modal-only**;
-stop the warm GPU with `modal app stop qwen-scope-steering-gui` when done.
+(isometry + energy), `manifold_pullback_probe_2b` (pullback). These gated probes are the way to
+produce a recorded real-GPU result; stop the warm GPU with `modal app stop qwen-scope-steering-gui`
+when done. **The entire manifold mode (fit / steer / compare / pullback / SAE coverage) also runs
+locally on the real 2B via the MLX backend** — `serve_web.py --mlx … --mlx-sae …` — no Modal/CUDA;
+the pullback's L-BFGS optimisation becomes an `mx.value_and_grad` + Adam loop on-device (see `MLX.md`).
+The 27B remains Modal-only.
 
 The dead-end probes that produced §2's negatives are archived in `archive/research_probes.py`
 (preserved, not runnable).

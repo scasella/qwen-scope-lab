@@ -35,10 +35,17 @@ pip install -e ".[dev]"`. Full setup + credentials are in `README.md`. Then pick
 - **Local (dev, CPU, no GPU):** `python serve_web.py --dev`, then open the printed URL (default
   **http://127.0.0.1:7870**). This runs the *real code* over a tiny in-memory model, so the whole
   interface works with no GPU, no downloads, and no token. Every **Try it** below works here.
+- **Real model on your Mac (Apple Silicon, no cloud):** `python serve_web.py --mlx
+  mlx-community/Qwen3.5-2B-bf16 --mlx-sae Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100 --mlx-d-sae
+  32768`, then open the printed URL. This runs the **real Qwen3.5-2B + SAE on-device** via MLX —
+  every mode in this guide works, private and offline, no Modal and no GPU bill. The first launch
+  downloads the model (~4.5 GB) + SAE (~540 MB), then it's cached. (Drop the `--mlx-sae` flags for
+  the probe/detection paths only.) Details: `docs/MLX.md`. **This is the recommended way to follow
+  this guide on real text.**
 - **Real model (Modal, GPU):** `modal serve modal_app.py`, then open the **`web_gui`** URL it
-  prints — the real Qwen3.5-2B (default; set `QWEN_GUI_TARGET=27b-a100` for 27B). The first action
-  triggers a cold model load (a minute or two). **Stop the GPU when done:**
-  `modal app stop qwen-scope-steering-gui`. (Needs Modal auth + `HF_TOKEN` — see `RUNBOOK.md`.)
+  prints — the real Qwen3.5-2B (default; set `QWEN_GUI_TARGET=27b-a100` for 27B — the 27B is
+  Modal-only). The first action triggers a cold model load (a minute or two). **Stop the GPU when
+  done:** `modal app stop qwen-scope-steering-gui`. (Needs Modal auth + `HF_TOKEN` — see `RUNBOOK.md`.)
 
 > **Read this once — the dev caveat.** On the dev server the model is a *tiny random* network. All
 > the mechanics work (features fire, hooks fire, panes/gauges/verdicts populate), but generated

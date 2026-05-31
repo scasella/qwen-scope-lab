@@ -205,7 +205,13 @@ GET  /demo                                                  -> the live single-m
   controlled (≤0.30), AND the probe still matches the judge under stress; else `degraded`.
 
 ## Notes
-- This works on the dev backend (CPU, no GPU) for developing your loop, and identically on the
-  real model via the Modal `web_gui` — same endpoints, same contract.
+- This works on **three backends behind the same endpoints + contract**: the **dev** backend
+  (CPU, no GPU) for developing your loop; **MLX** for the real 2B locally on an Apple Silicon
+  Mac (`serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16 [--mlx-sae <repo> --mlx-d-sae N]` — no
+  Modal/CUDA, every op works); and **CUDA/Modal** for the real model on a GPU (and the only
+  option for the 27B). The agent job API, the experiment log, and every op are identical across
+  all three. MLX results replicate the Modal/CUDA findings qualitatively, not bit-for-bit (re-run
+  and recalibrate; see `MLX.md`).
 - The science scope is SAE-feature steering + concept-manifold steering on Qwen-Scope; see
-  `MANIFOLD.md` for what the manifold ops mean and `USER_GUIDE.md` for the human-facing tour.
+  `MANIFOLD.md` for what the manifold ops mean, `MLX.md` for the local Apple-Silicon backend, and
+  `USER_GUIDE.md` for the human-facing tour.

@@ -55,14 +55,20 @@ serialized on one `gpu_lock`. Build new features to fit this shape.
    route and the job runner both call the same `op_<feature>`.
 5. **Dev-backend mirror** — confirm the op runs under `build_dev_service()`. On the random dev model
    results are chance, so the verdict lands `BENCHMARKED`; that's expected. Tests assert *shape* and
-   that the verdict is a valid value, not high scores.
+   that the verdict is a valid value, not high scores. **If the op touches the model** (capture /
+   generate / a hook / the tokenizer), it must ALSO run on the **MLX backend** (`mlx_backend.py`):
+   model-touching primitives branch on the duck-typed `is_mlx_runtime` flag at one point; tokenizer
+   calls should use `.encode()` (both backends support it). A per-method port can miss sibling
+   helpers — the real completeness check is a live `serve_web.py --mlx` GUI walk (see `docs/MLX.md`).
 6. **GUI mode** (if user-facing) — a nav item in `web/index.html`, a `view<Feature>()` dispatched
    from `renderStage` in `web/app.js`, handlers in the click switch, reusing existing UI
    (`.score` bars, `.verdict` chip, `.ba` panes, `.wrow`, `.rcard`, `withBusy`, `api()`). Match
    `viewManifold` / `viewMonitor`. Call heavy ops synchronously behind the busy spinner (like
    `runBenchmark`) — the lock makes that safe.
-7. **Modal probe** — `<feature>_demo_2b` in `modal_app.py` for real-model validation, mirroring
-   `monitor_demo_2b` / `manifold_pullback_probe_2b`. (Running it is the **bench-on-modal** skill.)
+7. **Real-model validation** — on a Mac, run it locally via the MLX backend (`serve_web.py --mlx …`
+   + the GUI / `/api/<feature>`) for fast, free, offline real-2B evidence. For a recorded, citable
+   real-GPU result, add a `<feature>_demo_2b` in `modal_app.py`, mirroring `monitor_demo_2b` /
+   `manifold_pullback_probe_2b`. (Running either is the **bench-on-modal** skill.)
 8. **Tests** — `tests/`: a unit test of the pure module on synthetic inputs (deterministic), plus
    API round-trips in `test_web_api.py` (discover/save→list→detail, and one **job** round-trip with
    `TestClient` as a context manager so the async task runs). Pass `*_root=tmp_path` to stores. The

@@ -15,6 +15,7 @@ The primary target is `Qwen/Qwen3.5-27B` with `Qwen/SAE-Res-Qwen3.5-27B-W80K-L0_
 - Keep a small local JSON feature notebook.
 - Request optional speculative feature labels when a model API key is configured.
 - Show loaded config, cache state, device, dtype, and GPU memory.
+- **Run the entire bench locally on an Apple Silicon Mac** (model + SAE, every GUI mode) via MLX — no Modal, no CUDA. See [`docs/MLX.md`](docs/MLX.md).
 
 Core inspect, compare, steer, bench, autopilot, and recipe export flows do not require hosted model APIs.
 
@@ -69,8 +70,9 @@ The Hugging Face token is used for model and SAE downloads. Model API keys are o
 
 ### 4. Run a real model
 
-- **Local (needs CUDA):** `python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml` (see the Lab Bench section for flags).
-- **No local GPU?** Serve the real model on Modal instead — see the [Modal](#modal) section (`modal serve modal_app.py` → the `web_gui` endpoint).
+- **On an Apple Silicon Mac (no CUDA, no Modal) — the recommended path for the 2B:** `python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16` runs the **full bench on-device** via MLX — every GUI mode, private and offline. Add `--mlx-sae Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100 --mlx-d-sae 32768` to enable the SAE-feature paths. Full details in [`docs/MLX.md`](docs/MLX.md).
+- **Local with CUDA:** `python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml` (see the Lab Bench section for flags).
+- **No local GPU and not on a Mac (or running the 27B):** serve the real model on Modal instead — see the [Modal](#modal) section (`modal serve modal_app.py` → the `web_gui` endpoint). The 27B is Modal-only.
 
 ## Classic GUI (Gradio)
 
@@ -115,11 +117,12 @@ python serve_web.py --config configs/qwen35_27b_l0_100.yaml      # 27B
 # Flags: --host 0.0.0.0   --port 8000   --recipes path/to/recipes   --mlx-layer 12
 ```
 
-Then open **http://127.0.0.1:7870** (override with `--host` / `--port`). JSON endpoints live under `/api/*` (`/api/docs` for the schema). **No local GPU?** Serve the real model on Modal instead — see the [Modal](#modal) section's `web_gui` endpoint. The dev backend exercises the real activation/contrast/steering code paths on a fake CPU model, so it proves wiring without a GPU; switching to a real config is the only change needed. The classic Gradio app (`app.py`) is unchanged and still available.
+Then open **http://127.0.0.1:7870** (override with `--host` / `--port`). JSON endpoints live under `/api/*` (`/api/docs` for the schema). **No local GPU?** On an Apple Silicon Mac, run the real 2B locally with `--mlx` — the entire bench runs on-device with no Modal/CUDA (see [`docs/MLX.md`](docs/MLX.md)); otherwise serve it on Modal — see the [Modal](#modal) section's `web_gui` endpoint. The dev backend exercises the real activation/contrast/steering code paths on a fake CPU model, so it proves wiring without a GPU; switching to a real config (or `--mlx`) is the only change needed. The classic Gradio app (`app.py`) is unchanged and still available.
 
 ## Documentation
 
 - `docs/USER_GUIDE.md`: how to use the Lab Bench workbench (Explore → Steer → Measure → Manifold → Library).
+- `docs/MLX.md`: run the **entire bench locally on an Apple Silicon Mac** via MLX — model + SAE, every GUI mode, no Modal/CUDA. Quickstart, architecture (one-point backend branches), fidelity caveats (bf16 not 4-bit; qualitative replication), and what stays on Modal.
 - `docs/MANIFOLD.md`: technical deep-dive on concept-manifold steering, including the science (isometry, pullback, and the negative results behind the design).
 - `docs/AGENT_RESEARCH.md`: how an **AI agent** conducts research here — the async job API (`POST /api/jobs` → poll), the experiment log (`/api/experiments`), and the honesty contract (read `validation_decision`; report negatives). Endpoints are serialized on the GPU so concurrent calls queue instead of failing.
 
