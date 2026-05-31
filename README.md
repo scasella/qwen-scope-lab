@@ -2,7 +2,7 @@
 
 **A local, browser-based SAE interpretability lab. Inspect, steer, monitor, and control a real language model from a visual GUI — running entirely on your Mac via MLX. No GPU, no cloud, no notebooks.**
 
-[![CI](https://github.com/scasella/qwen-scope-steering/actions/workflows/ci.yml/badge.svg)](https://github.com/scasella/qwen-scope-steering/actions/workflows/ci.yml)
+[![CI](https://github.com/scasella/qwen-scope-lab-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/scasella/qwen-scope-lab-bench/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 

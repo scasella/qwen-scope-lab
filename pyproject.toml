@@ -34,7 +34,7 @@ dev = ["pytest"]
 all = ["qwen-scope-lab-bench[mlx,cuda,modal,gradio,dev]"]
 
 [project.urls]
-Homepage = "https://github.com/scasella/qwen-scope-steering"
+Homepage = "https://github.com/scasella/qwen-scope-lab-bench"
 
 [tool.setuptools.packages.find]
 where = ["."]
