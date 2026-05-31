@@ -10,6 +10,10 @@
 
 The Lab is a Sparse-Autoencoder interpretability workbench over [Qwen Scope](https://huggingface.co/Qwen) that you drive entirely from a **point-and-click web GUI**. It runs the **whole pipeline on-device via [MLX](https://github.com/ml-explore/mlx)** — the real model **and** its SAE — on **any Apple-Silicon Mac (M1–M4)**: inspect features, steer generation, fit concept manifolds in 3D, train behavior detectors, and run an honest detect→suppress→prove control loop, all locally and offline. A GPU-free dev backend lets you explore the whole interface with no downloads; an optional Modal/CUDA path scales to the 27B and shareable hosted demos.
 
+## Why I built this
+
+I wanted to *use* sparse-autoencoder interpretability hands-on — inspect features, steer a model, train and stress-test detectors — on my own Mac, without a GPU, a cloud bill, or a notebook. So the whole lab runs on Apple Silicon via MLX, behind a point-and-click GUI. More of my projects and research are on my [personal site](https://casella.dev).
+
 ## Quickstart — the full lab on your Mac
 
 ```bash
