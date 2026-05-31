@@ -1,4 +1,4 @@
-# Qwen Scope Lab
+# Qwen Scope Lab on MLX
 
 **A local, browser-based SAE interpretability lab. Inspect, steer, monitor, and control a real language model from a visual GUI — running entirely on your Mac via MLX. No GPU, no cloud, no notebooks.**
 
