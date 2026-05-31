@@ -8,7 +8,7 @@
 
 ![The Lab — token-level SAE feature inspection on the real Qwen3.5-2B, running on-device via MLX](docs/assets/lab-explore.png)
 
-The Lab is a comprehensive Sparse-Autoencoder interpretability workbench over [Qwen Scope](https://huggingface.co/Qwen) that you drive entirely from a **point-and-click web GUI** — no notebooks, no scripting. It runs the **whole pipeline on-device via [MLX](https://github.com/ml-explore/mlx)** — the real model **and** its SAE — on **any Apple-Silicon Mac (M1–M4)**, so you can inspect features, steer generation, fit concept manifolds in 3D, train behavior detectors, and run an honest detect→suppress→prove control loop just by clicking through your browser, all locally and offline. A GPU-free dev backend lets you explore the whole interface with no downloads; an optional Modal/CUDA path scales to the 27B and shareable hosted demos.
+The Lab is a Sparse-Autoencoder interpretability workbench over [Qwen Scope](https://huggingface.co/Qwen) that you drive entirely from a **point-and-click web GUI**. It runs the **whole pipeline on-device via [MLX](https://github.com/ml-explore/mlx)** — the real model **and** its SAE — on **any Apple-Silicon Mac (M1–M4)**: inspect features, steer generation, fit concept manifolds in 3D, train behavior detectors, and run an honest detect→suppress→prove control loop, all locally and offline. A GPU-free dev backend lets you explore the whole interface with no downloads; an optional Modal/CUDA path scales to the 27B and shareable hosted demos.
 
 ## Quickstart — the full lab on your Mac
 
@@ -18,7 +18,7 @@ python serve_web.py --mlx          # the real 2B + its SAE, entirely on-device
 # → open http://127.0.0.1:7870 in your browser — the whole lab is a visual GUI
 ```
 
-That one command runs the whole bench on the real `Qwen3.5-2B` and its Qwen-Scope SAE and serves it as a **browser-based GUI** — everything in this README is done by clicking, not coding. No Modal, no CUDA, no API key. First launch downloads the model (~4.5 GB, bf16) and SAE (~540 MB), then caches them; every run after is offline. (Pass `--mlx-sae none` to skip the SAE download and use the probe-only paths; pass `--mlx <repo>` to override the model.)
+That one command runs the whole lab on the real `Qwen3.5-2B` and its Qwen-Scope SAE and serves the GUI in your browser — no Modal, CUDA, or API key needed. First launch downloads the model (~4.5 GB, bf16) and SAE (~540 MB), then caches them; every run after is offline. (Pass `--mlx-sae none` to skip the SAE download and use the probe-only paths; pass `--mlx <repo>` to override the model.)
 
 **Just want to explore the interface, with no downloads at all?**
 
@@ -45,7 +45,7 @@ The GUI is one click-through loop — each step is a mode in the left-hand nav: 
 
 ## Why it's credible — honest controls
 
-The bench's differentiator is its rigor. A steer "validates" only if it beats a prompt-only baseline **and** seven controls — including a **random-feature control** (inject a *different* feature at the same strength) and a negative-strength control. Detectors are scored against a raw-residual linear probe and a random-feature control, at a **TPR-at-fixed-FPR** operating point — the way a deployed monitor is actually tuned. Suppression only counts if the behavior was present, the steer removed it, **and** nothing else broke; perfect suppression that lobotomizes the model or erodes its refusals is honestly marked `benchmarked`. Negatives are reported, not hidden. (Driving the lab from an agent? Every op runs through a job API and an experiment log — see [`docs/AGENT_RESEARCH.md`](docs/AGENT_RESEARCH.md).)
+A steer "validates" only if it beats a prompt-only baseline **and** seven controls — including a **random-feature control** (inject a *different* feature at the same strength) and a negative-strength control. Detectors are scored against a raw-residual linear probe and a random-feature control, at a **TPR-at-fixed-FPR** operating point — the way a deployed monitor is actually tuned. Suppression only counts if the behavior was present, the steer removed it, **and** nothing else broke; perfect suppression that lobotomizes the model or erodes its refusals is honestly marked `benchmarked`. Negatives are reported, not hidden. (Driving the lab from an agent? Every op runs through a job API and an experiment log — see [`docs/AGENT_RESEARCH.md`](docs/AGENT_RESEARCH.md).)
 
 ## Highlight: a free jailbreak detector
 
