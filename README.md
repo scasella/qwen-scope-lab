@@ -1,6 +1,6 @@
 # Qwen Scope Lab Bench
 
-**A local SAE interpretability lab — inspect, steer, monitor, and control a real language model on your Mac. No GPU, no cloud.**
+**A local, browser-based SAE interpretability lab. Inspect, steer, monitor, and control a real language model from a visual GUI — running entirely on your Mac via MLX. No GPU, no cloud, no notebooks.**
 
 [![CI](https://github.com/scasella/qwen-scope-steering/actions/workflows/ci.yml/badge.svg)](https://github.com/scasella/qwen-scope-steering/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
@@ -8,17 +8,17 @@
 
 ![The Lab Bench — token-level SAE feature inspection on the real Qwen3.5-2B, running on-device via MLX](docs/assets/lab-explore.png)
 
-The Lab Bench is a comprehensive Sparse-Autoencoder interpretability workbench over [Qwen Scope](https://huggingface.co/Qwen). It runs the **entire pipeline on-device via [MLX](https://github.com/ml-explore/mlx)** — the real model **and** its SAE — so you can inspect features, steer generation, fit concept manifolds, train behavior detectors, and run an honest detect→suppress→prove control loop, all locally and offline on Apple Silicon. A GPU-free dev backend lets you explore the whole UI with no downloads; an optional Modal/CUDA path scales to the 27B and shareable hosted demos.
+The Lab Bench is a comprehensive Sparse-Autoencoder interpretability workbench over [Qwen Scope](https://huggingface.co/Qwen) that you drive entirely from a **point-and-click web GUI** — no notebooks, no scripting. It runs the **whole pipeline on-device via [MLX](https://github.com/ml-explore/mlx)** — the real model **and** its SAE — on **any Apple-Silicon Mac (M1–M4)**, so you can inspect features, steer generation, fit concept manifolds in 3D, train behavior detectors, and run an honest detect→suppress→prove control loop just by clicking through your browser, all locally and offline. A GPU-free dev backend lets you explore the whole interface with no downloads; an optional Modal/CUDA path scales to the 27B and shareable hosted demos.
 
 ## Quickstart — the full lab on your Mac
 
 ```bash
 pip install -e ".[mlx]"
 python serve_web.py --mlx          # the real 2B + its SAE, entirely on-device
-# → open http://127.0.0.1:7870
+# → open http://127.0.0.1:7870 in your browser — the whole lab is a visual GUI
 ```
 
-That one command runs the whole bench on the real `Qwen3.5-2B` and its Qwen-Scope SAE — no Modal, no CUDA, no API key. First launch downloads the model (~4.5 GB, bf16) and SAE (~540 MB), then caches them; every run after is offline. (Pass `--mlx-sae none` to skip the SAE download and use the probe-only paths; pass `--mlx <repo>` to override the model.)
+That one command runs the whole bench on the real `Qwen3.5-2B` and its Qwen-Scope SAE and serves it as a **browser-based GUI** — everything in this README is done by clicking, not coding. No Modal, no CUDA, no API key. First launch downloads the model (~4.5 GB, bf16) and SAE (~540 MB), then caches them; every run after is offline. (Pass `--mlx-sae none` to skip the SAE download and use the probe-only paths; pass `--mlx <repo>` to override the model.)
 
 **Just want to explore the interface, with no downloads at all?**
 
@@ -31,7 +31,7 @@ New here? `docs/USER_GUIDE.md` is a click-along tour of every mode using the app
 
 ## What you can do — the loop
 
-The workbench is organized as one loop: **Explore → Steer → Measure → Manifold → Monitor → Control → Library.**
+The GUI is one click-through loop — each step is a mode in the left-hand nav: **Explore → Steer → Measure → Manifold → Monitor → Control → Library.**
 
 - 🔎 **Explore** — a token-level SAE feature microscope; atlas a whole prompt corpus by peak or breadth; contrast two prompts. Pin a feature to carry it into Steer and Measure.
 - ↗ **Steer** — dial a feature up or down; live before/after generation; a strength sweep; the logit-effect metric.
