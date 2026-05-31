@@ -38,6 +38,24 @@ def _to_numpy(arr: Any) -> np.ndarray:
         return np.asarray(arr.tolist(), dtype=np.float32)
 
 
+def _find_trunk(model: Any) -> Any:
+    """Locate the decoder stack (the module with ``embed_tokens`` + ``layers``). Its path
+    differs by Qwen arch: qwen2 → ``model.model``; qwen3_5 (a ConditionalGeneration wrapper)
+    → ``model.language_model.model``. Find it by shape, not by a hard-coded path."""
+    lang = getattr(model, "language_model", None)
+    candidates = [
+        getattr(model, "model", None),
+        getattr(lang, "model", None) if lang is not None else None,
+        lang,
+        getattr(model, "transformer", None),
+        model,
+    ]
+    for cand in candidates:
+        if cand is not None and hasattr(cand, "layers") and hasattr(cand, "embed_tokens"):
+            return cand
+    raise RuntimeError("could not locate the decoder trunk (embed_tokens + layers) on this MLX model")
+
+
 class MlxModel:
     """Thin wrapper over an ``mlx-lm`` model exposing the primitives the service needs.
 
@@ -53,7 +71,7 @@ class MlxModel:
         self._mx = mx
         self.repo = repo
         self.model, self.tokenizer = load(repo)
-        self.trunk = self.model.model  # the decoder stack (embed_tokens, layers[], norm)
+        self.trunk = _find_trunk(self.model)  # decoder stack (embed_tokens, layers[]); path varies by arch
         self.num_layers = len(self.trunk.layers)
         args = getattr(self.model, "args", None)
         self.d_model = int(getattr(args, "hidden_size", 0)
@@ -66,16 +84,25 @@ class MlxModel:
         (mean-pooled over tokens). ``steer`` adds a vector at that block (Phase 2 path)."""
         mx = self._mx
         from mlx_lm.models.base import create_attention_mask
+        try:
+            from mlx_lm.models.base import create_ssm_mask
+        except Exception:  # noqa: BLE001 — older mlx-lm without linear-attention support
+            create_ssm_mask = None
 
         ids_list = list(self.tokenizer.encode(text))[:MAX_SEQ]
         if not ids_list:
             ids_list = [getattr(self.tokenizer, "eos_token_id", 0) or 0]
         ids = mx.array([ids_list])
         h = self.trunk.embed_tokens(ids)
-        mask = create_attention_mask(h)
+        # hybrid archs (qwen3_5) mix full-attention and linear-attention (SSM) blocks, which need
+        # different masks; mirror the model's own forward and pick per layer.
+        fa_mask = create_attention_mask(h)
+        hybrid = any(getattr(block, "is_linear", False) for block in self.trunk.layers)
+        ssm_mask = create_ssm_mask(h) if (hybrid and create_ssm_mask is not None) else None
         captured = None
         for i, block in enumerate(self.trunk.layers):
-            h = block(h, mask=mask)
+            mask = ssm_mask if getattr(block, "is_linear", False) else fa_mask
+            h = block(h, mask=mask, cache=None)
             if i == layer:
                 captured = h
                 if steer is not None:
