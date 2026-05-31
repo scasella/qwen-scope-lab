@@ -81,7 +81,10 @@ def register_steering_hook(
     strength: float,
     mode: str,
     trace: HookTrace,
-) -> torch.utils.hooks.RemovableHandle:
+) -> Any:
+    if getattr(model, "is_mlx_runtime", False):  # local Apple-Silicon (MLX) backend: swap the block
+        return model.install_steer(layer, steering_vector, strength, trace)
+
     def _hook(_module: torch.nn.Module, _inputs: tuple[Any, ...], output: Any) -> Any:
         hidden = _hidden_from_output(output)
         steered, delta_norm = apply_steering_to_hidden(hidden, steering_vector, strength, mode)
@@ -98,11 +101,16 @@ def register_replace_hook(
     replacement: torch.Tensor,
     position: int,
     trace: HookTrace,
-) -> torch.utils.hooks.RemovableHandle:
+) -> Any:
     """Manifold-steering intervention: overwrite the residual at a single token
     position with ``replacement`` (a point on the fitted manifold). Fires only when the
     position is within the current sequence — i.e. the prompt forward pass — so during
     cached generation (seq len 1) it is a no-op and the KV cache propagates the edit."""
+    if getattr(model, "is_mlx_runtime", False):  # manifold replace intervention = MLX Phase 2.5
+        raise NotImplementedError(
+            "the manifold replace intervention is not yet on the MLX backend (Phase 2.5); "
+            "CAA/direction steering, generation, and perplexity run on MLX today.")
+
     def _hook(_module: torch.nn.Module, _inputs: tuple[Any, ...], output: Any) -> Any:
         hidden = _hidden_from_output(output)
         if not 0 <= position < hidden.shape[1]:

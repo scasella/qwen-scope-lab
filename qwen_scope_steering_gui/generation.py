@@ -19,7 +19,9 @@ def generate_text(
     prompt: str,
     max_new_tokens: int,
     temperature: float,
-) -> tuple[str, torch.Tensor]:
+) -> tuple[str, Any]:
+    if getattr(bundle.model, "is_mlx_runtime", False):  # local Apple-Silicon (MLX) backend
+        return bundle.model.generate(prompt, int(max_new_tokens), float(temperature)), None
     tokenizer = bundle.tokenizer
     encoded = tokenizer(prompt, return_tensors="pt")
     input_ids = encoded["input_ids"].to(bundle.device)
@@ -56,6 +58,8 @@ def sequence_perplexity(bundle: ModelBundle, prompt: str, continuation: str) -> 
     more fluent/natural — our proxy for the paper's off-manifold "naturalness" energy."""
     if not continuation:
         return None
+    if getattr(bundle.model, "is_mlx_runtime", False):
+        return bundle.model.perplexity(prompt, continuation)
     tokenizer = bundle.tokenizer
     full_ids = tokenizer(prompt + continuation, return_tensors="pt")["input_ids"].to(bundle.device)
     p_len = tokenizer(prompt, return_tensors="pt")["input_ids"].shape[1]
@@ -73,6 +77,8 @@ def steered_perplexity(bundle: ModelBundle, prompt: str, continuation: str, laye
     proxy: a steer that lobotomises the model makes unrelated natural text far less likely."""
     if not continuation:
         return None
+    if getattr(bundle.model, "is_mlx_runtime", False):
+        return bundle.model.perplexity(prompt, continuation, steer=(layer, steering_vector, strength))
     tokenizer = bundle.tokenizer
     full_ids = tokenizer(prompt + continuation, return_tensors="pt")["input_ids"].to(bundle.device)
     p_len = tokenizer(prompt, return_tensors="pt")["input_ids"].shape[1]

@@ -101,10 +101,10 @@ The real model/SAE path loads lazily when an action button is pressed. On a mach
 # Fastest: GPU-free dev backend (tiny in-memory model, no downloads, no token):
 python serve_web.py --dev
 
-# Local on Apple Silicon via MLX (no Modal/CUDA) — runs the detection paths + /demo
-# on the real 2B on-device. Detection (probes, jailbreak suite, monitor/stream) is live;
-# the SAE-feature and steering paths are still CUDA/Modal (MLX Phase 2).
-python serve_web.py --mlx Qwen/Qwen3.5-2B            # or any mlx-community/* repo
+# Local on Apple Silicon via MLX (no Modal/CUDA) — runs detection + generation + CAA/direction
+# steering on the real 2B on-device: probes, the jailbreak suite, /demo, monitor/stream,
+# collateral, perplexity. SAE-feature + manifold paths stay CUDA/Modal (MLX Phase 2.5).
+python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16   # or any mlx-community/* repo
 
 # Real model locally (needs CUDA):
 python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml   # 2B

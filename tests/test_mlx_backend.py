@@ -42,6 +42,52 @@ def test_mlx_runtime_branch_delegates_capture_and_guards_sae():
         svc.inspect_prompt("hello", layer=1)
 
 
+def test_mlx_generation_and_steering_branches_delegate():
+    """generate_text / sequence_perplexity / steered_perplexity / register_steering_hook all
+    route to the MLX runtime when present, populating the hook trace. No MLX needed."""
+    from qwen_scope_steering_gui.generation import generate_text, sequence_perplexity, steered_perplexity
+    from qwen_scope_steering_gui.hooks import HookTrace, register_steering_hook
+
+    svc = build_dev_service()
+    d = svc.config.d_model
+
+    class StubMlx:
+        is_mlx_runtime = True
+
+        def __init__(self) -> None:
+            self.steered = False
+
+        def generate(self, prompt: str, n: int, temp: float) -> str:
+            return f"STUB:{prompt}"
+
+        def perplexity(self, prompt: str, cont: str, steer=None) -> float:
+            return 4.0 if steer is not None else 9.0
+
+        def install_steer(self, layer: int, vec, strength: float, trace=None):
+            self.steered = True
+            if trace is not None:
+                trace.fired_count += 1
+                trace.hidden_delta_norm += 1.0
+
+            class _H:
+                def remove(self_) -> None:
+                    pass
+
+            return _H()
+
+    stub = StubMlx()
+    svc.bundle.model = stub  # type: ignore[union-attr]
+
+    assert generate_text(svc.bundle, "hi", 4, 0.0) == ("STUB:hi", None)
+    assert sequence_perplexity(svc.bundle, "p", "c") == 9.0
+    assert steered_perplexity(svc.bundle, "p", "c", 1, [0.0] * d, 2.0) == 4.0
+
+    trace = HookTrace()
+    handle = register_steering_hook(stub, 1, [0.0] * d, 2.0, "all_positions", trace)
+    assert stub.steered and trace.hook_fired
+    handle.remove()
+
+
 def _mlx_model_cached(repo: str) -> bool:
     folder = "models--" + repo.replace("/", "--")
     root = os.path.expanduser(os.path.join("~/.cache/huggingface/hub", folder))
@@ -64,3 +110,12 @@ def test_mlx_backend_end_to_end_when_available():
     assert r["verdict"] in {"jailbreak", "clean"}
     assert {"score", "threshold", "confidence", "fires", "scored_ms"} <= set(r)
     assert 0.0 <= r["confidence"] <= 1.0
+
+    # Phase 2: generation + CAA steering run on MLX too
+    from qwen_scope_steering_gui.generation import generate_text
+
+    txt, _ = generate_text(svc.ensure_model(), "The capital of France is", 5, 0.0)
+    assert isinstance(txt, str)
+    steered = svc.steer_direction("Tell me about your day.", 12, [0.0] * svc.config.d_model, 0.0,
+                                  max_new_tokens=5, temperature=0.0)
+    assert {"unsteered_text", "steered_text", "hook_fired"} <= set(steered)

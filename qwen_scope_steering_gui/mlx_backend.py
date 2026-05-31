@@ -56,6 +56,21 @@ def _find_trunk(model: Any) -> Any:
     raise RuntimeError("could not locate the decoder trunk (embed_tokens + layers) on this MLX model")
 
 
+class _SteerLayer:
+    """Wraps a decoder block to add ``strength * vec`` to its residual-stream output — the MLX
+    equivalent of the torch ``register_steering_hook`` (a forward hook). Mirrors the block's call
+    signature and exposes ``is_linear`` so the hybrid-mask routing still works."""
+
+    def __init__(self, inner: Any, vec: Any, strength: float) -> None:
+        self.inner = inner
+        self.vec = vec
+        self.strength = strength
+        self.is_linear = getattr(inner, "is_linear", False)
+
+    def __call__(self, x: Any, mask: Any = None, cache: Any = None) -> Any:
+        return self.inner(x, mask=mask, cache=cache) + self.strength * self.vec
+
+
 class MlxModel:
     """Thin wrapper over an ``mlx-lm`` model exposing the primitives the service needs.
 
@@ -117,6 +132,73 @@ class MlxModel:
         """[d_model] mean-pooled residual after block ``layer`` — the input a linear probe
         reads. Matches ``service._pooled_residual``'s contract (numpy float32 vector)."""
         return _to_numpy(self._residual_at(text, int(layer)))
+
+    # ------- Phase 2: generation, steering injection, perplexity -------
+    def _to_mx_vec(self, vec: Any):
+        """Coerce a steering vector (torch tensor / numpy / list) to a [d_model] mlx array."""
+        if hasattr(vec, "detach"):  # torch tensor
+            arr = vec.detach().cpu().numpy()
+        else:
+            arr = np.asarray(vec)
+        return self._mx.array(np.asarray(arr, dtype=np.float32).ravel())
+
+    def generate(self, prompt: str, max_new_tokens: int, temperature: float = 0.0) -> str:
+        """Greedy/sampled completion via mlx-lm's own generation (handles the hybrid KV/SSM
+        cache correctly). Any steering installed via install_steer is active automatically,
+        because it lives on the decoder block the generation loop calls."""
+        from mlx_lm import generate as _generate
+        from mlx_lm.sample_utils import make_sampler
+
+        sampler = make_sampler(temp=float(temperature))
+        return _generate(self.model, self.tokenizer, prompt=prompt,
+                         max_tokens=int(max_new_tokens), sampler=sampler, verbose=False)
+
+    def install_steer(self, layer: int, vec: Any, strength: float, trace: Any = None) -> Any:
+        """Swap the decoder block at ``layer`` for a steered wrapper (the MLX forward hook).
+        Returns a handle with ``.remove()`` that restores the original block. Populates ``trace``
+        (fired_count + a representative delta-norm) so the bench's hook_fired check is honest."""
+        mx = self._mx
+        v = self._to_mx_vec(vec)
+        idx = int(layer)
+        if trace is not None:
+            trace.fired_count += 1
+            trace.hidden_delta_norm += float(strength) * float(mx.linalg.norm(v))
+        inner = self.trunk.layers[idx]
+        self.trunk.layers[idx] = _SteerLayer(inner, v, float(strength))
+        runtime = self
+
+        class _Handle:
+            def remove(self_) -> None:
+                runtime.trunk.layers[idx] = inner
+
+        return _Handle()
+
+    def perplexity(self, prompt: str, continuation: str, *, steer: tuple | None = None) -> float | None:
+        """Perplexity of ``continuation`` given ``prompt`` (one scoring forward). ``steer`` =
+        (layer, vec, strength) installs the steer for the scoring pass — the MLX twin of
+        steered_perplexity, the bench's capability-damage proxy."""
+        if not continuation:
+            return None
+        mx = self._mx
+        full = list(self.tokenizer.encode(prompt + continuation))
+        p_len = len(list(self.tokenizer.encode(prompt)))
+        if len(full) <= p_len:
+            return None
+        handle = self.install_steer(*steer) if steer else None
+        try:
+            logits = self.model(mx.array([full]))[0]                       # [seq, vocab]
+            pred = logits[:-1]                                             # predicts token at pos+1
+            logprobs = pred - mx.logsumexp(pred, axis=-1, keepdims=True)   # log_softmax
+            targets = mx.array(full[1:])
+            chosen = mx.take_along_axis(logprobs, targets[:, None], axis=-1)[:, 0]
+            cont = chosen[p_len - 1:]
+            if cont.size == 0:
+                return None
+            ppl = float(mx.exp(-cont.mean()))
+        finally:
+            if handle is not None:
+                handle.remove()
+        return ppl
 
 
 def build_mlx_service(model_repo: str, *, default_layer: int = 12, d_sae: int = 0,
