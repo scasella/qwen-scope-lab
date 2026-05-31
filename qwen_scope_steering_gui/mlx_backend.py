@@ -249,6 +249,7 @@ def build_mlx_service(model_repo: str, *, default_layer: int = 12, d_sae: int = 
     ``build_dev_service`` / the Modal path. Reads ``d_model`` / ``num_layers`` from the
     loaded model, so it works for the cached 0.5B test model and the real Qwen-2B alike."""
     import torch  # only for the bundle's device/dtype sentinels (the torch path stays unused)
+    from huggingface_hub.constants import HF_HUB_CACHE  # the resolved default cache (respects HF_HOME)
 
     runtime = MlxModel(model_repo, default_layer=default_layer)
     config = SteeringConfig(
@@ -263,7 +264,7 @@ def build_mlx_service(model_repo: str, *, default_layer: int = 12, d_sae: int = 
         torch_dtype="float16",
         device="mlx",
         sae_cache_max_layers=1,
-        hf_cache_dir="~/.cache/huggingface",
+        hf_cache_dir=HF_HUB_CACHE,
         trust_remote_code=False,
     )
     service = SteeringService(config, f"mlx://{model_repo}")
