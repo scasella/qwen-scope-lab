@@ -207,7 +207,7 @@ GET  /demo                                                  -> the live single-m
 ## Notes
 - This works on **three backends behind the same endpoints + contract**: the **dev** backend
   (CPU, no GPU) for developing your loop; **MLX** for the real 2B locally on an Apple Silicon
-  Mac (`serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16 [--mlx-sae <repo> --mlx-d-sae N]` — no
+  Mac (`serve_web.py --mlx` — bare loads the default 2B + its SAE; no
   Modal/CUDA, every op works); and **CUDA/Modal** for the real model on a GPU (and the only
   option for the 27B). The agent job API, the experiment log, and every op are identical across
   all three. MLX results replicate the Modal/CUDA findings qualitatively, not bit-for-bit (re-run

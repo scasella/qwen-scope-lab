@@ -9,8 +9,12 @@ This runbook is the operational command reference. See `README.md` for setup and
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
+pip install -e ".[dev]"                 # GPU-free dev + the test suite
+# On an Apple Silicon Mac, add the on-device backend: pip install -e ".[mlx]"
 ```
+
+The base install is slim (torch + the web layer); the heavy/cloud deps are opt-in extras
+(`.[mlx]` on a Mac, `.[cuda]` for a CUDA GPU, `.[cuda,modal]` to drive `modal_app.py`, `.[all]` for everything).
 
 ## Credentials
 
@@ -46,11 +50,11 @@ The Lab Bench is a richer single-page workbench (`web/`) served over FastAPI (`q
 # GPU-free dev backend (tiny CPU model, no downloads) -- verify the UI/wiring locally:
 python serve_web.py --dev
 
-# Apple Silicon, local, no Modal/CUDA -- the FULL bench on the real 2B via MLX (see docs/MLX.md):
-python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16                       # detection + steering + manifold
-python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16 \
-    --mlx-sae Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100 --mlx-d-sae 32768      # + the SAE-feature path
-# (--mlx-layer N sets the probe/capture layer; first run downloads model ~4.5GB + SAE ~540MB, then cached)
+# Apple Silicon, local, no Modal/CUDA -- the FULL bench on the real 2B + its SAE via MLX (see docs/MLX.md):
+python serve_web.py --mlx                       # bare: the default 2B + its SAE, on-device
+python serve_web.py --mlx --mlx-sae none        # skip the SAE download (probe + steering + manifold only)
+# (--mlx <repo> overrides the model; --mlx-layer N sets the probe/capture layer;
+#  first run downloads model ~4.5GB + SAE ~540MB, then cached)
 
 # real model paths (need CUDA):
 python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml

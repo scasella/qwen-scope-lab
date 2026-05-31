@@ -30,18 +30,18 @@ AI agent — see `AGENT_RESEARCH.md`.
 ## Getting started
 
 **First time? Install it** (Python ≥ 3.10): `python -m venv .venv && source .venv/bin/activate &&
-pip install -e ".[dev]"`. Full setup + credentials are in `README.md`. Then pick a backend:
+pip install -e ".[dev]"` (on an Apple Silicon Mac, use `".[mlx]"` to run the real model on-device).
+Full setup + credentials are in `README.md`. Then pick a backend:
 
 - **Local (dev, CPU, no GPU):** `python serve_web.py --dev`, then open the printed URL (default
   **http://127.0.0.1:7870**). This runs the *real code* over a tiny in-memory model, so the whole
   interface works with no GPU, no downloads, and no token. Every **Try it** below works here.
-- **Real model on your Mac (Apple Silicon, no cloud):** `python serve_web.py --mlx
-  mlx-community/Qwen3.5-2B-bf16 --mlx-sae Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100 --mlx-d-sae
-  32768`, then open the printed URL. This runs the **real Qwen3.5-2B + SAE on-device** via MLX —
+- **Real model on your Mac (Apple Silicon, no cloud):** `python serve_web.py --mlx`, then open the
+  printed URL. Bare `--mlx` runs the **real Qwen3.5-2B + its SAE on-device** via MLX —
   every mode in this guide works, private and offline, no Modal and no GPU bill. The first launch
-  downloads the model (~4.5 GB) + SAE (~540 MB), then it's cached. (Drop the `--mlx-sae` flags for
-  the probe/detection paths only.) Details: `docs/MLX.md`. **This is the recommended way to follow
-  this guide on real text.**
+  downloads the model (~4.5 GB) + SAE (~540 MB), then it's cached. (Add `--mlx-sae none` for the
+  probe/detection paths only — no SAE download.) Details: `docs/MLX.md`. **This is the recommended
+  way to follow this guide on real text.**
 - **Real model (Modal, GPU):** `modal serve modal_app.py`, then open the **`web_gui`** URL it
   prints — the real Qwen3.5-2B (default; set `QWEN_GUI_TARGET=27b-a100` for 27B — the 27B is
   Modal-only). The first action triggers a cold model load (a minute or two). **Stop the GPU when

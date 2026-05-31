@@ -14,20 +14,20 @@ selected with `serve_web.py --mlx` (or `mlx_backend.build_mlx_service(...)` in c
 ## TL;DR
 
 ```bash
-# Detection + steering + manifold, but no SAE-feature path (probe-only):
-python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16
+# The FULL bench — the real 2B + its SAE, on-device. No other args needed:
+python serve_web.py --mlx
 
-# The FULL bench (adds the SAE monitor/atlas, SAE-feature steering, the shootout's SAE arm):
-python serve_web.py --mlx mlx-community/Qwen3.5-2B-bf16 \
-    --mlx-sae Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100 --mlx-d-sae 32768
+# Probe-only (skips the SAE download): detection + steering + manifold, no SAE-feature path:
+python serve_web.py --mlx --mlx-sae none
 ```
 
 Open the printed URL. The header shows `LIVE · Qwen3.5-2B-bf16`. That's the complete
 Explore → Steer → Measure → Manifold → Monitor → Control → Library loop, on-device.
 
-`mlx-lm` and an Apple Silicon Mac are the only requirements (`pip install mlx mlx-lm`).
-The first run downloads the model (~4.5 GB bf16) and, if you pass `--mlx-sae`, the SAE
-(~540 MB per layer); both are cached after that.
+Requirements: an Apple Silicon Mac and `pip install -e ".[mlx]"` — that adds `mlx` + `mlx-lm`
+to the slim base install (torch ships in the base because the Qwen-Scope SAE is a torch `.pt`).
+The first run downloads the model (~4.5 GB bf16) and the SAE (~540 MB per layer); both are
+cached after that. (Pass `--mlx-sae none` to skip the SAE download.)
 
 ---
 

@@ -17,6 +17,8 @@ python serve_web.py --dev      # http://127.0.0.1:7870
 pytest                          # full suite, GPU-free
 ```
 
+On an Apple Silicon Mac you can also test against the **real** model on-device: `pip install -e ".[mlx]"`, then `python serve_web.py --mlx` (see `docs/MLX.md`). The base install is deliberately slim — heavy/cloud deps live in opt-in extras (`mlx`, `cuda`, `modal`, `gradio`, `all`).
+
 See `README.md` for the full tour and `docs/USER_GUIDE.md` for a click-along walkthrough.
 
 ## Conventions
