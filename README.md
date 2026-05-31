@@ -101,11 +101,16 @@ The real model/SAE path loads lazily when an action button is pressed. On a mach
 # Fastest: GPU-free dev backend (tiny in-memory model, no downloads, no token):
 python serve_web.py --dev
 
+# Local on Apple Silicon via MLX (no Modal/CUDA) — runs the detection paths + /demo
+# on the real 2B on-device. Detection (probes, jailbreak suite, monitor/stream) is live;
+# the SAE-feature and steering paths are still CUDA/Modal (MLX Phase 2).
+python serve_web.py --mlx Qwen/Qwen3.5-2B            # or any mlx-community/* repo
+
 # Real model locally (needs CUDA):
 python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml   # 2B
 python serve_web.py --config configs/qwen35_27b_l0_100.yaml      # 27B
 
-# Flags: --host 0.0.0.0   --port 8000   --recipes path/to/recipes
+# Flags: --host 0.0.0.0   --port 8000   --recipes path/to/recipes   --mlx-layer 12
 ```
 
 Then open **http://127.0.0.1:7870** (override with `--host` / `--port`). JSON endpoints live under `/api/*` (`/api/docs` for the schema). **No local GPU?** Serve the real model on Modal instead — see the [Modal](#modal) section's `web_gui` endpoint. The dev backend exercises the real activation/contrast/steering code paths on a fake CPU model, so it proves wiring without a GPU; switching to a real config is the only change needed. The classic Gradio app (`app.py`) is unchanged and still available.

@@ -40,6 +40,11 @@ class SteeringService:
     def inspect_prompt(self, prompt: str, layer: int | None = None, top_k: int | None = None, max_seq_len: int | None = None) -> dict[str, Any]:
         layer = self.config.default_layer if layer is None else int(layer)
         bundle = self.ensure_model()
+        if getattr(bundle.model, "is_mlx_runtime", False):
+            raise NotImplementedError(
+                "inspect_prompt (the SAE-feature path) is Phase 2 for the MLX backend; the "
+                "probe/detection paths (discover_probe, score_probe, jailbreak_screen + /demo, "
+                "monitor_stream) run on MLX today.")
         sae = self.sae_loader.load_layer(layer)
         return extract_prompt_features(bundle, sae, self.config, prompt, layer, top_k, max_seq_len)
 
@@ -113,9 +118,11 @@ class SteeringService:
         """Mean-pooled raw residual-stream vector for a text (one forward pass) — the input
         a linear-probe baseline reads, captured the same way the manifold fitter captures
         residuals."""
+        bundle = self.ensure_model()
+        if getattr(bundle.model, "is_mlx_runtime", False):  # local Apple-Silicon (MLX) backend
+            return bundle.model.pooled_residual(text, int(layer))
         import torch
 
-        bundle = self.ensure_model()
         enc = bundle.tokenizer(text, return_tensors="pt", truncation=True, max_length=64)
         input_ids = enc["input_ids"].to(bundle.device)
         attn = enc.get("attention_mask")
