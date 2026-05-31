@@ -1274,6 +1274,41 @@ class SteeringService:
             return round(float(np.corrcoef(rec, ideal)[0, 1]), 4)
         return None
 
+    def _pullback_path_mlx(self, manifold, beh, layer, prompt, position, src_i, tgt_i, n_waypoints, lbfgs_iters):
+        """MLX pullback: prepare the PCA/target pieces (numpy) then optimise on-device via
+        ``MlxModel.pullback_optimize`` (autograd through the model). Mirrors the torch setup exactly."""
+        import numpy as np
+
+        bundle = self.ensure_model()
+        pca = manifold["pca"]
+        comps = np.asarray(pca.components_, dtype=np.float32)   # [n_pca, d_model]
+        mean = np.asarray(pca.mean_, dtype=np.float32)
+        cpca, n = manifold["centroids_pca"], manifold["n_items"]
+        ids_list = list(bundle.tokenizer.encode(prompt))[:64]
+        valid_pos, valid_ids, vocab = beh["valid_pos"], beh["valid_ids"], beh["vocab"]
+        sq_spline, token_ids = beh["spline"], beh["token_ids"]
+        d = (tgt_i - src_i) % n
+        if manifold["kind"] == "cyclic" and d > n / 2:
+            d -= n
+        u_at = (lambda tt: src_i + d * tt) if manifold["kind"] == "cyclic" else (lambda tt: src_i + tt * (tgt_i - src_i))
+        steps = max(2, n_waypoints)
+        if len(valid_ids) < 2:  # degenerate backend: no concept tokens in vocab -> linear interp, no optimisation
+            pts = [((1 - wi / (steps - 1)) * cpca[src_i] + (wi / (steps - 1)) * cpca[tgt_i]).astype(np.float32)
+                   for wi in range(steps)]
+            uni = np.full(len(token_ids), 1.0 / len(token_ids))
+            return pts, [uni for _ in pts], None, None
+        z_inits, targets = [], []
+        for wi in range(steps):
+            t = wi / (steps - 1)
+            uu = (u_at(t) % n) if manifold["kind"] == "cyclic" else u_at(t)
+            tgt_full = np.clip(sq_spline(uu), 0.0, None) ** 2
+            tv = np.array([tgt_full[i] for i in valid_pos], dtype=float)
+            tv = tv / max(tv.sum(), 1e-9)
+            z_inits.append(((1 - t) * cpca[src_i] + t * cpca[tgt_i]).astype(np.float32))
+            targets.append(tv)
+        return bundle.model.pullback_optimize(ids_list, layer, position, comps, mean, z_inits, targets,
+                                              valid_ids, token_ids, vocab, lbfgs_iters)
+
     def _pullback_path(self, manifold, beh, layer, prompt, position, src_i, tgt_i, n_waypoints, lbfgs_iters):
         import numpy as np
         import torch
@@ -1281,6 +1316,8 @@ class SteeringService:
         from .hooks import layer_module
 
         bundle = self.ensure_model()
+        if getattr(bundle.model, "is_mlx_runtime", False):  # local Apple-Silicon (MLX) backend
+            return self._pullback_path_mlx(manifold, beh, layer, prompt, position, src_i, tgt_i, n_waypoints, lbfgs_iters)
         dev = bundle.device
         pca = manifold["pca"]
         comps = torch.tensor(np.asarray(pca.components_), dtype=torch.float32, device=dev)

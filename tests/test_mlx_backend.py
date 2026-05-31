@@ -55,8 +55,9 @@ def test_mlx_runtime_branch_delegates_capture_and_guards_sae():
 def test_mlx_generation_and_steering_branches_delegate():
     """generate_text / sequence_perplexity / steered_perplexity / register_steering_hook all
     route to the MLX runtime when present, populating the hook trace. No MLX needed."""
-    from qwen_scope_steering_gui.generation import generate_text, sequence_perplexity, steered_perplexity
-    from qwen_scope_steering_gui.hooks import HookTrace, register_steering_hook
+    from qwen_scope_steering_gui.generation import (generate_text, logits_delta_norm, sequence_perplexity,
+                                                     steered_perplexity)
+    from qwen_scope_steering_gui.hooks import HookTrace, register_replace_hook, register_steering_hook
 
     svc = build_dev_service()
     d = svc.config.d_model
@@ -66,6 +67,7 @@ def test_mlx_generation_and_steering_branches_delegate():
 
         def __init__(self) -> None:
             self.steered = False
+            self.replaced = False
 
         def generate(self, prompt: str, n: int, temp: float) -> str:
             return f"STUB:{prompt}"
@@ -73,17 +75,26 @@ def test_mlx_generation_and_steering_branches_delegate():
         def perplexity(self, prompt: str, cont: str, steer=None) -> float:
             return 4.0 if steer is not None else 9.0
 
+        def logits_delta(self, prompt: str, layer: int, vec, strength: float) -> float:
+            return 7.0
+
         def install_steer(self, layer: int, vec, strength: float, trace=None):
             self.steered = True
             if trace is not None:
                 trace.fired_count += 1
                 trace.hidden_delta_norm += 1.0
+            return _StubHandle()
 
-            class _H:
-                def remove(self_) -> None:
-                    pass
+        def install_replace(self, layer: int, replacement, position: int, trace=None):
+            self.replaced = True
+            if trace is not None:
+                trace.fired_count += 1
+                trace.hidden_delta_norm += 1.0
+            return _StubHandle()
 
-            return _H()
+    class _StubHandle:
+        def remove(self) -> None:
+            pass
 
     stub = StubMlx()
     svc.bundle.model = stub  # type: ignore[union-attr]
@@ -91,11 +102,17 @@ def test_mlx_generation_and_steering_branches_delegate():
     assert generate_text(svc.bundle, "hi", 4, 0.0) == ("STUB:hi", None)
     assert sequence_perplexity(svc.bundle, "p", "c") == 9.0
     assert steered_perplexity(svc.bundle, "p", "c", 1, [0.0] * d, 2.0) == 4.0
+    assert logits_delta_norm(svc.bundle, "p", 1, [0.0] * d, 2.0, "all_positions") == 7.0
 
     trace = HookTrace()
     handle = register_steering_hook(stub, 1, [0.0] * d, 2.0, "all_positions", trace)
     assert stub.steered and trace.hook_fired
     handle.remove()
+
+    rtrace = HookTrace()
+    rhandle = register_replace_hook(stub, 1, [0.0] * d, 0, rtrace)
+    assert stub.replaced and rtrace.hook_fired
+    rhandle.remove()
 
 
 def _mlx_model_cached(repo: str) -> bool:
@@ -143,3 +160,16 @@ def test_mlx_backend_end_to_end_when_available():
     assert insp["tokens"] and len(insp["top_features_by_token"]) == len(insp["tokens"])
     feats = insp["top_features_by_token"][0]["features"]
     assert len(feats) == 4 and all(0 <= f["feature_id"] < 64 for f in feats)
+
+    # Phase 2.5: manifold replace + logit-delta + the pullback gradient optimisation
+    from qwen_scope_steering_gui.generation import manifold_generate
+
+    mdl = svc.ensure_model().model
+    assert mdl.logits_delta("Tell me about your day.", 12, [0.0] * d, 0.0) >= 0.0
+    mg = manifold_generate(svc.ensure_model(), "Tell me about your day.", 12, torch.zeros(d), 1, 4, 0.0)
+    assert {"unsteered_text", "steered_text", "hook_fired"} <= set(mg)
+    comps = (np.random.RandomState(0).randn(2, d) * 0.1).astype("float32")
+    pts, induced, l0, l1 = mdl.pullback_optimize(
+        mdl._encode_ids("The capital of France is"), 12, 2, comps, np.zeros(d, "float32"),
+        [np.zeros(2, "float32")], [np.array([0.6, 0.4])], [10, 20], [10, 20], 100000, 4)
+    assert len(pts) == 1 and pts[0].shape == (2,) and abs(float(np.sum(induced[0])) - 1.0) < 1e-3

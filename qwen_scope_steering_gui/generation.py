@@ -102,6 +102,8 @@ def logits_delta_norm(
     strength: float,
     mode: str,
 ) -> float | None:
+    if getattr(bundle.model, "is_mlx_runtime", False):
+        return bundle.model.logits_delta(prompt, layer, steering_vector, strength)
     tokenizer = bundle.tokenizer
     encoded = tokenizer(prompt, return_tensors="pt")
     input_ids = encoded["input_ids"].to(bundle.device)

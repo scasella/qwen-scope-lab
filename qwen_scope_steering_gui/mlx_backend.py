@@ -71,6 +71,29 @@ class _SteerLayer:
         return self.inner(x, mask=mask, cache=cache) + self.strength * self.vec
 
 
+class _ReplaceLayer:
+    """Overwrites the residual at a single token ``position`` with ``vec`` — the MLX equivalent of
+    ``register_replace_hook`` (manifold steering). Fires only on the prompt forward (when the position
+    is within the sequence); a no-op during cached generation (seq len 1), where the KV cache carries
+    the edit. ``mx`` is captured so the scatter stays framework-local."""
+
+    def __init__(self, mx: Any, inner: Any, vec: Any, position: int) -> None:
+        self._mx = mx
+        self.inner = inner
+        self.vec = vec
+        self.position = int(position)
+        self.is_linear = getattr(inner, "is_linear", False)
+
+    def __call__(self, x: Any, mask: Any = None, cache: Any = None) -> Any:
+        out = self.inner(x, mask=mask, cache=cache)
+        seq = out.shape[1]
+        if 0 <= self.position < seq:
+            mx = self._mx
+            m = (mx.arange(seq) == self.position).astype(out.dtype)[None, :, None]
+            out = out * (1 - m) + self.vec.reshape(1, 1, -1) * m
+        return out
+
+
 class MlxModel:
     """Thin wrapper over an ``mlx-lm`` model exposing the primitives the service needs.
 
@@ -241,6 +264,103 @@ class MlxModel:
             if handle is not None:
                 handle.remove()
         return ppl
+
+    def logits_delta(self, prompt: str, layer: int, vec: Any, strength: float) -> float:
+        """L2 norm of the change in next-token logits from a steer — the bench's logit-effect metric."""
+        mx = self._mx
+        ids = mx.array([self._encode_ids(prompt)])
+        base = self.model(ids)
+        handle = self.install_steer(int(layer), vec, float(strength))
+        try:
+            steered = self.model(ids)
+        finally:
+            handle.remove()
+        return float(mx.linalg.norm((steered - base).astype(mx.float32)))
+
+    def install_replace(self, layer: int, replacement: Any, position: int, trace: Any = None) -> Any:
+        """Swap the decoder block at ``layer`` for a position-replace wrapper (manifold intervention).
+        Returns a handle with ``.remove()`` that restores the original block; populates ``trace``."""
+        v = self._to_mx_vec(replacement)
+        idx = int(layer)
+        if trace is not None:
+            trace.fired_count += 1
+            trace.hidden_delta_norm += float(self._mx.linalg.norm(v))
+        inner = self.trunk.layers[idx]
+        self.trunk.layers[idx] = _ReplaceLayer(self._mx, inner, v, int(position))
+        runtime = self
+
+        class _Handle:
+            def remove(self_) -> None:
+                runtime.trunk.layers[idx] = inner
+
+        return _Handle()
+
+    # ------- Phase 2.5: manifold pullback (gradient through the model) -------
+    def pullback_optimize(self, ids_list, layer, position, comps, mean, z_inits, targets,
+                          valid_ids, token_ids, vocab, iters):
+        """Per-waypoint optimisation of a PCA-space point ``z`` (→ residual ``z@comps+mean`` injected
+        at ``position``) so the model's next-token distribution matches ``target`` — the MLX twin of
+        the torch L-BFGS pullback. Autograd flows through the model (mx.value_and_grad through the
+        _ReplaceLayer injection); Adam stands in for L-BFGS (no L-BFGS in mlx). Returns the same
+        (pca_points, induced, loss_start, loss_end) tuple as the torch ``_pullback_path``."""
+        import numpy as np
+
+        mx = self._mx
+        comps_mx = mx.array(np.asarray(comps, dtype=np.float32))   # [n_pca, d_model]
+        mean_mx = mx.array(np.asarray(mean, dtype=np.float32))     # [d_model]
+        valid_idx = mx.array(np.asarray(valid_ids, dtype=np.int32))
+        ids = mx.array([list(ids_list)])
+        L, pos = int(layer), int(position)
+        inner = self.trunk.layers[L]
+        b1, b2, eps, lr = 0.9, 0.999, 1e-8, 0.05
+        pca_points, induced = [], []
+        loss_start = loss_end = None
+        try:
+            for wi, (z0, tv) in enumerate(zip(z_inits, targets)):
+                z_init = mx.array(np.asarray(z0, dtype=np.float32))
+                tgt = mx.array(np.asarray(tv, dtype=np.float32))
+
+                def loss_fn(z):
+                    rep = z @ comps_mx + mean_mx
+                    self.trunk.layers[L] = _ReplaceLayer(mx, inner, rep, pos)
+                    logits = self.model(ids)[0, -1].astype(mx.float32)
+                    e = mx.exp(logits - logits.max())
+                    denom = mx.maximum(e.sum(), 1e-9)
+                    q = e[valid_idx] / denom
+                    q = q / mx.maximum(q.sum(), 1e-9)
+                    hellinger = 0.5 * ((mx.sqrt(mx.maximum(q, 1e-12)) - mx.sqrt(tgt)) ** 2).sum()
+                    return hellinger + 1e-3 * ((z - z_init) ** 2).sum()
+
+                grad_fn = mx.value_and_grad(loss_fn)
+                z = mx.array(np.asarray(z0, dtype=np.float32))
+                m = mx.zeros_like(z)
+                v = mx.zeros_like(z)
+                first = last = None
+                for t in range(1, int(iters) + 1):
+                    loss, g = grad_fn(z)
+                    last = float(loss)
+                    if first is None:
+                        first = last
+                    m = b1 * m + (1 - b1) * g
+                    v = b2 * v + (1 - b2) * (g * g)
+                    z = z - lr * (m / (1 - b1 ** t)) / (mx.sqrt(v / (1 - b2 ** t)) + eps)
+                    mx.eval(z, loss)
+                if wi == 0:
+                    loss_start = first
+                loss_end = last
+
+                zf = np.asarray(z, dtype=np.float32)
+                pca_points.append(zf)
+                rep = mx.array(zf) @ comps_mx + mean_mx
+                self.trunk.layers[L] = _ReplaceLayer(mx, inner, rep, pos)
+                logits = self.model(ids)[0, -1].astype(mx.float32)
+                e = mx.exp(logits - logits.max())
+                pr = np.asarray(e / mx.maximum(e.sum(), 1e-9))
+                full = np.array([pr[tk] if tk < vocab else 0.0 for tk in token_ids], dtype=float)
+                induced.append(full / full.sum() if full.sum() > 0 else full)
+        finally:
+            self.trunk.layers[L] = inner
+        return pca_points, induced, loss_start, loss_end
 
 
 def build_mlx_service(model_repo: str, *, default_layer: int = 12, d_sae: int = 0,
