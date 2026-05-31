@@ -41,10 +41,12 @@ class SteeringService:
         layer = self.config.default_layer if layer is None else int(layer)
         bundle = self.ensure_model()
         if getattr(bundle.model, "is_mlx_runtime", False):
-            raise NotImplementedError(
-                "inspect_prompt (the SAE-feature path) is Phase 2 for the MLX backend; the "
-                "probe/detection paths (discover_probe, score_probe, jailbreak_screen + /demo, "
-                "monitor_stream) run on MLX today.")
+            if int(self.config.d_sae) <= 0 or str(self.config.sae_id).startswith("mlx://"):
+                raise NotImplementedError(
+                    "the SAE-feature path needs an SAE on the MLX backend — start with "
+                    "--mlx-sae <repo> --mlx-d-sae <N> (the probe/detection + steering paths run without it).")
+            sae = self.sae_loader.load_layer(layer)
+            return bundle.model.inspect(prompt, sae, self.config, layer, top_k)
         sae = self.sae_loader.load_layer(layer)
         return extract_prompt_features(bundle, sae, self.config, prompt, layer, top_k, max_seq_len)
 

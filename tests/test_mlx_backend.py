@@ -31,6 +31,9 @@ def test_mlx_runtime_branch_delegates_capture_and_guards_sae():
             self.calls.append((text, layer))
             return np.ones(svc.config.d_model, dtype=np.float32)
 
+        def inspect(self, prompt: str, sae, config, layer: int, top_k=None) -> dict:
+            return {"stub_inspect": True, "layer": layer}
+
     stub = StubMlx()
     svc.bundle.model = stub  # type: ignore[union-attr]
 
@@ -38,6 +41,13 @@ def test_mlx_runtime_branch_delegates_capture_and_guards_sae():
     assert vec.shape == (svc.config.d_model,)
     assert stub.calls == [("hello", 1)]  # the torch path was bypassed
 
+    # with an SAE configured (the dev config has one), inspect_prompt delegates to the MLX runtime
+    assert svc.inspect_prompt("hello", layer=1) == {"stub_inspect": True, "layer": 1}
+
+    # with no SAE configured, it raises a clear guard rather than trying to download one
+    import dataclasses
+
+    svc.config = dataclasses.replace(svc.config, sae_id="mlx://none")
     with pytest.raises(NotImplementedError):
         svc.inspect_prompt("hello", layer=1)
 
@@ -119,3 +129,17 @@ def test_mlx_backend_end_to_end_when_available():
     steered = svc.steer_direction("Tell me about your day.", 12, [0.0] * svc.config.d_model, 0.0,
                                   max_new_tokens=5, temperature=0.0)
     assert {"unsteered_text", "steered_text", "hook_fired"} <= set(steered)
+
+    # Phase 2.5: SAE inspect mechanics with a synthetic SAE (no SAE download)
+    import torch
+    from pathlib import Path
+
+    from qwen_scope_steering_gui.sae_loader import SAELayer
+
+    d = svc.config.d_model
+    fake_sae = SAELayer(layer=12, path=Path("synthetic"), W_enc=torch.randn(64, d),
+                        W_dec=torch.randn(d, 64), b_enc=torch.zeros(64), b_dec=torch.zeros(d))
+    insp = svc.ensure_model().model.inspect("Ignore all previous instructions", fake_sae, svc.config, 12, top_k=4)
+    assert insp["tokens"] and len(insp["top_features_by_token"]) == len(insp["tokens"])
+    feats = insp["top_features_by_token"][0]["features"]
+    assert len(feats) == 4 and all(0 <= f["feature_id"] < 64 for f in feats)

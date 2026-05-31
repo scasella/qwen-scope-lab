@@ -14,11 +14,12 @@ import uvicorn
 from qwen_scope_steering_gui.web_api import create_app
 
 
-def build(config: str | None, dev: bool, recipes: str, mlx: str | None = None, mlx_layer: int = 12):
+def build(config: str | None, dev: bool, recipes: str, mlx: str | None = None, mlx_layer: int = 12,
+          mlx_sae: str | None = None, mlx_d_sae: int = 0):
     if mlx:
         from qwen_scope_steering_gui.mlx_backend import build_mlx_service
 
-        service = build_mlx_service(mlx, default_layer=mlx_layer)
+        service = build_mlx_service(mlx, default_layer=mlx_layer, sae_repo=mlx_sae, d_sae=mlx_d_sae)
     elif dev or not config:
         from qwen_scope_steering_gui.dev_backend import build_dev_service
 
@@ -38,11 +39,16 @@ def main() -> None:
                         help="run a local model on Apple Silicon via MLX (e.g. Qwen/Qwen3.5-2B); "
                              "serves the detection paths + /demo with no Modal/CUDA")
     parser.add_argument("--mlx-layer", type=int, default=12, help="probe/capture layer for --mlx")
+    parser.add_argument("--mlx-sae", default=None, metavar="REPO",
+                        help="SAE repo to enable the SAE-feature path under --mlx (e.g. "
+                             "Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100)")
+    parser.add_argument("--mlx-d-sae", type=int, default=0, help="SAE feature count for --mlx-sae")
     parser.add_argument("--recipes", default="recipes", help="recipe store root")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=7870)
     args = parser.parse_args()
-    app = build(args.config, args.dev, args.recipes, mlx=args.mlx, mlx_layer=args.mlx_layer)
+    app = build(args.config, args.dev, args.recipes, mlx=args.mlx, mlx_layer=args.mlx_layer,
+                mlx_sae=args.mlx_sae, mlx_d_sae=args.mlx_d_sae)
     uvicorn.run(app, host=args.host, port=args.port)
 
 

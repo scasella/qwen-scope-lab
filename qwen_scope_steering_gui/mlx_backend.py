@@ -94,9 +94,13 @@ class MlxModel:
         self.default_layer = int(default_layer)
 
     # ------- Phase 1: activation capture (the proven mechanic) -------
-    def _residual_at(self, text: str, layer: int, *, steer: Any = None, strength: float = 0.0):
-        """Run a manual forward and return the residual stream after block ``layer``
-        (mean-pooled over tokens). ``steer`` adds a vector at that block (Phase 2 path)."""
+    def _encode_ids(self, text: str) -> list:
+        ids = list(self.tokenizer.encode(text))[:MAX_SEQ]
+        return ids or [getattr(self.tokenizer, "eos_token_id", 0) or 0]
+
+    def _forward_capture(self, ids_list: list, layer: int, *, steer: Any = None, strength: float = 0.0):
+        """Manual forward returning the per-token residual after block ``layer`` ([1, seq, d_model]).
+        Mirrors the model's own forward, including hybrid (qwen3_5) full/linear-attention mask routing."""
         mx = self._mx
         from mlx_lm.models.base import create_attention_mask
         try:
@@ -104,13 +108,8 @@ class MlxModel:
         except Exception:  # noqa: BLE001 — older mlx-lm without linear-attention support
             create_ssm_mask = None
 
-        ids_list = list(self.tokenizer.encode(text))[:MAX_SEQ]
-        if not ids_list:
-            ids_list = [getattr(self.tokenizer, "eos_token_id", 0) or 0]
         ids = mx.array([ids_list])
         h = self.trunk.embed_tokens(ids)
-        # hybrid archs (qwen3_5) mix full-attention and linear-attention (SSM) blocks, which need
-        # different masks; mirror the model's own forward and pick per layer.
         fa_mask = create_attention_mask(h)
         hybrid = any(getattr(block, "is_linear", False) for block in self.trunk.layers)
         ssm_mask = create_ssm_mask(h) if (hybrid and create_ssm_mask is not None) else None
@@ -122,16 +121,59 @@ class MlxModel:
                 captured = h
                 if steer is not None:
                     h = h + strength * steer
-        if captured is None:  # layer past the stack — fall back to the final hidden state
-            captured = h
-        pooled = captured.mean(axis=1)[0]
-        mx.eval(pooled)
+        return captured if captured is not None else h  # [1, seq, d_model]
+
+    def _residual_at(self, text: str, layer: int, *, steer: Any = None, strength: float = 0.0):
+        cap = self._forward_capture(self._encode_ids(text), layer, steer=steer, strength=strength)
+        pooled = cap.mean(axis=1)[0]
+        self._mx.eval(pooled)
         return pooled
 
     def pooled_residual(self, text: str, layer: int) -> np.ndarray:
         """[d_model] mean-pooled residual after block ``layer`` — the input a linear probe
         reads. Matches ``service._pooled_residual``'s contract (numpy float32 vector)."""
         return _to_numpy(self._residual_at(text, int(layer)))
+
+    # ------- Phase 2.5: SAE-feature inspection (per-token top features) -------
+    def inspect(self, prompt: str, sae: Any, config: Any, layer: int, top_k: int | None = None) -> dict:
+        """Per-token SAE feature map — the MLX twin of ``activations.extract_prompt_features``.
+        ``sae`` is the torch SAELayer the existing loader downloaded/validated; its encoder weights
+        are converted to MLX once and cached. Encode = ``residual @ W_enc.T + b_enc`` then top-k."""
+        import torch  # the SAE tensors are torch; convert the encoder once
+
+        mx = self._mx
+        layer = int(layer)
+        k = int(top_k or config.top_k)
+        cache = getattr(self, "_sae_cache", None)
+        if cache is None or cache.get("key") != (layer, id(sae)):
+            w_enc = mx.array(np.asarray(sae.W_enc.detach().cpu().to(torch.float32).numpy()))  # [d_sae, d_model]
+            b_enc = mx.array(np.asarray(sae.b_enc.detach().cpu().to(torch.float32).numpy()))  # [d_sae]
+            cache = {"key": (layer, id(sae)), "w_enc_t": w_enc.T, "b_enc": b_enc}
+            self._sae_cache = cache
+
+        ids_list = self._encode_ids(prompt)
+        resid = self._forward_capture(ids_list, layer)[0]                 # [seq, d_model]
+        pre = resid @ cache["w_enc_t"] + cache["b_enc"]                   # [seq, d_sae]
+        k = min(k, int(pre.shape[-1]))
+        order = mx.argsort(-pre, axis=-1)[:, :k]                          # top-k indices, descending
+        vals = mx.take_along_axis(pre, order, axis=-1)
+        mx.eval(order, vals)
+        idx_l, vals_l = order.tolist(), vals.tolist()
+        try:
+            tokens = self.tokenizer.convert_ids_to_tokens(ids_list)
+        except Exception:  # noqa: BLE001 — wrapper without convert_ids_to_tokens
+            tokens = [self.tokenizer.decode([i]) for i in ids_list]
+
+        rows = []
+        for ti, token_text in enumerate(tokens):
+            feats = [{"feature_id": int(f), "activation": float(v)}
+                     for v, f in zip(vals_l[ti], idx_l[ti])]
+            rows.append({"token_index": ti, "token_text": token_text, "features": feats})
+        return {
+            "prompt": prompt, "layer": layer, "tokens": tokens, "top_features_by_token": rows,
+            "metadata": {"model_id": config.model_id, "sae_id": config.sae_id, "top_k": k,
+                         "d_model": config.d_model, "d_sae": config.d_sae},
+        }
 
     # ------- Phase 2: generation, steering injection, perplexity -------
     def _to_mx_vec(self, vec: Any):
