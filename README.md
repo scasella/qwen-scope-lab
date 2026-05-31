@@ -86,6 +86,10 @@ The base install is deliberately slim (torch + the web layer); the heavy and clo
 - [`docs/AGENT_RESEARCH.md`](docs/AGENT_RESEARCH.md) — driving the lab programmatically: the job API, the experiment log, and the honesty contract.
 - [`RUNBOOK.md`](RUNBOOK.md) — operational reference: the CLI scripts, recipe commands, and Modal/GPU runbook.
 
+## Acknowledgements
+
+The **Manifold** mode builds on [Goodfire](https://goodfire.ai)'s research on concept-manifold geometry and manifold steering — *"Do Sparse Autoencoders Capture Concept Manifolds?"* (arXiv 2604.28119) and *"Manifold Steering Reveals the Shared Geometry of Representation and Behavior"* (arXiv 2605.05115). This lab replicates and stress-tests their results on Qwen; see [`docs/MANIFOLD.md`](docs/MANIFOLD.md). Built over the [Qwen Scope](https://huggingface.co/Qwen) SAE release.
+
 ## Contributing & License
 
 Contributions welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md). The house rules: keep new capabilities testable GPU-free on the dev backend, build in an honest control from the start, and add tests. Licensed under the Apache License 2.0 — see [`LICENSE`](LICENSE).

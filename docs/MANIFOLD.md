@@ -11,7 +11,7 @@ the dead ends. This is the deep-dive companion to the task-oriented `USER_GUIDE.
 
 ## 1. Motivation
 
-Two papers frame this work:
+Two papers from **[Goodfire](https://goodfire.ai)** frame this work — their concept-manifold geometry and manifold-steering research, which the Manifold mode builds on:
 
 - **arXiv 2604.28119 — "Do Sparse Autoencoders Capture Concept Manifolds?"** Concepts live on
   low-dimensional manifolds; an SAE *tiles* a manifold with many features rather than encoding
@@ -180,5 +180,9 @@ The dead-end probes that produced §2's negatives were removed from the public t
 preserved in git history.
 
 ## 9. References
-- arXiv 2604.28119 — Do Sparse Autoencoders Capture Concept Manifolds?
-- arXiv 2605.05115 — Manifold Steering Reveals the Shared Geometry of Representation and Behavior.
+
+The concept-manifold geometry and manifold-steering research below is **[Goodfire](https://goodfire.ai)'s**;
+the Manifold mode builds on it and replicates/tests it on Qwen.
+
+- Goodfire — "Do Sparse Autoencoders Capture Concept Manifolds?" (arXiv 2604.28119)
+- Goodfire — "Manifold Steering Reveals the Shared Geometry of Representation and Behavior" (arXiv 2605.05115)
