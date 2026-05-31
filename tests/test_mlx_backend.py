@@ -11,7 +11,7 @@ import os
 import numpy as np
 import pytest
 
-from qwen_scope_steering_gui.dev_backend import build_dev_service
+from qwen_scope_lab_bench.dev_backend import build_dev_service
 
 _CACHED_MLX_MODEL = "mlx-community/Qwen2.5-0.5B-Instruct-4bit"
 
@@ -55,9 +55,9 @@ def test_mlx_runtime_branch_delegates_capture_and_guards_sae():
 def test_mlx_generation_and_steering_branches_delegate():
     """generate_text / sequence_perplexity / steered_perplexity / register_steering_hook all
     route to the MLX runtime when present, populating the hook trace. No MLX needed."""
-    from qwen_scope_steering_gui.generation import (generate_text, logits_delta_norm, sequence_perplexity,
+    from qwen_scope_lab_bench.generation import (generate_text, logits_delta_norm, sequence_perplexity,
                                                      steered_perplexity)
-    from qwen_scope_steering_gui.hooks import HookTrace, register_replace_hook, register_steering_hook
+    from qwen_scope_lab_bench.hooks import HookTrace, register_replace_hook, register_steering_hook
 
     svc = build_dev_service()
     d = svc.config.d_model
@@ -128,7 +128,7 @@ def test_mlx_backend_end_to_end_when_available():
     if not _mlx_model_cached(_CACHED_MLX_MODEL):
         pytest.skip(f"{_CACHED_MLX_MODEL} not cached; skipping to avoid a download")
 
-    from qwen_scope_steering_gui.mlx_backend import build_mlx_service
+    from qwen_scope_lab_bench.mlx_backend import build_mlx_service
 
     svc = build_mlx_service(_CACHED_MLX_MODEL, default_layer=12)
     assert svc.config.d_model > 0 and svc.config.num_layers >= 13
@@ -139,7 +139,7 @@ def test_mlx_backend_end_to_end_when_available():
     assert 0.0 <= r["confidence"] <= 1.0
 
     # Phase 2: generation + CAA steering run on MLX too
-    from qwen_scope_steering_gui.generation import generate_text
+    from qwen_scope_lab_bench.generation import generate_text
 
     txt, _ = generate_text(svc.ensure_model(), "The capital of France is", 5, 0.0)
     assert isinstance(txt, str)
@@ -151,7 +151,7 @@ def test_mlx_backend_end_to_end_when_available():
     import torch
     from pathlib import Path
 
-    from qwen_scope_steering_gui.sae_loader import SAELayer
+    from qwen_scope_lab_bench.sae_loader import SAELayer
 
     d = svc.config.d_model
     fake_sae = SAELayer(layer=12, path=Path("synthetic"), W_enc=torch.randn(64, d),
@@ -162,7 +162,7 @@ def test_mlx_backend_end_to_end_when_available():
     assert len(feats) == 4 and all(0 <= f["feature_id"] < 64 for f in feats)
 
     # Phase 2.5: manifold replace + logit-delta + the pullback gradient optimisation
-    from qwen_scope_steering_gui.generation import manifold_generate
+    from qwen_scope_lab_bench.generation import manifold_generate
 
     mdl = svc.ensure_model().model
     assert mdl.logits_delta("Tell me about your day.", 12, [0.0] * d, 0.0) >= 0.0

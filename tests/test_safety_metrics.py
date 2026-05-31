@@ -1,4 +1,4 @@
-from qwen_scope_steering_gui import safety_metrics as S
+from qwen_scope_lab_bench import safety_metrics as S
 
 
 def test_is_refusal_detects_markers():

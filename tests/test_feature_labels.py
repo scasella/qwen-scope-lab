@@ -1,4 +1,4 @@
-from qwen_scope_steering_gui.feature_labels import label_feature
+from qwen_scope_lab_bench.feature_labels import label_feature
 
 
 def test_label_feature_disabled_without_api_keys(monkeypatch):

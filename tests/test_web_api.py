@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
-from qwen_scope_steering_gui.dev_backend import build_dev_service
-from qwen_scope_steering_gui.web_api import create_app
+from qwen_scope_lab_bench.dev_backend import build_dev_service
+from qwen_scope_lab_bench.web_api import create_app
 
 
 def _client() -> TestClient:
@@ -457,7 +457,7 @@ def test_control_loop_as_job_logs_decision(tmp_path):
 # ---- monitor robustness: does the detector survive a paraphrase shift? ----
 
 def test_monitor_robustness_reports_auc_drop_and_verdict():
-    from qwen_scope_steering_gui.behavior_sets import BEHAVIORS
+    from qwen_scope_lab_bench.behavior_sets import BEHAVIORS
     pos, neg = BEHAVIORS["sycophancy"]["clean"]
     spos, sneg = BEHAVIORS["sycophancy"]["shift"]
     r = _client().post("/api/monitor/robustness", json={"behavior": "sycophancy",
@@ -566,7 +566,7 @@ def test_caa_vs_sae_compares_both_arms(tmp_path):
 
 def test_collateral_accepts_direction(tmp_path):
     # the generalized collateral path (direction instead of feature_id)
-    from qwen_scope_steering_gui.dev_backend import build_dev_service as _dev
+    from qwen_scope_lab_bench.dev_backend import build_dev_service as _dev
     s = _dev()
     direction = [0.0] * 64
     direction[0] = 1.0
@@ -591,7 +591,7 @@ def test_method_atlas_maps_detection_and_control(tmp_path):
 # ---- emotion -> safety coupling: does inducing an emotion move the model's safety behavior? ----
 
 def test_emotion_coupling_measures_both_arms_and_verdict(tmp_path):
-    from qwen_scope_steering_gui.emotion_sets import EMOTIONS
+    from qwen_scope_lab_bench.emotion_sets import EMOTIONS
     pos, neg = EMOTIONS["affection"]
     c = _probe_client(tmp_path)
     r = c.post("/api/emotion_coupling", json={"emotion": "affection", "positive_examples": "\n".join(pos),

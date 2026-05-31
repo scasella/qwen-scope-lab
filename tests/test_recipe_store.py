@@ -1,7 +1,7 @@
 import pytest
 
-from qwen_scope_steering_gui.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
-from qwen_scope_steering_gui.recipe_store import RecipeStore
+from qwen_scope_lab_bench.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
+from qwen_scope_lab_bench.recipe_store import RecipeStore
 
 
 def make_recipe():

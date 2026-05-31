@@ -1,4 +1,4 @@
-from qwen_scope_steering_gui import behavior_sets as BS
+from qwen_scope_lab_bench import behavior_sets as BS
 
 
 def test_sycophancy_has_clean_and_shift_balanced_pairs():

@@ -11,21 +11,21 @@ import argparse
 
 import uvicorn
 
-from qwen_scope_steering_gui.web_api import create_app
+from qwen_scope_lab_bench.web_api import create_app
 
 
 def build(config: str | None, dev: bool, recipes: str, mlx: str | None = None, mlx_layer: int = 12,
           mlx_sae: str | None = None, mlx_d_sae: int = 0):
     if mlx:
-        from qwen_scope_steering_gui.mlx_backend import build_mlx_service
+        from qwen_scope_lab_bench.mlx_backend import build_mlx_service
 
         service = build_mlx_service(mlx, default_layer=mlx_layer, sae_repo=mlx_sae, d_sae=mlx_d_sae)
     elif dev or not config:
-        from qwen_scope_steering_gui.dev_backend import build_dev_service
+        from qwen_scope_lab_bench.dev_backend import build_dev_service
 
         service = build_dev_service()
     else:
-        from qwen_scope_steering_gui.service import SteeringService
+        from qwen_scope_lab_bench.service import SteeringService
 
         service = SteeringService.from_config_path(config)
     return create_app(service, recipes_root=recipes, experiments_root="experiments")

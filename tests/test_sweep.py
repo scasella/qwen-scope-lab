@@ -1,6 +1,6 @@
-from qwen_scope_steering_gui.benchmark import EchoGenerationBackend
-from qwen_scope_steering_gui.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
-from qwen_scope_steering_gui.sweep import run_strength_sweep, select_best_setting, strength_grid
+from qwen_scope_lab_bench.benchmark import EchoGenerationBackend
+from qwen_scope_lab_bench.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
+from qwen_scope_lab_bench.sweep import run_strength_sweep, select_best_setting, strength_grid
 
 
 def make_recipe():

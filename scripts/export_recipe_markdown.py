@@ -6,8 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from qwen_scope_steering_gui.recipe_schema import FeatureRecipe
-from qwen_scope_steering_gui.recipe_store import RecipeStore
+from qwen_scope_lab_bench.recipe_schema import FeatureRecipe
+from qwen_scope_lab_bench.recipe_store import RecipeStore
 
 
 def main() -> None:

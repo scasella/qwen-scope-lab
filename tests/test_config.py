@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from qwen_scope_steering_gui.config import load_config
+from qwen_scope_lab_bench.config import load_config
 
 
 def test_all_shipped_configs_parse():

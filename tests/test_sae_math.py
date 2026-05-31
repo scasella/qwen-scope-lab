@@ -1,6 +1,6 @@
 import torch
 
-from qwen_scope_steering_gui.sae_math import compute_pre_activations, topk_features
+from qwen_scope_lab_bench.sae_math import compute_pre_activations, topk_features
 
 
 def test_topk_activations_expected_indices_and_values():

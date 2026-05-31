@@ -1,6 +1,6 @@
 import logging
 
-from qwen_scope_steering_gui.safety import redact_mapping, redact_text
+from qwen_scope_lab_bench.safety import redact_mapping, redact_text
 
 
 def test_secret_values_redacted(monkeypatch, caplog):

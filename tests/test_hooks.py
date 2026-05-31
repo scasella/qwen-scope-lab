@@ -1,6 +1,6 @@
 import torch
 
-from qwen_scope_steering_gui.hooks import HookTrace, register_capture_hook, register_steering_hook
+from qwen_scope_lab_bench.hooks import HookTrace, register_capture_hook, register_steering_hook
 
 
 class TinyInner(torch.nn.Module):

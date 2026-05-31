@@ -45,7 +45,7 @@ pip install -e ".[dev]"`. Full setup + credentials are in `README.md`. Then pick
 - **Real model (Modal, GPU):** `modal serve modal_app.py`, then open the **`web_gui`** URL it
   prints — the real Qwen3.5-2B (default; set `QWEN_GUI_TARGET=27b-a100` for 27B — the 27B is
   Modal-only). The first action triggers a cold model load (a minute or two). **Stop the GPU when
-  done:** `modal app stop qwen-scope-steering-gui`. (Needs Modal auth + `HF_TOKEN` — see `RUNBOOK.md`.)
+  done:** `modal app stop qwen-scope-lab-bench`. (Needs Modal auth + `HF_TOKEN` — see `RUNBOOK.md`.)
 
 > **Read this once — the dev caveat.** On the dev server the model is a *tiny random* network. All
 > the mechanics work (features fire, hooks fire, panes/gauges/verdicts populate), but generated

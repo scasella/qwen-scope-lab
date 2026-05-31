@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 import torch
 
-from qwen_scope_steering_gui.config import load_config
-from qwen_scope_steering_gui.sae_loader import LazySAELoader, layer_filename, load_sae_file, validate_sae_state
+from qwen_scope_lab_bench.config import load_config
+from qwen_scope_lab_bench.sae_loader import LazySAELoader, layer_filename, load_sae_file, validate_sae_state
 
 
 def fake_state(d_model=4, d_sae=6):
@@ -60,7 +60,7 @@ def test_download_error_mentions_token_when_missing(monkeypatch):
         response.status_code = 401
         raise HfHubHTTPError("401", response=response)
 
-    monkeypatch.setattr("qwen_scope_steering_gui.sae_loader.hf_hub_download", fail_download)
+    monkeypatch.setattr("qwen_scope_lab_bench.sae_loader.hf_hub_download", fail_download)
     monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.delenv("HUGGINGFACE_HUB_TOKEN", raising=False)
     with pytest.raises(RuntimeError, match="HF_TOKEN"):

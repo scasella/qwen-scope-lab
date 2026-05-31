@@ -1,6 +1,6 @@
 import pytest
 
-from qwen_scope_steering_gui import monitor as M
+from qwen_scope_lab_bench import monitor as M
 
 
 def test_activation_map_takes_max_across_tokens():

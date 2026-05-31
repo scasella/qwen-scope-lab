@@ -1,7 +1,7 @@
 import pytest
 
-from qwen_scope_steering_gui.probe_schema import LinearProbe
-from qwen_scope_steering_gui.recipe_schema import ModelMetadata, RecipeValidationError, TargetBehavior
+from qwen_scope_lab_bench.probe_schema import LinearProbe
+from qwen_scope_lab_bench.recipe_schema import ModelMetadata, RecipeValidationError, TargetBehavior
 
 
 def _behavior():

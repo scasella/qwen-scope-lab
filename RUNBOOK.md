@@ -27,7 +27,7 @@ Never print `.env`, serialize secrets into recipe cards, or commit credentials.
 
 ```bash
 pytest
-python -m compileall -q qwen_scope_steering_gui app.py modal_app.py scripts
+python -m compileall -q qwen_scope_lab_bench app.py modal_app.py scripts
 ```
 
 ## Local GUI
@@ -40,7 +40,7 @@ Open the printed Gradio URL. The 2B model loads lazily on first model-backed act
 
 ## Lab Bench Web UI
 
-The Lab Bench is a richer single-page workbench (`web/`) served over FastAPI (`qwen_scope_steering_gui/web_api.py`) wrapping the same `SteeringService`.
+The Lab Bench is a richer single-page workbench (`web/`) served over FastAPI (`qwen_scope_lab_bench/web_api.py`) wrapping the same `SteeringService`.
 
 ```bash
 # GPU-free dev backend (tiny CPU model, no downloads) -- verify the UI/wiring locally:
@@ -57,7 +57,7 @@ python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml
 python serve_web.py --config configs/qwen35_27b_l0_100.yaml
 ```
 
-Defaults to `http://127.0.0.1:7870`; override with `--host/--port`. JSON API under `/api/*`, schema at `/api/docs`. The `--dev` backend (`qwen_scope_steering_gui/dev_backend.py`) runs the real activation/contrast/steering code paths against a fake CPU model, so its generations are intentionally toy but the wiring is real. The `--mlx` backend (`qwen_scope_steering_gui/mlx_backend.py`) runs the **real** 2B + SAE on-device on Apple Silicon — bf16 (not 4-bit) for fidelity; results replicate the Modal/CUDA findings qualitatively, not bit-for-bit. Web-API tests: `pytest tests/test_web_api.py`; MLX tests: `pytest tests/test_mlx_backend.py` (the real-model layer skips unless `mlx_lm` + a cached model are present).
+Defaults to `http://127.0.0.1:7870`; override with `--host/--port`. JSON API under `/api/*`, schema at `/api/docs`. The `--dev` backend (`qwen_scope_lab_bench/dev_backend.py`) runs the real activation/contrast/steering code paths against a fake CPU model, so its generations are intentionally toy but the wiring is real. The `--mlx` backend (`qwen_scope_lab_bench/mlx_backend.py`) runs the **real** 2B + SAE on-device on Apple Silicon — bf16 (not 4-bit) for fidelity; results replicate the Modal/CUDA findings qualitatively, not bit-for-bit. Web-API tests: `pytest tests/test_web_api.py`; MLX tests: `pytest tests/test_mlx_backend.py` (the real-model layer skips unless `mlx_lm` + a cached model are present).
 
 ## Core Scripts
 
@@ -141,7 +141,7 @@ GPU choices:
 Each smoke is intentionally short, with tiny prompts, low `max_new_tokens`, and one active SAE layer. Stop unexpected long-running apps with the Modal dashboard or:
 
 ```bash
-modal app stop qwen-scope-steering-gui
+modal app stop qwen-scope-lab-bench
 ```
 
 ## Modal Commands
@@ -197,7 +197,7 @@ Aliases are accepted: `2b`, `l4`, `dev`, `27b`, `a100`, `a100-80gb`, and `h100`.
 Closing the browser tab does not stop the Modal app. Stop the server with `Ctrl-C` in the `modal serve` terminal or:
 
 ```bash
-modal app stop qwen-scope-steering-gui
+modal app stop qwen-scope-lab-bench
 ```
 
 The GUI function intentionally uses a 300 second `scaledown_window` so the model stays loaded while moving between tabs during an active session. This means the selected GPU can remain allocated for up to about five idle minutes after the last request unless you stop the app explicitly.

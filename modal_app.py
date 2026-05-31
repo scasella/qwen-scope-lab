@@ -8,7 +8,7 @@ from pathlib import Path
 import modal
 
 
-app = modal.App("qwen-scope-steering-gui")
+app = modal.App("qwen-scope-lab-bench")
 
 hf_cache = modal.Volume.from_name("qwen-scope-hf-cache", create_if_missing=True)
 modal_secret = modal.Secret.from_dotenv(__file__) if Path(".env").exists() else modal.Secret.from_dict({})
@@ -101,7 +101,7 @@ image = (
         "transformers",
         "uvicorn",
     )
-    .add_local_dir("qwen_scope_steering_gui", remote_path="/root/qwen_scope_steering_gui")
+    .add_local_dir("qwen_scope_lab_bench", remote_path="/root/qwen_scope_lab_bench")
     .add_local_dir("configs", remote_path="/root/configs")
     .add_local_dir("data", remote_path="/root/data")
     .add_local_dir("scripts", remote_path="/root/scripts")
@@ -112,7 +112,7 @@ image = (
 
 
 def _smoke(config_path: str, layer: int, max_new_tokens: int) -> dict:
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     prompt = "The capital of France is"
@@ -184,8 +184,8 @@ def _web_parity(config_path: str, layer: int, max_new_tokens: int) -> dict:
     """
     from fastapi.testclient import TestClient
 
-    from qwen_scope_steering_gui.service import SteeringService
-    from qwen_scope_steering_gui.web_api import create_app
+    from qwen_scope_lab_bench.service import SteeringService
+    from qwen_scope_lab_bench.web_api import create_app
 
     service = SteeringService.from_config_path(config_path)
     client = TestClient(create_app(service, recipes_root="/root/recipes"))
@@ -332,8 +332,8 @@ def _residual_manifold_sweep(config_path: str, layers: list[int], k_pca: int = 8
 
     warnings.filterwarnings("ignore")
 
-    from qwen_scope_steering_gui.hooks import register_capture_hook
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.hooks import register_capture_hook
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     bundle = service.ensure_model()
@@ -433,7 +433,7 @@ def _manifold_steer_demo(config_path: str, layer: int, concept: str, source: str
     printing the behavioral trajectory. The honest, geometry-grounded steering feature."""
     import json as _json
 
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     fit = service.manifold_fit(concept, layer)
@@ -490,7 +490,7 @@ def _manifold_vs_linear(config_path: str, layer: int, concept: str, source: str,
     manifold stays natural / lower perplexity; linear cuts off-manifold)."""
     import json as _json
 
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     cmp = service.manifold_compare(concept, target, layer=layer, source=source, n_waypoints=7, max_new_tokens=24)
@@ -524,9 +524,9 @@ def _manifold_atlas(config_path: str, layers: list[int]) -> dict:
 
     warnings.filterwarnings("ignore")
 
-    from qwen_scope_steering_gui.concept_presets import ATLAS_CONCEPTS
-    from qwen_scope_steering_gui.hooks import register_capture_hook
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.concept_presets import ATLAS_CONCEPTS
+    from qwen_scope_lab_bench.hooks import register_capture_hook
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     bundle = service.ensure_model()
@@ -602,7 +602,7 @@ def _manifold_naturalness_probe(config_path: str, specs: list[tuple]) -> dict:
 
     import numpy as np
 
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
 
@@ -677,7 +677,7 @@ def _manifold_pullback_probe(config_path: str, specs: list[tuple]) -> dict:
     (recovered_r ≫ linear's)? + pullback LBFGS loss start→end (autograd sanity)."""
     import json as _json
 
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     rows = []
@@ -762,7 +762,7 @@ def _monitor_demo(config_path: str, layer: int = 12) -> dict:
     behavior and report held-out AUC / F1 + the random-feature control + verdict."""
     import json as _json
 
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     rows = []
@@ -806,8 +806,8 @@ def _control_demo(config_path: str, layer: int = 12, behavior: str = "sycophancy
     strength removes it WITHOUT collateral damage (the Rogue-Scalpel check). One model load."""
     import json as _json
 
-    from qwen_scope_steering_gui import behavior_sets as BS
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench import behavior_sets as BS
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     pos, neg = BS.BEHAVIORS[behavior]["clean"]
@@ -875,8 +875,8 @@ def _control_scan(config_path: str, layer: int = 12, behaviors=("sycophancy", "s
     clean cases, not just flags dirty ones. One model load."""
     import json as _json
 
-    from qwen_scope_steering_gui import behavior_sets as BS
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench import behavior_sets as BS
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer, "behaviors": {}}
@@ -949,8 +949,8 @@ def _probe_demo(config_path: str, layer: int = 12, behaviors=("sycophancy", "sen
     sends the eval text to OpenRouter (external call from the container) — keep False unless approved."""
     import json as _json
 
-    from qwen_scope_steering_gui import behavior_sets as BS
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench import behavior_sets as BS
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer,
@@ -1014,8 +1014,8 @@ def _caa_demo(config_path: str, layer: int = 12, behaviors=("sycophancy", "senti
     direction suppress with less collateral — and ever land VALIDATED where the SAE feature can't?"""
     import json as _json
 
-    from qwen_scope_steering_gui import behavior_sets as BS
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench import behavior_sets as BS
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer, "behaviors": {}}
@@ -1055,8 +1055,8 @@ def _atlas_demo(config_path: str, layer: int = 12, behaviors=("sycophancy", "sen
     assembled from the separate probe_monitor + caa_vs_sae runs."""
     import json as _json
 
-    from qwen_scope_steering_gui import behavior_sets as BS
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench import behavior_sets as BS
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer, "behaviors": {}}
@@ -1093,7 +1093,7 @@ def _extrapolate_demo(config_path: str, concept: str = "size") -> dict:
     training range, or break? Builds on the validated manifold-steering positives."""
     import json as _json
 
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     out: dict = {"model_id": service.config.model_id, "concept": concept, "runs": []}
@@ -1134,9 +1134,9 @@ def _emotion_safety_demo(config_path: str, layer: int = 12, emotions=("affection
     is trusted — a broken or truncating judge aborts the run rather than faking a result."""
     import json as _json
 
-    from qwen_scope_steering_gui import emotion_sets as ES
-    from qwen_scope_steering_gui import judge as _judge
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench import emotion_sets as ES
+    from qwen_scope_lab_bench import judge as _judge
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer,
@@ -1245,8 +1245,8 @@ def _safety_geometry_demo(config_path: str, layer: int = 12, strength: float = 6
     preflighted, since string-matching collateral manufactured a false +50% in the emotion arc."""
     import json as _json
 
-    from qwen_scope_steering_gui import judge as _judge
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench import judge as _judge
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer,
@@ -1331,8 +1331,8 @@ def _jailbreak_detection_demo(config_path: str, layer: int = 12, use_judge: bool
     benign prompt low, or the 'matches a paid judge' comparison is not trusted."""
     import json as _json
 
-    from qwen_scope_steering_gui import judge as _judge
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench import judge as _judge
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     out: dict = {"config": config_path, "model_id": service.config.model_id, "layer": layer,
@@ -1471,10 +1471,10 @@ def manifold_atlas_27b() -> dict:
 def _bench_smoke(config_path: str, layer: int, max_new_tokens: int, prompt_count: int, recipe_name: str) -> dict:
     from pathlib import Path
 
-    from qwen_scope_steering_gui.benchmark import ServiceGenerationBackend, attach_benchmark_to_recipe, run_benchmark, save_benchmark_result
-    from qwen_scope_steering_gui.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
-    from qwen_scope_steering_gui.recipe_store import RecipeStore
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.benchmark import ServiceGenerationBackend, attach_benchmark_to_recipe, run_benchmark, save_benchmark_result
+    from qwen_scope_lab_bench.recipe_schema import FeatureRecipe, Intervention, ModelMetadata, TargetBehavior
+    from qwen_scope_lab_bench.recipe_store import RecipeStore
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     inspection = service.inspect_prompt("The capital of France is", layer=layer, top_k=3, max_seq_len=32)
@@ -1546,9 +1546,9 @@ def _bench_smoke(config_path: str, layer: int, max_new_tokens: int, prompt_count
 def _autopilot_smoke(config_path: str, layer: int, max_new_tokens: int, candidate_count: int, recipe_dir_name: str) -> dict:
     from pathlib import Path
 
-    from qwen_scope_steering_gui.autopilot import run_autopilot
-    from qwen_scope_steering_gui.benchmark import ServiceGenerationBackend
-    from qwen_scope_steering_gui.service import SteeringService
+    from qwen_scope_lab_bench.autopilot import run_autopilot
+    from qwen_scope_lab_bench.benchmark import ServiceGenerationBackend
+    from qwen_scope_lab_bench.service import SteeringService
 
     service = SteeringService.from_config_path(config_path)
     result = run_autopilot(
@@ -1668,8 +1668,8 @@ def _mount_gradio(config_path: str):
 
 
 def _mount_web(config_path: str):
-    from qwen_scope_steering_gui.service import SteeringService
-    from qwen_scope_steering_gui.web_api import create_app
+    from qwen_scope_lab_bench.service import SteeringService
+    from qwen_scope_lab_bench.web_api import create_app
 
     service = SteeringService.from_config_path(config_path)
     return create_app(service, recipes_root="/root/recipes", experiments_root="/root/experiments",

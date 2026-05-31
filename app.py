@@ -8,12 +8,12 @@ from typing import Any
 import gradio as gr
 import pandas as pd
 
-from qwen_scope_steering_gui.autopilot import run_autopilot
-from qwen_scope_steering_gui.benchmark import ServiceGenerationBackend, attach_benchmark_to_recipe, recipe_from_manual, run_benchmark, save_benchmark_result
-from qwen_scope_steering_gui.prompt_sets import parse_prompt_text
-from qwen_scope_steering_gui.recipe_schema import FeatureRecipe
-from qwen_scope_steering_gui.recipe_store import RecipeStore
-from qwen_scope_steering_gui.service import SteeringService
+from qwen_scope_lab_bench.autopilot import run_autopilot
+from qwen_scope_lab_bench.benchmark import ServiceGenerationBackend, attach_benchmark_to_recipe, recipe_from_manual, run_benchmark, save_benchmark_result
+from qwen_scope_lab_bench.prompt_sets import parse_prompt_text
+from qwen_scope_lab_bench.recipe_schema import FeatureRecipe
+from qwen_scope_lab_bench.recipe_store import RecipeStore
+from qwen_scope_lab_bench.service import SteeringService
 
 
 def _rows_to_frame(rows: list[dict[str, Any]], columns: list[str]) -> pd.DataFrame:

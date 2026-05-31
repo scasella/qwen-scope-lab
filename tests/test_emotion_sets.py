@@ -1,4 +1,4 @@
-from qwen_scope_steering_gui import emotion_sets as E
+from qwen_scope_lab_bench import emotion_sets as E
 
 
 def test_three_companion_relevant_emotions_present():

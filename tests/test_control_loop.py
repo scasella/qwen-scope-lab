@@ -1,4 +1,4 @@
-from qwen_scope_steering_gui import control_loop as CL
+from qwen_scope_lab_bench import control_loop as CL
 
 
 def _rows(unsteered, steered):

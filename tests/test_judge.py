@@ -1,5 +1,5 @@
-from qwen_scope_steering_gui import judge as J
-from qwen_scope_steering_gui.dev_backend import build_dev_service
+from qwen_scope_lab_bench import judge as J
+from qwen_scope_lab_bench.dev_backend import build_dev_service
 
 
 def test_parse_score_extracts_and_normalises():

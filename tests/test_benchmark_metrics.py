@@ -1,4 +1,4 @@
-from qwen_scope_steering_gui.benchmark_metrics import aggregate_metrics, json_validity, repeated_ngram_rate, required_forbidden_terms, text_metrics
+from qwen_scope_lab_bench.benchmark_metrics import aggregate_metrics, json_validity, repeated_ngram_rate, required_forbidden_terms, text_metrics
 
 
 def test_json_validity_metric():
