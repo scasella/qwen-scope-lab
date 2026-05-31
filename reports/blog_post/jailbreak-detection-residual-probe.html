@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The jailbreak detector you already computed — Qwen Scope Lab Bench</title>
+  <meta name="description" content="On Qwen3.5-2B a free difference-of-means residual probe detects jailbreak and prompt-injection prompts at AUC 1.00, matching a paid GPT-4o-mini judge, beating the SAE feature, and generalising to attack families it never saw. Under adversarial stress the direction holds; the threshold is what moves." />
+  <meta property="og:title" content="The jailbreak detector you already computed" />
+  <meta property="og:description" content="A free residual probe matches a paid judge at jailbreak detection on Qwen3.5-2B, beats the SAE feature, and generalises across attack families. The honest caveat is the threshold, not the direction." />
+  <meta property="og:type" content="article" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:           #F9F9F6;
+      --accent:       #090909;
+      --fg:           #3B3B39;
+      --fg-soft:      #3B3B39;
+      --fg-mute:      #595856;
+      --fg-faint:     #969592;
+      --on-dark:      #DFDEDA;
+      --surface-muted:#EFEFEB;
+      --chart-primary:   #3B3B39;
+      --chart-secondary: #969592;
+      --chart-axis:      #C8C7C2;
+      --chart-grid:      #E4E3DE;
+      --chart-accent-1:  #5C8A95;
+      --chart-accent-2:  #8B6F8C;
+      --font-serif: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+      --font-sans:  'Inter', 'Helvetica Neue', Arial, sans-serif;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html {
+      background: var(--bg);
+      overflow-y: scroll;
+      scrollbar-color: #bbb #f4f4f4;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+      font-variant-ligatures: common-ligatures contextual;
+      font-variant-numeric: oldstyle-nums proportional-nums;
+      font-optical-sizing: auto;
+      font-synthesis: none;
+    }
+    html::-webkit-scrollbar { width: 16px; }
+    html::-webkit-scrollbar-track { background: #f4f4f4; }
+    html::-webkit-scrollbar-thumb { background: #bbb; border-radius: 5px; }
+    ::selection { background: rgba(0,0,0,0.08); color: inherit; }
+    body {
+      min-height: 100vh;
+      font-family: var(--font-serif);
+      background: var(--bg);
+      color: var(--accent);
+      display: flex;
+      flex-direction: column;
+      text-wrap: pretty;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, .subtitle { text-wrap: balance; }
+    .page-surface { background: var(--bg); display: flex; flex: 1 0 auto; flex-direction: column; width: 100%; }
+    .main { flex: 1; }
+    .perspectives-header {
+      display: flex; flex-direction: row; justify-content: space-between; align-items: center;
+      padding: 2rem 2.5rem; width: 100%;
+    }
+    .logo-centered {
+      font-family: var(--font-sans); font-size: 14px; font-weight: 500; letter-spacing: 0.25em;
+      color: var(--fg-soft); text-decoration: none;
+    }
+    .logo-centered .accent { color: var(--accent); }
+    .contact-link {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.5rem 0.75rem; margin-right: -0.75rem; border-radius: 999px; color: var(--fg);
+      transition: background 240ms cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none;
+      font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.08em;
+    }
+    .contact-link:hover, .contact-link:focus-visible { background: var(--surface-muted); }
+    .benchmarks-content { max-width: 720px; margin: 0 auto; padding: 2rem 2rem 6rem; }
+    .benchmarks-content h1 {
+      font-size: 48px; font-weight: 400; line-height: 1.1; letter-spacing: -0.01em;
+      color: var(--fg); margin-top: 144px;
+    }
+    .benchmarks-content .subtitle {
+      font-size: 18px; font-weight: 300; line-height: 1.5; color: var(--fg);
+      margin-top: 10px; margin-bottom: 0.5em;
+    }
+    .benchmarks-content .date {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.1em;
+      color: var(--fg-faint); margin-top: 1em; text-transform: uppercase;
+    }
+    .paper-links { display: flex; align-items: center; gap: 1rem; margin: 26px 0; flex-wrap: wrap; }
+    .paper-links .btn-pill {
+      font-family: var(--font-sans); font-size: 14px; line-height: 1; color: var(--fg);
+      text-decoration: none; background: #fff; border-radius: 999px; padding: 0.85rem 1.2rem 0.95rem;
+      transition: background 240ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .paper-links .btn-pill:hover { background: var(--surface-muted); }
+    .benchmarks-body { margin: 96px 0 48px; }
+    .benchmarks-body .body-main { font-size: 17px; line-height: 1.6; margin-top: 1lh; }
+    .benchmarks-body p { font-weight: 400; color: var(--fg-soft); margin-bottom: 1lh; }
+    .benchmarks-body em { font-style: italic; }
+    .benchmarks-body strong { font-weight: 500; color: var(--fg); }
+    .benchmarks-body a, .benchmarks-body a:visited {
+      color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--fg-faint); padding-bottom: 1px;
+    }
+    .benchmarks-body a:hover { border-bottom-color: var(--accent); }
+    .benchmarks-body h2 {
+      font-size: 26px; font-weight: 400; color: var(--fg); margin: 1.75lh 0 24px; letter-spacing: -0.005em;
+    }
+    .benchmarks-body h3 {
+      font-size: 19px; font-weight: 700; color: var(--fg); margin: 1.5lh 0 16px; letter-spacing: -0.005em;
+    }
+    .benchmarks-body ul, .benchmarks-body ol { padding-left: 1.25em; margin-bottom: 1.5em; }
+    .benchmarks-body ul { list-style: disc; }
+    .benchmarks-body ol { list-style: decimal; }
+    .benchmarks-body li {
+      font-size: 17px; font-weight: 400; line-height: 1.6; color: var(--fg-soft); margin-bottom: 0.6em;
+    }
+    .benchmarks-body li::marker { color: var(--fg-faint); }
+    .benchmarks-body code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.82em; background: rgba(0,0,0,0.05); padding: 0.08em 0.3em; border-radius: 4px;
+    }
+    .benchmarks-body pre {
+      background: rgba(0,0,0,0.05); padding: 14px 18px; border-radius: 8px; overflow-x: auto;
+      margin: 1lh 0; font-size: 13px; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+    }
+    .benchmarks-body pre code { background: none; padding: 0; border-radius: 0; font-size: inherit; }
+    pre .c { color: var(--fg-faint); font-style: italic; }
+    pre .k { color: var(--accent); }
+    pre .s { color: var(--fg); }
+    .tldr { margin: 32px 0 48px; padding: 0 0 0 24px; border-left: 2px solid var(--fg-mute); }
+    .tldr-label {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--fg-faint); margin-bottom: 10px; display: block;
+    }
+    .tldr p { font-size: 17px; font-weight: 400; line-height: 1.6; color: var(--fg); }
+    .tldr p + p { margin-top: 0.8em; }
+    .callout { margin: 1.5lh 0; padding: 20px 24px; background: var(--surface-muted); border-radius: 10px; }
+    .callout-label {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--fg-mute); margin-bottom: 8px; display: block;
+    }
+    .callout p { font-size: 15px; font-weight: 400; line-height: 1.6; color: var(--fg); margin-bottom: 0; }
+    .stat-row {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; margin: 1.5lh 0;
+      border-top: 1px solid var(--chart-grid); border-bottom: 1px solid var(--chart-grid);
+    }
+    @media (min-width: 600px) { .stat-row { grid-template-columns: repeat(4, 1fr); } }
+    .stat { padding: 18px 18px; border-right: 1px solid var(--chart-grid); }
+    .stat:first-child { padding-left: 0; }
+    .stat:last-child { border-right: 0; }
+    @media (max-width: 599px) {
+      .stat:nth-child(2n) { border-right: 0; }
+      .stat:nth-child(n+3) { border-top: 1px solid var(--chart-grid); }
+    }
+    .stat .k {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--fg-faint); margin-bottom: 8px; display: block;
+    }
+    .stat .v {
+      font-family: var(--font-serif); font-size: 24px; font-weight: 400; color: var(--fg);
+      line-height: 1.1; letter-spacing: -0.01em;
+    }
+    .stat .s { font-family: var(--font-sans); font-size: 12px; color: var(--fg-faint); margin-top: 6px; line-height: 1.35; }
+    .mode-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 1.5lh 0; }
+    @media (min-width: 600px) { .mode-grid { grid-template-columns: repeat(2, 1fr); } }
+    .mode-card { background: #fff; border-radius: 12px; padding: 20px 22px 22px; border: 1px solid var(--chart-grid); }
+    .mode-card .tag {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--fg-faint); display: block; margin-bottom: 10px;
+    }
+    .mode-card .t {
+      font-family: var(--font-serif); font-size: 17px; font-weight: 700; color: var(--fg);
+      display: block; margin-bottom: 8px; letter-spacing: -0.005em;
+    }
+    .mode-card .desc { font-size: 14px; font-weight: 400; line-height: 1.55; color: var(--fg-soft); }
+    .table-wrap { margin: 1.5lh 0; }
+    .table-label {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--fg-faint); margin-bottom: 12px;
+    }
+    .table-label .id { color: var(--fg); margin-right: 12px; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-family: var(--font-serif); }
+    th, td {
+      padding: 11px 14px 11px 0; text-align: left; font-size: 14px; font-weight: 400;
+      border-bottom: 1px solid var(--chart-grid); color: var(--fg);
+    }
+    th {
+      font-family: var(--font-sans); font-weight: 400; color: var(--fg-mute); font-size: 12px;
+      letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--fg-mute);
+    }
+    td.num { font-variant-numeric: tabular-nums; color: var(--fg); }
+    td.pos { color: var(--accent); }
+    td.neg { color: var(--fg-faint); }
+    tr:last-child td { border-bottom: none; }
+    tr.highlight td { background: var(--surface-muted); }
+    tr.totals td { border-top: 1px solid var(--fg-mute); font-weight: 400; }
+    figure.chart { margin: 1.5lh 0; }
+    figure.chart svg { display: block; width: 100%; height: auto; background: var(--bg); }
+    figcaption { font-family: var(--font-sans); font-size: 13px; color: var(--fg-mute); line-height: 1.5; margin-top: 16px; }
+    figcaption strong { color: var(--fg); font-weight: 500; }
+    @media (min-width: 960px) {
+      .body-main > figure.chart {
+        width: min(1200px, calc(100vw - 3rem)); max-width: none; margin-left: 50%; transform: translateX(-50%);
+      }
+    }
+    @media (min-width: 1400px) {
+      .body-main > figure.chart { width: min(1320px, calc(100vw - 3rem)); }
+    }
+    .neg-list { margin: 1.5lh 0; padding: 0; border-top: 1px solid var(--chart-grid); }
+    .neg-list-label {
+      font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--fg-faint); margin: 16px 0 8px; display: block;
+    }
+    .neg-list ul { list-style: none; padding: 0; margin: 0; }
+    .neg-list li {
+      padding: 16px 0; border-bottom: 1px solid var(--chart-grid); font-size: 15px; font-weight: 400;
+      line-height: 1.6; color: var(--fg-soft);
+    }
+    .neg-list li:last-child { border-bottom: 0; }
+    .neg-list li strong { color: var(--fg); font-weight: 500; }
+    .break {
+      display: flex; align-items: center; justify-content: center; margin: 4rem 0 3rem;
+      color: var(--fg-faint); font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.6em;
+    }
+    .site-footer { background: var(--accent); color: #fff; display: flex; flex-direction: column; margin-top: auto; padding: 0; }
+    .site-footer .footer-inner { max-width: 720px; width: 100%; margin: 2rem auto 0; padding: 0 2rem 140px; }
+    .footer-title { font-family: var(--font-serif); font-size: 20px; color: #fff; margin-bottom: 1rem; }
+    .footer-subscribe { display: flex; flex-direction: column; gap: 1lh; max-width: 480px; }
+    .footer-subscribe-label { font-size: 17px; font-weight: 400; line-height: 1.5; color: var(--on-dark); display: block; }
+    .footer-subscribe-row {
+      display: flex; align-items: stretch; gap: 8px; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18); border-radius: 999px; padding: 4px;
+      transition: border-color 150ms ease, background 150ms ease;
+    }
+    .footer-subscribe-row:focus-within { border-color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.12); }
+    .footer-subscribe-input {
+      flex: 1; min-width: 0; background: transparent; border: 0; outline: none; padding: 0.6rem 1rem;
+      font-family: var(--font-serif); font-size: 16px; font-weight: 300; color: #fff;
+    }
+    .footer-subscribe-input::placeholder { color: rgba(255,255,255,0.45); }
+    .footer-subscribe-button {
+      font-family: var(--font-sans); font-size: 15px; line-height: 1; color: var(--accent); background: #fff;
+      border: 0; border-radius: 999px; padding: 0 1.1rem; cursor: pointer; transition: background 150ms ease;
+    }
+    .footer-subscribe-button:hover { background: var(--surface-muted); }
+    .footer-meta { font-family: var(--font-sans); font-size: 12px; color: var(--fg-faint); margin-top: 2rem; line-height: 1.7; }
+    .footer-meta a { color: var(--on-dark); text-decoration: none; border-bottom: 1px dotted rgba(255,255,255,0.25); }
+    .footer-meta a:hover { color: #fff; border-bottom-color: #fff; }
+    @media (max-width: 768px) {
+      .perspectives-header { padding: 1.5rem 1.5rem; }
+      .benchmarks-content { padding: 3rem 1.5rem 4rem; }
+      .benchmarks-content h1 { font-size: 44px; margin-top: 120px; }
+      .benchmarks-body { margin: 72px 0 32px; }
+      .site-footer .footer-inner { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .perspectives-header { padding: 1.25rem 1.25rem; }
+      .benchmarks-content { padding: 2rem 1.25rem 3rem; }
+      .benchmarks-content h1 { font-size: 38px; margin-top: 80px; }
+      .benchmarks-content .subtitle { font-size: 18px; }
+      .benchmarks-body h2 { font-size: 26px; }
+      .benchmarks-body h3 { font-size: 20px; }
+      .benchmarks-body .body-main { font-size: 18px; }
+      .benchmarks-body li { font-size: 18px; }
+      .tldr p { font-size: 18px; }
+      .stat .v { font-size: 24px; }
+      .site-footer .footer-inner { padding: 0 1.25rem 80px; }
+    }
+  </style>
+</head>
+<body class="benchmarks-page">
+  <div class="page-surface">
+
+    <header class="perspectives-header">
+      <a href="https://github.com/scasella/qwen-scope-steering" class="logo-centered">LAB<span class="accent">·</span>BENCH</a>
+      <a href="mailto:scasella91@gmail.com" class="contact-link" aria-label="Contact">Contact</a>
+    </header>
+
+    <main class="main">
+      <article class="benchmarks-content">
+
+        <h1>The jailbreak detector you already computed</h1>
+        <p class="subtitle">On Qwen3.5-2B, a difference-of-means direction over the residual stream detects jailbreak and prompt-injection prompts at AUC 1.00 — matching a paid GPT-4o-mini judge, beating the SAE feature, and generalising to attack families it never trained on. Under adversarial stress the direction holds; the threshold is what moves.</p>
+        <p class="date">Stephen Casella · May 2026</p>
+
+        <div class="paper-links">
+          <a href="https://github.com/scasella/qwen-scope-steering" class="btn-pill">Github</a>
+          <a href="#stress" class="btn-pill">The stress test</a>
+        </div>
+
+        <div class="benchmarks-body">
+          <div class="body-main">
+
+            <div class="tldr">
+              <span class="tldr-label">TL;DR</span>
+              <p>
+                Behavior detection is the deployable half of AI control: read a model's activations, flag the behavior, before or during generation. The highest-value target is jailbreak and prompt-injection detection, and on Qwen3.5-2B the cheapest possible detector wins it. A difference-of-means <em>residual probe</em> at layer 12 separates jailbreak prompts from ordinary requests at AUC 1.00, matching a paid GPT-4o-mini judge (also 1.00) and beating the interpretable SAE-feature monitor (0.84) it was supposed to be the poor relation of. Discovered on one set of attack families and evaluated on six held-out families it never saw, the probe holds at AUC 1.00, zero drop. It separates on manipulation-intent, not surface templates.
+              </p>
+              <p>
+                <strong>Update — the stress test.</strong> A clean-split 1.00 is the number to trust least, so the same probe was thrown at jailbreak-shaped benign prompts and at marker-free evasion. The ranking survives: realistic-distribution AUC is 0.96, and the probe-beats-SAE margin widens under load (0.97 against the SAE's 0.70). The crack is the operating point. At the threshold calibrated on clean data, a quarter of jailbreak-looking benign prompts fire and a quarter of the subtlest evasion slips through. The direction is robust; the threshold needs recalibrating per distribution.
+              </p>
+            </div>
+
+            <h2 id="question">A model to catch a model?</h2>
+
+            <p>Production safety stacks catch jailbreaks with a model. Either a dedicated classifier sits in front of the LLM, or every prompt makes a round-trip to an LLM-judge API. Both spend a forward pass or a network call, both add latency to every request, and the judge route sends user text off the box.</p>
+
+            <p>A linear probe spends none of that. It is a dot product between one activation already computed in the forward pass and a fixed direction. The interpretability field's own sanity-check literature has been circling this point for a year: trained SAE features barely beat a raw-residual probe at detection (<a href="https://arxiv.org/abs/2502.16681">arXiv 2502.16681</a>; <a href="https://arxiv.org/abs/2602.14111">arXiv 2602.14111</a>). If the cheap baseline is that strong, the question is whether it holds on the target that pays for itself.</p>
+
+            <div class="callout">
+              <span class="callout-label">The question</span>
+              <p>Can a free, inline residual probe detect jailbreaks as well as a paid judge, and does it generalise to attack families it never saw, or only memorise the templates it trained on?</p>
+            </div>
+
+            <p>On Qwen3.5-2B it does both. The honest caveat is not in the ranking but in the threshold, and the stress test is where it surfaces.</p>
+
+            <h2 id="setup">Setup — the detector is the deployable object</h2>
+
+            <p>The recipe matters more than any single number here, because the recipe is what ships.</p>
+
+            <h3>The backbone</h3>
+            <p>Qwen3.5-2B, a 2B-parameter base model, with a Qwen Scope SAE over its residual stream. Every number below is at layer 12. The bench drives a 27B variant too; it was immaterial for this question and not run.</p>
+
+            <h3>The detector</h3>
+            <p>A difference-of-means probe. Take 8 jailbreak prompts and 8 ordinary requests, pool each one's residual at layer 12, and the probe direction is the difference of the two class means. The threshold is calibrated for a 10% false-positive rate on a held-out split. That is the entire recipe: no training, no gradient, one subtraction.</p>
+
+<pre><code><span class="c"># the whole detector</span>
+<span class="k">w = mean(residual[jailbreak]) - mean(residual[benign])</span>
+<span class="s">score(x) = w · residual(x)          # fires if score >= threshold</span></code></pre>
+
+            <h3>The baselines</h3>
+            <p>Two, plus a control. The SAE-feature monitor picks the top-k SAE atoms that best separate the same examples, the interpretable detector the probe is supposed to lose to. The prompted judge is GPT-4o-mini scoring each prompt zero-shot against a one-line description of a jailbreak. A random-feature control sets the chance floor.</p>
+
+            <div class="callout">
+              <span class="callout-label">What makes this comparison fair</span>
+              <p>Same held-out split, same texts, for every method. The judge is preflighted before its AUC counts: it scores a known jailbreak 0.95 and a known benign prompt 0.00, so a broken or truncating judge cannot fake the comparison. Payloads are abstract throughout; the sets are manipulation wrappers, not harmful content.</p>
+            </div>
+
+            <div class="stat-row">
+              <div class="stat">
+                <span class="k">Backbone</span>
+                <div class="v">Qwen3.5-2B</div>
+                <div class="s">Qwen Scope SAE, residual stream</div>
+              </div>
+              <div class="stat">
+                <span class="k">Layer</span>
+                <div class="v">12</div>
+                <div class="s">pooled residual, single site</div>
+              </div>
+              <div class="stat">
+                <span class="k">Examples</span>
+                <div class="v">8 / class</div>
+                <div class="s">interleaved held-out split</div>
+              </div>
+              <div class="stat">
+                <span class="k">Paid judge</span>
+                <div class="v">GPT-4o-mini</div>
+                <div class="s">zero-shot, preflighted</div>
+              </div>
+            </div>
+
+            <h2 id="method">Four steps, one shared split</h2>
+
+            <p>Each step runs GPU-free on a tiny model for wiring and tests, and identically on the real model through a self-terminating Modal probe. The detection and the stress test share the same discovered probe, so nothing is tuned between them.</p>
+
+            <div class="mode-grid">
+              <div class="mode-card">
+                <span class="tag">01 · probe</span>
+                <span class="t">Difference of means</span>
+                <span class="desc">The direction is the difference of the jailbreak and benign class means over pooled layer-12 residuals; the threshold is F1-calibrated at a 10% false-positive operating point.</span>
+              </div>
+              <div class="mode-card">
+                <span class="tag">02 · compare</span>
+                <span class="t">Probe vs SAE vs judge</span>
+                <span class="desc">The SAE top-k monitor, the prompted GPT-4o-mini judge, and a random-feature control all evaluated on one shared held-out split, reported with AUC and TPR at 10% FPR.</span>
+              </div>
+              <div class="mode-card">
+                <span class="tag">03 · generalise</span>
+                <span class="t">Held-out families</span>
+                <span class="desc">Discover on overt families (DAN, instruction-override, developer-mode, roleplay); evaluate on six families that share no trigger tokens (grandmother exploit, base64, prefix-injection, fiction, payload-splitting, system-prompt extraction).</span>
+              </div>
+              <div class="mode-card">
+                <span class="tag">04 · stress</span>
+                <span class="t">Hard cases</span>
+                <span class="desc">Hard negatives (benign prompts in jailbreak surface forms) and adaptive evasion (manipulation with no markers), scored at the deployed threshold so the false-positive rate is reported, not only AUC.</span>
+              </div>
+            </div>
+
+            <p>Eight examples per class drive discovery, four-plus-four held out give the in-distribution split, eight per axis make the stress sets. Small by design; the article's claims are scoped to match.</p>
+
+            <h2 id="result">The headline — a free direction matches a paid model</h2>
+
+            <p>AUC measures whether the detector ranks jailbreaks above benign prompts; the 10% FPR point is where a deployer would set the cutoff. The residual probe tops out on both, and the paid judge ties it rather than beating it.</p>
+
+            <div class="stat-row">
+              <div class="stat">
+                <span class="k">Residual probe</span>
+                <div class="v">1.00</div>
+                <div class="s">AUC and TPR@10%FPR 1.00 · free</div>
+              </div>
+              <div class="stat">
+                <span class="k">GPT-4o-mini judge</span>
+                <div class="v">1.00</div>
+                <div class="s">AUC · the paid baseline, tied</div>
+              </div>
+              <div class="stat">
+                <span class="k">SAE feature</span>
+                <div class="v">0.84</div>
+                <div class="s">AUC · the interpretable one</div>
+              </div>
+              <div class="stat">
+                <span class="k">Random control</span>
+                <div class="v">0.45</div>
+                <div class="s">AUC · chance floor</div>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <div class="table-label"><span class="id">Table 01</span>Detection on the clean split (Qwen3.5-2B, layer 12, 4+4 held out)</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>method</th>
+                    <th>cost</th>
+                    <th>AUC</th>
+                    <th>TPR@10%FPR</th>
+                    <th>F1</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="highlight">
+                    <td>residual probe (diff-means)</td>
+                    <td class="neg">free</td>
+                    <td class="num pos">1.00</td>
+                    <td class="num">1.00</td>
+                    <td class="num">1.00</td>
+                  </tr>
+                  <tr>
+                    <td>residual probe (logistic)</td>
+                    <td class="neg">free</td>
+                    <td class="num pos">1.00</td>
+                    <td class="num">1.00</td>
+                    <td class="num">1.00</td>
+                  </tr>
+                  <tr>
+                    <td>prompted judge (GPT-4o-mini)</td>
+                    <td class="neg">API call</td>
+                    <td class="num pos">1.00</td>
+                    <td class="num">1.00</td>
+                    <td class="num">1.00</td>
+                  </tr>
+                  <tr>
+                    <td>SAE feature monitor (top-3)</td>
+                    <td class="neg">forward pass</td>
+                    <td class="num">0.84</td>
+                    <td class="num">0.75</td>
+                    <td class="num">0.75</td>
+                  </tr>
+                  <tr>
+                    <td>random-feature control</td>
+                    <td class="neg">—</td>
+                    <td class="num">0.45</td>
+                    <td class="num">—</td>
+                    <td class="num">—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>The obvious objection is that the split is easy. It is small, and the negatives are ordinary requests, so this measures manipulation against the everyday, a distinction the residual stream draws cleanly. The generalisation and stress sections are what move it from "easy split" to "deployable."</p>
+
+            <h3>It is not memorising templates</h3>
+            <p>The discovery families are overt: DAN, "ignore all previous instructions," developer-mode. None of their trigger tokens appear in the six held-out families. A probe that keyed on the string "DAN" would score the grandmother exploit and the base64 request as benign. It scores them as attacks.</p>
+
+            <div class="callout">
+              <span class="callout-label">Sanity check</span>
+              <p>The random-feature control sits at 0.45, below chance on this split, so the ranking is the probe's and not an artifact of the metric. The judge passed its preflight at 0.95 against 0.00 before any AUC was trusted.</p>
+            </div>
+
+            <h2 id="mechanism">The manipulation-intent direction</h2>
+
+            <p>If the probe separates on manipulation-intent rather than tokens, two consequences follow. It should hold on held-out families, and it should degrade gracefully, not collapse, when the distribution turns adversarial. Both hold, and the contrast with the SAE feature is the mechanism.</p>
+
+            <figure class="chart">
+              <svg viewBox="0 0 960 460" role="img" aria-label="Detection AUC by method on the clean split versus the adversarial hard distribution. The residual probe and the paid judge stay near 1.0 under both; the SAE feature falls from 0.84 to 0.70 under stress.">
+                <rect x="0" y="0" width="960" height="460" fill="#F9F9F6" />
+
+                <text x="480" y="30" text-anchor="middle" fill="#3B3B39"
+                      font-family="Libre Baskerville, Georgia, serif" font-size="18" font-weight="400">
+                  Free probe vs paid judge vs SAE feature, clean and under stress
+                </text>
+                <text x="480" y="54" text-anchor="middle" fill="#969592"
+                      font-family="Inter, Helvetica Neue, sans-serif" font-size="12" font-weight="400">
+                  Detection AUC. The probe holds where the SAE feature collapses; the paid judge only ties it.
+                </text>
+
+                <!-- legend -->
+                <rect x="338" y="73" width="16" height="10" fill="#3B3B39" />
+                <text x="360" y="82" fill="#3B3B39" font-family="Inter, Helvetica Neue, sans-serif" font-size="12">clean split</text>
+                <rect x="470" y="73" width="16" height="10" fill="#5C8A95" />
+                <text x="492" y="82" fill="#3B3B39" font-family="Inter, Helvetica Neue, sans-serif" font-size="12">adversarial &ldquo;hard&rdquo; mix</text>
+
+                <!-- gridlines (AUC 0.00 .. 1.00) -->
+                <line x1="80" y1="380"   x2="880" y2="380"   stroke="#C8C7C2" stroke-width="1" />
+                <line x1="80" y1="312.5" x2="880" y2="312.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="245"   x2="880" y2="245"   stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="177.5" x2="880" y2="177.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="110"   x2="880" y2="110"   stroke="#E4E3DE" stroke-width="1" />
+
+                <text x="72" y="384" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.00</text>
+                <text x="72" y="316" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.25</text>
+                <text x="72" y="249" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.50</text>
+                <text x="72" y="181" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.75</text>
+                <text x="72" y="114" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">1.00</text>
+
+                <!-- probe group (c=180) -->
+                <rect x="132" y="110.0" width="44" height="270.0" fill="#3B3B39" />
+                <rect x="184" y="118.1" width="44" height="261.9" fill="#5C8A95" />
+                <text x="154" y="104" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">1.00</text>
+                <text x="206" y="112" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">0.97</text>
+
+                <!-- judge group (c=380) -->
+                <rect x="332" y="110.0" width="44" height="270.0" fill="#3B3B39" />
+                <rect x="384" y="112.7" width="44" height="267.3" fill="#5C8A95" />
+                <text x="354" y="104" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">1.00</text>
+                <text x="406" y="107" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">0.99</text>
+
+                <!-- SAE group (c=580) -->
+                <rect x="532" y="153.2" width="44" height="226.8" fill="#3B3B39" />
+                <rect x="584" y="191.0" width="44" height="189.0" fill="#5C8A95" />
+                <text x="554" y="147" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">0.84</text>
+                <text x="606" y="185" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">0.70</text>
+
+                <!-- random group (c=780) -->
+                <rect x="732" y="258.5" width="44" height="121.5" fill="#3B3B39" />
+                <rect x="784" y="247.7" width="44" height="132.3" fill="#5C8A95" />
+                <text x="754" y="252" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">0.45</text>
+                <text x="806" y="242" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="11">0.49</text>
+
+                <!-- x labels -->
+                <text x="180" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">residual probe</text>
+                <text x="380" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">GPT-4o-mini judge</text>
+                <text x="580" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">SAE feature</text>
+                <text x="780" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">random</text>
+
+                <text x="80" y="448" fill="#969592" font-family="Inter, sans-serif" font-size="11">AUC, held-out split. &ldquo;Hard&rdquo; = realistic adversarial mix (evasion attacks vs jailbreak-looking benign). n = 8/class clean, 16/16 hard, layer 12.</text>
+              </svg>
+              <figcaption>
+                <strong>Figure 1.</strong> Detection AUC for each method on the clean split (dark) and the adversarial hard distribution (sage). The free residual probe and the paid judge stay within 0.03 of each other under both conditions. The interpretable SAE feature starts 0.16 behind on the clean split and falls to 0.70 under stress, so the probe-beats-SAE gap widens from 0.16 to 0.27 exactly where deployment lives.
+              </figcaption>
+            </figure>
+
+            <p>The held-out families are the first half of the prediction.</p>
+
+            <div class="table-wrap">
+              <div class="table-label"><span class="id">Table 02</span>Generalisation to six attack families with no shared trigger tokens</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>detector</th>
+                    <th>in-distribution AUC</th>
+                    <th>held-out-family AUC</th>
+                    <th>drop</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="highlight">
+                    <td>residual probe (diff-means)</td>
+                    <td class="num">1.00</td>
+                    <td class="num pos">1.00</td>
+                    <td class="num">0.00</td>
+                  </tr>
+                  <tr>
+                    <td>SAE feature monitor</td>
+                    <td class="num">0.84</td>
+                    <td class="num">0.94</td>
+                    <td class="num">-0.09</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>The probe is already at the ceiling in-distribution, so the held-out families cannot raise it; what counts is that they do not lower it. A probe trained on DAN flags the grandmother exploit it has never seen. The manipulation concept is a direction the families share, not a list of phrases the probe stored.</p>
+
+            <h2 id="stress">From a clean split to adversarial cases</h2>
+
+            <p>AUC 1.00 on benign-versus-jailbreak is the number a deployer should trust least, because the deployment distribution is not benign-versus-jailbreak. It is benign prompts that look like attacks, and attacks that look benign.</p>
+
+            <p>So the same clean-trained probe, threshold fixed, faced two adversarial sets. Hard negatives are benign requests wearing jailbreak surface forms: "explain how prompt injection works for my security class," "ignore the typos in my message," a benign pirate roleplay. Adaptive evasion is manipulation stripped of markers: a polite "off the record, just between us," a translation framing, an appeal to a medical emergency, none of them containing "DAN" or "ignore your instructions."</p>
+
+            <p>The realistic combined distribution pools the two, evasion attacks as positives and jailbreak-looking benign as negatives, scored at the threshold calibrated on clean data with no recalibration.</p>
+
+            <h3>The ranking survives</h3>
+            <p>Discrimination holds across every axis. The probe still ranks jailbreak-shaped benign below real jailbreaks and ranks marker-free evasion above ordinary requests.</p>
+
+            <div class="stat-row">
+              <div class="stat">
+                <span class="k">Realistic AUC</span>
+                <div class="v">0.96</div>
+                <div class="s">probe, hard distribution</div>
+              </div>
+              <div class="stat">
+                <span class="k">Probe − SAE</span>
+                <div class="v">+0.27</div>
+                <div class="s">0.97 vs 0.70, up from +0.16 clean</div>
+              </div>
+              <div class="stat">
+                <span class="k">Judge under stress</span>
+                <div class="v">0.99</div>
+                <div class="s">probe within 0.05</div>
+              </div>
+              <div class="stat">
+                <span class="k">SAE under stress</span>
+                <div class="v">0.70</div>
+                <div class="s">collapses on adversarial cases</div>
+              </div>
+            </div>
+
+            <p>The SAE feature does not survive. Under the adversarial distribution it falls to 0.70 while the dense probe direction holds at 0.97, and the paid judge holds at 0.99. The gap the interpretability sanity-checks predicted is widest exactly where a deployment meets the cases it was built for. The probe trails the judge by 0.02 on the hardest evasion, within the tolerance that calls them a match.</p>
+
+            <h3>The operating point is where it cracks</h3>
+
+            <p>AUC ranks; it does not commit to a cutoff. The deployed threshold does, and the deployed threshold was set on clean data.</p>
+
+            <div class="table-wrap">
+              <div class="table-label"><span class="id">Table 03</span>The clean-trained probe at the deployed threshold, per adversarial axis (n = 8/axis)</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>axis</th>
+                    <th>AUC</th>
+                    <th>catches (recall@thr)</th>
+                    <th>false alarms (FPR@thr)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>held-out families</td>
+                    <td class="num">1.00</td>
+                    <td class="num">100%</td>
+                    <td class="num">0%</td>
+                  </tr>
+                  <tr>
+                    <td>hard negatives (jailbreak-shaped benign)</td>
+                    <td class="num">0.98</td>
+                    <td class="num">—</td>
+                    <td class="num neg">25%</td>
+                  </tr>
+                  <tr>
+                    <td>adaptive evasion (no markers)</td>
+                    <td class="num">1.00</td>
+                    <td class="num neg">75%</td>
+                    <td class="num">0%</td>
+                  </tr>
+                  <tr class="highlight">
+                    <td>realistic combined</td>
+                    <td class="num pos">0.96</td>
+                    <td class="num">88%</td>
+                    <td class="num">12%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <figure class="chart">
+              <svg viewBox="0 0 960 460" role="img" aria-label="Probe AUC across four adversarial axes, all between 0.96 and 1.0, with the operating-point error at the deployed threshold annotated beneath each bar.">
+                <rect x="0" y="0" width="960" height="460" fill="#F9F9F6" />
+
+                <text x="480" y="30" text-anchor="middle" fill="#3B3B39"
+                      font-family="Libre Baskerville, Georgia, serif" font-size="18" font-weight="400">
+                  Ranking is robust across every adversarial axis
+                </text>
+                <text x="480" y="54" text-anchor="middle" fill="#969592"
+                      font-family="Inter, Helvetica Neue, sans-serif" font-size="12">
+                  Probe AUC per axis (bars). The error at the deployed threshold (beneath) is what does not transfer.
+                </text>
+
+                <!-- gridlines -->
+                <line x1="80" y1="380"   x2="880" y2="380"   stroke="#C8C7C2" stroke-width="1" />
+                <line x1="80" y1="312.5" x2="880" y2="312.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="245"   x2="880" y2="245"   stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="177.5" x2="880" y2="177.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="110"   x2="880" y2="110"   stroke="#E4E3DE" stroke-width="1" />
+
+                <text x="72" y="384" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.00</text>
+                <text x="72" y="316" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.25</text>
+                <text x="72" y="249" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.50</text>
+                <text x="72" y="181" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.75</text>
+                <text x="72" y="114" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">1.00</text>
+
+                <!-- chance reference -->
+                <line x1="80" y1="245" x2="880" y2="245" stroke="#969592" stroke-width="1" stroke-dasharray="4 4" opacity="0.6" />
+                <text x="876" y="241" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="10">chance 0.50</text>
+
+                <!-- bars -->
+                <rect x="140" y="110.0" width="80" height="270.0" fill="#5C8A95" />
+                <rect x="340" y="114.2" width="80" height="265.8" fill="#5C8A95" />
+                <rect x="540" y="110.0" width="80" height="270.0" fill="#5C8A95" />
+                <rect x="740" y="120.6" width="80" height="259.4" fill="#5C8A95" />
+
+                <text x="180" y="104" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">1.00</text>
+                <text x="380" y="108" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">0.98</text>
+                <text x="580" y="104" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">1.00</text>
+                <text x="780" y="114" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">0.96</text>
+
+                <!-- x labels -->
+                <text x="180" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">held-out families</text>
+                <text x="380" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">hard negatives</text>
+                <text x="580" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">adaptive evasion</text>
+                <text x="780" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">realistic mix</text>
+
+                <!-- operating-point sub-annotations -->
+                <text x="180" y="423" text-anchor="middle" fill="#969592" font-family="Inter, sans-serif" font-size="11">0% false alarms</text>
+                <text x="380" y="423" text-anchor="middle" fill="#969592" font-family="Inter, sans-serif" font-size="11">25% false alarms</text>
+                <text x="580" y="423" text-anchor="middle" fill="#969592" font-family="Inter, sans-serif" font-size="11">25% slip past</text>
+                <text x="780" y="423" text-anchor="middle" fill="#969592" font-family="Inter, sans-serif" font-size="11">12% / 12%</text>
+
+                <text x="80" y="448" fill="#969592" font-family="Inter, sans-serif" font-size="11">Bars: AUC (ranking quality) of the clean-trained probe. Sub-labels: error at the clean-calibrated threshold. The ranking transfers; the operating point does not.</text>
+              </svg>
+              <figcaption>
+                <strong>Figure 2.</strong> The probe's AUC stays between 0.96 and 1.00 across all four axes, so its ranking of manipulation-intent is robust. The cracks live one level down, at the shipped threshold: a quarter of jailbreak-looking benign prompts cross it and fire, and a quarter of the subtlest evasion stays under it and slips. Two different failure modes, both invisible to AUC.
+              </figcaption>
+            </figure>
+
+            <p>Two readings of the same threshold. The clean-calibrated cutoff sits a little low for the adversarial distribution: a quarter of jailbreak-looking benign prompts cross it, and a quarter of the subtlest evasion stays under it. AUC says the probe could separate both at the right cutoff. The fixed threshold says the cutoff it shipped with is not that one. The repair is recalibration on the deployment distribution, not a better direction.</p>
+
+            <h3>Honest scope</h3>
+
+            <div class="neg-list">
+              <span class="neg-list-label">What the result is and is not</span>
+              <ul>
+                <li><strong>Does say:</strong> on Qwen3.5-2B at layer 12, a difference-of-means residual probe ranks jailbreak and injection prompts above benign at AUC 0.96–1.00 across held-out families and adversarial axes, matching a paid judge and beating the SAE feature by a margin that widens under stress.</li>
+                <li><strong>Does not say:</strong> that the shipped threshold transfers. It does not: 25% false alarms on jailbreak-shaped benign and a 25% miss on marker-free evasion at the clean cutoff. Nor that the probe resists an attacker optimising against the probe direction itself, which is untested, nor that 1.00 means zero errors in production. The splits are 8 per class.</li>
+                <li><strong>Single point in design space:</strong> one model, one layer, one seed. The adversarial sets are author-written, not an in-the-wild corpus such as JailbreakBench or a red-team. The pattern, ranking robust and threshold mobile, is the finding; the exact percentages are small-n.</li>
+              </ul>
+            </div>
+
+            <h2 id="next">What's next</h2>
+
+            <p>The clean-split claim is closed. The deployment claim has one open seam, the threshold, and the next four steps are ordered by how directly they tighten it.</p>
+
+            <h3>An in-the-wild corpus</h3>
+            <p>Swap the author-written sets for JailbreakBench and real DAN variants, and recalibrate the threshold per distribution. This is what turns the 0.96 and the 25% from directional small-n numbers into a reported operating point with a confidence interval.</p>
+
+            <h3>An adaptive red-team against the probe</h3>
+            <p>The evasion set was written to dodge surface markers, not the probe direction. An attacker who holds the direction and optimises against it is the real adversary, and the honest test of whether manipulation-intent is a stable target or a soft one.</p>
+
+            <h3>Threshold transfer</h3>
+            <p>A small amount of target-distribution data should move the operating point back into place. The open question is how little is enough, tens of labeled prompts or hundreds, since that number decides whether recalibration is a deployment footnote or a real cost.</p>
+
+            <h3>Streaming detection</h3>
+            <p>The same direction scores a partial generation token by token, so it flags a jailbreak mid-response, not only at the input. That path is already wired on the bench; it wants the same adversarial pass this article ran on the input side.</p>
+
+            <div class="break">· · ·</div>
+
+            <p>On Qwen3.5-2B the cheapest white-box detector is the strong one. A difference-of-means direction over the residual stream detects jailbreak and prompt-injection prompts as well as a paid judge, beats the interpretable SAE feature by a margin that grows under adversarial load, and generalises to attack families it never trained on. For the deployable half of AI control, the primitive that works is a vector and a dot product, and it comes with a tunable operating point the paid judge cannot offer.</p>
+
+            <p>The seam is the threshold, not the direction. A clean-calibrated cutoff lets a quarter of jailbreak-shaped benign prompts fire and a quarter of marker-free evasion slip, and closing that needs per-distribution calibration and a corpus harder than the one written here. The ranking is deployable now. The operating point is one recalibration away.</p>
+
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-title">Qwen Scope Lab Bench</div>
+        <form class="footer-subscribe" novalidate>
+          <label class="footer-subscribe-label" for="footer-email">Get early access to research, products, and more.</label>
+          <div class="footer-subscribe-row">
+            <input class="footer-subscribe-input" type="email" id="footer-email" name="email" placeholder="you@example.com" autocomplete="email" required />
+            <button class="footer-subscribe-button" type="submit">Subscribe</button>
+          </div>
+          <p class="footer-subscribe-status" role="status" aria-live="polite"></p>
+        </form>
+        <div class="footer-meta">
+          Stephen Casella · Qwen Scope Lab Bench · May 2026<br />
+          Qwen3.5-2B, layer 12 · 8 examples / class, interleaved held-out split, 10% FPR · jailbreak detection + adversarial hardening, two L4 one-shot Modal probes, GPT-4o-mini judge preflighted · 163 pytest pass.<br />
+          Code: <a href="https://github.com/scasella/qwen-scope-steering">github.com/scasella/qwen-scope-steering</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A tiny, free detector caught jailbreak attempts it had never seen before</title>
+<meta name="description" content="On a small open AI model, a single cheap calculation on the model's own internal activity spotted jailbreak attempts as accurately as a paid AI judge, beat the method built for the job, and caught attack styles it was never trained on. A harder test showed where it still needs tuning." />
+<meta property="og:title" content="A tiny, free detector caught jailbreak attempts it had never seen before" />
+<meta property="og:description" content="A free calculation inside a small open model matched a paid AI judge at spotting jailbreaks — and even caught attacks it had never seen. Then a tougher test showed the catch." />
+<meta property="og:type" content="article" />
+<style>
+:root{
+  --bg:#fbfbf9; --fg:#2c2c2a; --ink:#0a0a0a; --muted:#7c7a74;
+  --rule:#e7e6e1; --teal:#3f7180; --teal2:#6a9aa6; --clay:#9a6b48; --clay2:#b08a64;
+  --rust:#8a3f2a; --paper:#ffffff; --soft:#f3f1ec;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--fg);
+  font-family:Georgia,"Times New Roman",serif; font-size:20px; line-height:1.7;}
+.kicker-bar{padding:13px 28px; border-bottom:1px solid var(--rule);
+  font-family:Inter,system-ui,sans-serif; font-size:12px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted);}
+.kicker-bar b{color:var(--teal); font-weight:700}
+.wrap{max-width:720px; margin:0 auto; padding:0 26px}
+.lede-wrap{max-width:800px; margin:0 auto; padding:0 26px}
+.kicker{font-family:Inter,sans-serif; font-size:13px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--rust); font-weight:700; margin:58px 0 20px}
+h1{font-weight:600; font-size:48px; line-height:1.1; letter-spacing:-.018em;
+  color:var(--ink); margin:0 0 24px}
+.dek{font-size:23px; line-height:1.5; color:#56544f; margin:0 0 28px; font-style:italic}
+.byline{font-family:Inter,sans-serif; font-size:13px; color:var(--muted);
+  border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+  padding:13px 0; margin:0 0 44px; display:flex; gap:20px; flex-wrap:wrap}
+.byline b{color:var(--ink); font-weight:600}
+p{margin:18px 0}
+.lead p:first-of-type{font-size:21px}
+.lead p:first-of-type::first-letter{
+  font-size:62px; line-height:.8; float:left; padding:6px 10px 0 0; color:var(--ink); font-weight:600}
+h2{font-weight:600; font-size:28px; line-height:1.25; color:var(--ink);
+  letter-spacing:-.01em; margin:50px 0 6px}
+a{color:var(--teal)}
+strong{color:var(--ink)}
+code{font-family:"SFMono-Regular",Menlo,monospace; font-size:.82em; background:var(--soft); padding:1px 5px; border-radius:3px}
+.bignum{margin:34px 0; padding:26px 30px; background:var(--paper); border:1px solid var(--rule);
+  border-left:4px solid var(--teal); border-radius:0 8px 8px 0}
+.bignum .v{font-family:Georgia,serif; font-size:38px; color:var(--ink); line-height:1.05; font-weight:600}
+.bignum .l{font-family:Inter,sans-serif; font-size:15.5px; color:#56544f; margin-top:8px; line-height:1.5}
+.pull{font-size:27px; line-height:1.38; color:var(--ink); font-weight:600;
+  margin:44px 0; padding-left:24px; border-left:4px solid var(--clay)}
+figure{margin:30px auto; max-width:900px}
+.card{background:var(--paper); border:1px solid var(--rule); border-radius:10px; padding:26px 28px}
+.ctitle{font-family:Inter,sans-serif; font-size:16px; font-weight:600; color:var(--ink); margin:0 0 3px}
+.cnote{font-family:Inter,sans-serif; font-size:13px; color:var(--muted); margin:0 0 18px; line-height:1.5}
+figcaption{font-family:Inter,sans-serif; font-size:13.5px; color:var(--muted); margin-top:12px; line-height:1.55}
+.finehed{font-family:Inter,sans-serif; font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted); font-weight:700; margin:0 0 8px}
+.fine{background:var(--soft); border-radius:9px; padding:22px 26px; margin:40px 0; font-size:17px; color:#56544f}
+.fine p{margin:8px 0}
+.foot{margin-top:60px; padding:34px 0; border-top:1px solid var(--rule);
+  font-family:Inter,sans-serif; font-size:13.5px; color:var(--muted); line-height:1.7}
+.foot code{background:none; color:#6a6862; font-size:.92em}
+@media (max-width:680px){ h1{font-size:34px} .dek{font-size:20px} body{font-size:18px} }
+</style>
+</head>
+<body>
+
+<div class="kicker-bar">AI / Research · <b>detecting jailbreaks</b></div>
+
+<div class="lede-wrap">
+  <div class="kicker">AI safety · the cheap detector</div>
+  <h1>A tiny, free detector caught jailbreak attempts it had never seen before</h1>
+  <p class="dek">On a small open AI model, one cheap calculation on numbers the model already computes spotted manipulation attempts across attack styles it was never trained on — matching a paid AI judge, and beating the method built for the job.</p>
+  <div class="byline">
+    <span><b>Model:</b> Qwen3.5-2B, a small open model</span>
+    <span><b>Detector:</b> one calculation on the model's own activity</span>
+    <span><b>Cost:</b> essentially free per message</span>
+  </div>
+</div>
+
+<div class="wrap lead">
+
+  <p>Every company that runs an AI chatbot has the same nuisance: people try to talk it out of its own rules. These attempts — known as "jailbreaks," messages crafted to make an AI ignore its safety training — are common enough that catching them has become its own small industry. The usual defense is to put a second AI in front of the first, or pay an outside service to screen every incoming message. Both cost money, and both add a delay to every conversation.</p>
+
+  <p>Work on a small, freely available open model just showed that a far cheaper option holds up about as well. Instead of a second AI, it reads the first AI's own internal activity — the numbers it already produces while processing your message — and runs a single calculation on them. That calculation flagged jailbreak attempts as accurately as a paid AI judge, beat the specialized tool built for the job, and caught attack styles it had never been shown.</p>
+
+  <h2>What they actually built</h2>
+
+  <p>The idea fits in one picture. As a model reads your message, it lights up a vast array of internal numbers, its "activations." The researchers took a handful of example messages — some jailbreaks, some ordinary requests — and found the single direction through those numbers that best separates the two groups. After that, screening a new message is one multiplication: does it lean toward the "manipulation" side, or the "ordinary" side? No second model. No outside call. The detector rides along inside a model already running.</p>
+
+  <div class="bignum">
+    <div class="v">One multiplication</div>
+    <div class="l">That's the whole detector. It reads numbers the model computes anyway, so screening each message adds almost nothing — no second AI, no per-message API bill.</div>
+  </div>
+
+  <h2>It matched the paid version — and it had never seen these attacks</h2>
+
+  <p>On a clean test, the free calculation told every jailbreak apart from every ordinary request. So did a paid AI judge — OpenAI's GPT-4o-mini, asked to rate each message — which scored just as perfectly. The specialized tool built for this job — software that picks out the tidy, nameable concepts buried inside a model — trailed well behind. A random guess landed at chance, where it belongs.</p>
+
+  <figure>
+    <div class="card">
+      <div class="ctitle">Spotting jailbreaks on a clean test: how often each method told a real attack from an ordinary message</div>
+      <div class="cnote">Higher is better. The free calculation and the paid AI both got every case right; the specialized tool and a coin flip did not.</div>
+      <svg viewBox="0 0 720 280" role="img" aria-label="On a clean test, the free probe and the paid AI judge each told attacks from ordinary messages correctly every time. The specialized method was right about 84 in 100. A random guess was right about 45 in 100.">
+        <!-- baseline y=220, axis max 100 over 190px, px/unit = 1.9 -->
+        <line x1="70" y1="220" x2="700" y2="220" stroke="#cdcbc4" stroke-width="1"/>
+        <line x1="70" y1="172.5" x2="700" y2="172.5" stroke="#ebe9e4" stroke-width="1"/>
+        <line x1="70" y1="125" x2="700" y2="125" stroke="#ebe9e4" stroke-width="1"/>
+        <line x1="70" y1="77.5" x2="700" y2="77.5" stroke="#ebe9e4" stroke-width="1"/>
+        <line x1="70" y1="30" x2="700" y2="30" stroke="#ebe9e4" stroke-width="1"/>
+        <text x="60" y="224" text-anchor="end" font-family="Inter,sans-serif" font-size="12" fill="#9a9892">0%</text>
+        <text x="60" y="129" text-anchor="end" font-family="Inter,sans-serif" font-size="12" fill="#9a9892">50%</text>
+        <text x="60" y="34" text-anchor="end" font-family="Inter,sans-serif" font-size="12" fill="#9a9892">100%</text>
+
+        <!-- free probe: 100 -> h=190, y=30 -->
+        <rect x="85" y="30" width="90" height="190" fill="#3f7180"/>
+        <text x="130" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="600" fill="#3f7180">100%</text>
+        <!-- paid judge: 100 -> h=190, y=30 -->
+        <rect x="255" y="30" width="90" height="190" fill="#6a9aa6"/>
+        <text x="300" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="600" fill="#4f7e8a">100%</text>
+        <!-- specialized: 84 -> h=159.6, y=60.4 -->
+        <rect x="425" y="60.4" width="90" height="159.6" fill="#9a6b48"/>
+        <text x="470" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="600" fill="#9a6b48">84%</text>
+        <!-- random: 45 -> h=85.5, y=134.5 -->
+        <rect x="595" y="134.5" width="90" height="85.5" fill="#bcb9b1"/>
+        <text x="640" y="126" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="600" fill="#8f8d86">45%</text>
+
+        <text x="130" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#2c2c2a">Free probe</text>
+        <text x="130" y="258" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#7c7a74">the model's own numbers</text>
+        <text x="300" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#2c2c2a">Paid AI judge</text>
+        <text x="300" y="258" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#7c7a74">an API call per message</text>
+        <text x="470" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#2c2c2a">Specialized tool</text>
+        <text x="470" y="258" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#7c7a74">built to read the model</text>
+        <text x="640" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#2c2c2a">Random guess</text>
+        <text x="640" y="258" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#7c7a74">the floor</text>
+      </svg>
+      <figcaption>The free calculation and the paid AI judge each sorted attacks from ordinary messages without a single mistake on the clean test. The specialized tool was right roughly 8 times in 10; a coin flip, about 45 in 100.</figcaption>
+    </div>
+  </figure>
+
+  <p>The part that stood out came next. The detector had been trained only on obvious attacks — "pretend you have no rules," "ignore your previous instructions." Then it faced six completely different tricks it had never seen: a sob story about a late grandmother, a request smuggled inside computer code, a fake "just finish this sentence" trap. It caught all of them. It hadn't memorized the wording of attacks. It had learned, from the inside, what manipulation looks like.</p>
+
+  <p class="pull">It hadn't memorized the wording of attacks. It had learned what manipulation looks like from the inside.</p>
+
+  <h2>Then came the trick questions</h2>
+
+  <p>Here is the part most write-ups would skip, and it is the most useful one. A real deployment never sees tidy attacks and tidy innocent messages. It sees innocent messages dressed up to look like attacks — "explain how prompt injection works for my security class" — and real attacks stripped of every obvious tell. The researchers built exactly those, then ran the detector again without touching its settings.</p>
+
+  <p>The good news held: it still sorted attacks from innocent messages almost perfectly. The catch is where it draws the line. At the cutoff it shipped with, about <strong>1 in 4</strong> innocent-but-suspicious messages tripped a false alarm, and about <strong>1 in 4</strong> of the sneakiest disguised attacks slipped through.</p>
+
+  <figure>
+    <div class="card">
+      <div class="ctitle">The harder test, at the detector's factory setting</div>
+      <div class="cnote">Same detector, no re-tuning, faced with disguised attacks and innocent look-alikes.</div>
+      <svg viewBox="0 0 720 280" role="img" aria-label="On the hard test at its default setting, the detector caught about 75 in 100 of the sneakiest disguised attacks and wrongly flagged about 25 in 100 innocent look-alike messages.">
+        <!-- baseline y=220, axis max 100 over 190px, px/unit = 1.9 -->
+        <line x1="70" y1="220" x2="700" y2="220" stroke="#cdcbc4" stroke-width="1"/>
+        <line x1="70" y1="172.5" x2="700" y2="172.5" stroke="#ebe9e4" stroke-width="1"/>
+        <line x1="70" y1="125" x2="700" y2="125" stroke="#ebe9e4" stroke-width="1"/>
+        <line x1="70" y1="77.5" x2="700" y2="77.5" stroke="#ebe9e4" stroke-width="1"/>
+        <line x1="70" y1="30" x2="700" y2="30" stroke="#ebe9e4" stroke-width="1"/>
+        <text x="60" y="224" text-anchor="end" font-family="Inter,sans-serif" font-size="12" fill="#9a9892">0%</text>
+        <text x="60" y="129" text-anchor="end" font-family="Inter,sans-serif" font-size="12" fill="#9a9892">50%</text>
+        <text x="60" y="34" text-anchor="end" font-family="Inter,sans-serif" font-size="12" fill="#9a9892">100%</text>
+
+        <!-- caught: 75 -> h=142.5, y=77.5 -->
+        <rect x="135" y="77.5" width="150" height="142.5" fill="#3f7180"/>
+        <text x="210" y="69" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="600" fill="#3f7180">75%</text>
+        <text x="210" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#2c2c2a">Sneaky attacks it caught</text>
+        <text x="210" y="258" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="#7c7a74">about 3 in 4 — good</text>
+
+        <!-- false flag: 25 -> h=47.5, y=172.5 -->
+        <rect x="435" y="172.5" width="150" height="47.5" fill="#8a3f2a"/>
+        <text x="510" y="164" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="600" fill="#8a3f2a">25%</text>
+        <text x="510" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#2c2c2a">Innocent look-alikes it flagged</text>
+        <text x="510" y="258" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="#7c7a74">about 1 in 4 — false alarms</text>
+      </svg>
+      <figcaption>Its judgment stayed sharp — it still ranked attacks above innocent messages almost perfectly. But at the setting it shipped with, it caught roughly 3 in 4 of the most disguised attacks and raised a false alarm on roughly 1 in 4 suspicious-looking but harmless messages.</figcaption>
+    </div>
+  </figure>
+
+  <p>The detector's judgment was sound; its factory setting was off. Re-tuning that one cutoff on a given service's real traffic fixes most of it, but it means the free detector is not quite plug-and-play. The hard test also showed why the plain calculation keeps winning. The specialized tool leans on a few tidy, nameable concepts, and the messiest disguised messages fall between them, so it came apart here. The plain calculation uses the model's whole internal pattern at once, so it barely moved, and stayed level with the paid AI judge.</p>
+
+  <h2>Why it matters</h2>
+
+  <p>Strip it down and the takeaway is cheap to act on. If you run a model and can read its internal activity, you can stand up a first-line jailbreak detector for almost nothing: screen every message with no second AI and no per-message bill, and catch attack styles nobody wrote down in advance. What you cannot do is trust the factory cutoff. You have to tune it on your own traffic first.</p>
+
+  <p>That last sentence is the honest edge of the result, and it is as useful as the headline. A free detector that quietly false-alarms on a quarter of suspicious-looking but harmless messages would burn user trust fast if it shipped blind. Knowing exactly where it slips is what makes it safe to use — and what separates a real finding from a press release.</p>
+
+  <div class="fine">
+    <div class="finehed">Fine print</div>
+    <p>The numbers come from one small open model (Qwen3.5-2B) read at a single internal layer, on one run, with small test batches: eight example messages per category, and eight per trick on the hard test. Small samples make the exact percentages rough.</p>
+    <p>"As accurately as a paid AI judge" means both told attacks from ordinary messages without a miss on the clean test; on the hardest disguised attacks the paid judge stayed a hair ahead of the free one.</p>
+    <p>The hard-test attacks and innocent look-alikes were written by the researchers, not pulled from a real-world jailbreak database or a live red-team trying to beat the detector on purpose. So the next step is testing it against attacks in the wild, and against an attacker who can see the detector and aims at it. None of that is buried; it's the edge of what the evidence actually shows.</p>
+  </div>
+
+  <div class="foot">
+    Based on results logged on the Qwen Scope Lab Bench, May 2026; every figure traces to a recorded run on rented GPUs, with the paid AI judge checked beforehand to confirm it could tell a clear attack from a clear ordinary message.<br />
+    Terminology, once: the "free calculation" is a difference-of-means linear probe over the model's residual stream; the "specialized tool" is a sparse-autoencoder feature monitor; "told attacks from ordinary messages" refers to area-under-ROC on a held-out split.
+  </div>
+
+</div>
+
+</body>
+</html>

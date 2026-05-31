@@ -16,6 +16,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -385,6 +386,12 @@ class JailbreakHardeningReq(BaseModel):
     use_judge: bool = False
 
 
+class JailbreakScreenReq(BaseModel):
+    prompt: str
+    layer: int | None = None
+    use_judge: bool = False
+
+
 async def _guard(fn, *args, **kwargs):
     try:
         return await run_in_threadpool(fn, *args, **kwargs)
@@ -686,6 +693,9 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         return service.jailbreak_hardening(layer=p.get("layer"), top_k=p.get("top_k", 3),
                                            target_fpr=p.get("target_fpr", 0.1), use_judge=p.get("use_judge", False))
 
+    def op_jailbreak_screen(p: dict) -> dict:
+        return service.jailbreak_screen(p["prompt"], layer=p.get("layer"), use_judge=p.get("use_judge", False))
+
     OPS = {"inspect": op_inspect, "compare": op_compare, "atlas": op_atlas, "steer": op_steer, "sweep": op_sweep,
            "benchmark": op_benchmark, "autopilot": op_autopilot, "manifold_fit": op_manifold_fit,
            "manifold_steer": op_manifold_steer, "manifold_compare": op_manifold_compare,
@@ -697,7 +707,8 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
            "steer_direction": op_steer_direction, "caa_vs_sae": op_caa_vs_sae,
            "method_atlas": op_method_atlas, "emotion_coupling": op_emotion_coupling,
            "safety_geometry": op_safety_geometry, "monitor_stream": op_monitor_stream,
-           "jailbreak_detection": op_jailbreak_detection, "jailbreak_hardening": op_jailbreak_hardening}
+           "jailbreak_detection": op_jailbreak_detection, "jailbreak_hardening": op_jailbreak_hardening,
+           "jailbreak_screen": op_jailbreak_screen}
 
     def _summarize(op: str, result: Any) -> dict:
         if not isinstance(result, dict):
@@ -776,6 +787,10 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
                     "adaptive_evasion_recall_at_thr": v.get("adaptive_evasion_recall_at_thr"),
                     "probe_auc_on_hard": v.get("probe_auc_on_hard"), "judge_auc_on_hard": v.get("judge_auc_on_hard"),
                     "weakest_axis": v.get("weakest_axis")}
+        if op == "jailbreak_screen":
+            return {"verdict": result.get("verdict"), "score": result.get("score"),
+                    "threshold": result.get("threshold"), "fires": result.get("fires"),
+                    "scored_ms": result.get("scored_ms")}
         if op == "emotion_coupling":
             v = result.get("verdict", {})
             return {"emotion": result.get("emotion"), "emotion_probe_auc": result.get("emotion_probe_auc"),
@@ -975,6 +990,18 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
         result = await _guard_gpu(op_jailbreak_hardening, params)
         _log_experiment("jailbreak_hardening", params, "done", result=result)
         return result
+
+    @app.post("/api/jailbreak_screen")
+    async def jailbreak_screen(req: JailbreakScreenReq) -> dict:
+        # live demo screening — high-frequency, so not written to the experiment log
+        return await _guard_gpu(op_jailbreak_screen, req.model_dump())
+
+    @app.get("/demo")
+    async def demo_page() -> FileResponse:
+        page = WEB_DIR / "demo.html"
+        if not page.is_file():
+            raise HTTPException(status_code=404, detail="demo page not found")
+        return FileResponse(str(page))
 
     @app.post("/api/monitor/stream")
     async def monitor_stream(req: MonitorStreamReq) -> dict:

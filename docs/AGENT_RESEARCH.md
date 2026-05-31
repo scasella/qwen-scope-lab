@@ -32,7 +32,8 @@ GET  /api/experiments?limit=50                              -> the research trai
 `manifold_fit`, `manifold_steer`, `manifold_compare`, `manifold_sae_coverage`, `manifold_pullback`,
 `monitor_discover`, `monitor_score`, `monitor_shootout`, `monitor_robustness`, `collateral`,
 `control_loop`, `probe_discover`, `probe_score`, `steer_direction`, `caa_vs_sae`, `method_atlas`,
-`emotion_coupling`, `safety_geometry`, `monitor_stream`, `jailbreak_detection`, `jailbreak_hardening`.
+`emotion_coupling`, `safety_geometry`, `monitor_stream`, `jailbreak_detection`, `jailbreak_hardening`,
+`jailbreak_screen`.
 `params` mirror the matching `POST /api/<op>` request body (see `/api/openapi.json` for every
 field). The quick ops (`inspect`/`compare`/`steer`) are also fine to call synchronously at
 `POST /api/<op>`; the heavy/experiment ops (`benchmark`, `autopilot`, `manifold_*`, `atlas`,
@@ -149,6 +150,9 @@ POST /api/jailbreak_detection {layer, top_k, target_fpr, use_judge}
 POST /api/jailbreak_hardening {layer, top_k, target_fpr, use_judge}
    -> {transfer{held_out_families, hard_negatives, adaptive_evasion, realistic_combined (each {auc, fpr_at_thr, recall_at_thr}), weakest_axis},
        shootout_on_hard{methods, verdict}, verdict{status: robust|degraded, realistic_auc, hard_negative_fpr_at_thr, adaptive_evasion_recall_at_thr}}
+POST /api/jailbreak_screen    {prompt, use_judge}
+   -> {verdict: jailbreak|clean, score, threshold, margin, fires, confidence, scored_ms, judge?{score, verdict, ms}}
+GET  /demo                                                  -> the live single-message screening demo page (web/demo.html)
 ```
 
 - **`monitor_shootout`** is the credibility check: does the interpretable SAE-feature monitor beat a
@@ -184,6 +188,12 @@ POST /api/jailbreak_hardening {layer, top_k, target_fpr, use_judge}
   (AUC≥0.80), **generalises** to held-out families, **and matches the judge** — else `benchmarked`. With
   `use_judge` the judge is preflighted (must score a jailbreak high, a benign prompt low) before the
   free-probe-vs-paid-judge comparison is trusted.
+- **`jailbreak_screen`** powers the live product demo at **`GET /demo`**: it discovers the jailbreak probe
+  once (cached on the service), then screens any typed prompt with one dot product on the message's pooled
+  residual, returning a `jailbreak`/`clean` verdict, the score against the calibrated threshold, a 0..1
+  display confidence, and the scoring latency. `use_judge` adds a GPT-4o-mini side-by-side (the free-local
+  vs paid-API contrast the demo sells). The page (`web/demo.html`) is served live whenever the bench runs,
+  including under `modal serve` at the `web_gui` URL + `/demo`.
 - **`jailbreak_hardening`** is the adversarial follow-up — it stress-tests the clean-split probe on the
   three axes where an AUC of 1.00 is most likely to break, to find *where* it breaks: **hard negatives**
   (benign prompts in jailbreak surface forms — the false-positive test), **adaptive evasion**

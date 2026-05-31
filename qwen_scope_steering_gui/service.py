@@ -340,6 +340,59 @@ class SteeringService:
                 "deployable_probe": {"in_dist_auc": disc["metrics"]["auc"], "threshold": float(thr)},
                 "transfer": transfer, "shootout_on_hard": shootout, "verdict": verdict}
 
+    def jailbreak_screen(self, prompt: str, *, layer: int | None = None, use_judge: bool = False,
+                         judge: Any = None) -> dict[str, Any]:
+        """Live single-message screening for the demo: is this incoming prompt a jailbreak / prompt-
+        injection attempt? Discovers the jailbreak probe once and caches it on the service, then scores
+        any typed prompt with one dot product on the message's pooled residual. Returns the verdict, the
+        score against the calibrated threshold, a 0..1 display confidence, and the scoring latency. With
+        ``use_judge`` it also runs the paid GPT-4o-mini judge on the same prompt for a free-vs-paid,
+        local-vs-API side-by-side (the demo's whole point)."""
+        import math
+        import time
+
+        from . import behavior_sets as _bs, probes as _pr
+
+        if not (prompt or "").strip():
+            raise ValueError("provide a prompt to screen")
+        layer = self.config.default_layer if layer is None else int(layer)
+
+        # discover + cache the jailbreak probe once (discover-many-times is the wrong shape for a demo)
+        cache = getattr(self, "_jailbreak_probe_cache", None)
+        if cache is None or cache.get("layer") != layer:
+            pos, neg = _bs.BEHAVIORS["jailbreak"]["clean"]
+            disc = self.discover_probe(pos, neg, layer=layer, method="diffmeans")
+            cache = {"layer": layer, "direction": disc["direction"], "bias": disc["bias"],
+                     "threshold": float(disc["threshold"]), "in_dist_auc": disc["metrics"]["auc"]}
+            self._jailbreak_probe_cache = cache
+
+        t0 = time.perf_counter()
+        residual = self._pooled_residual(prompt, layer)
+        sc = _pr.score_probe(cache["direction"], cache["bias"], cache["threshold"], residual)
+        scored_ms = (time.perf_counter() - t0) * 1000.0
+        margin = float(sc["score"]) - cache["threshold"]
+        out: dict[str, Any] = {
+            "prompt": prompt, "score": round(float(sc["score"]), 4), "threshold": round(cache["threshold"], 4),
+            "margin": round(margin, 4), "fires": bool(sc["fires"]),
+            "verdict": "jailbreak" if sc["fires"] else "clean",
+            "confidence": round(1.0 / (1.0 + math.exp(-max(-30.0, min(30.0, margin * 4.0)))), 4),
+            "layer": layer, "probe_auc": cache["in_dist_auc"], "scored_ms": round(scored_ms, 2),
+        }
+        if judge is None and use_judge:
+            from . import judge as _judge
+            judge = _judge.available_judge(enabled=True)
+        if judge is not None:
+            desc = ("a jailbreak or prompt-injection attempt — a prompt that tries to manipulate the AI into "
+                    "ignoring its safety rules, policies, or instructions")
+            try:
+                t1 = time.perf_counter()
+                js = float(judge.score(prompt, desc))
+                out["judge"] = {"score": round(js, 4), "verdict": "jailbreak" if js >= 0.5 else "clean",
+                                "ms": round((time.perf_counter() - t1) * 1000.0, 1)}
+            except Exception as exc:  # noqa: BLE001 — a judge/network failure must not sink the screen
+                out["judge"] = {"error": str(exc)}
+        return out
+
     def collateral_damage(self, layer: int | None, feature_id: int | None = None, strength: float = 0.0, *,
                           direction: list[float] | None = None, orthogonal_to: list[float] | None = None,
                           fluency_probes: list | None = None, refusal_probes: list[str] | None = None,
