@@ -51,13 +51,15 @@ The Lab is a richer single-page workbench (`web/`) served over FastAPI (`qwen_sc
 python serve_web.py --dev
 
 # Apple Silicon, local, no Modal/CUDA -- the FULL bench on the real 2B + its SAE via MLX (see docs/MLX.md):
-python serve_web.py --mlx                       # bare: the default 2B + its SAE, on-device
+python serve_web.py --mlx                       # bare: the default 2B (instruct) + its SAE, on-device
+python serve_web.py --mlx-base                   # the base model the SAE was trained on (SAE/manifold fidelity)
 python serve_web.py --mlx --mlx-sae none        # skip the SAE download (probe + steering + manifold only)
 # (--mlx <repo> overrides the model; --mlx-layer N sets the probe/capture layer;
 #  first run downloads model ~4.5GB + SAE ~540MB, then cached)
 
 # real model paths (need CUDA):
-python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml
+python serve_web.py --config configs/qwen35_2b_dev_l0_100.yaml    # instruct 2B (the behavioral demos)
+python serve_web.py --config configs/qwen35_2b_base_l0_100.yaml   # base 2B (matches the base-trained SAE)
 python serve_web.py --config configs/qwen35_27b_l0_100.yaml
 ```
 

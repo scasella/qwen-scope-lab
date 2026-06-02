@@ -17,6 +17,9 @@ selected with `serve_web.py --mlx` (or `mlx_backend.build_mlx_service(...)` in c
 # The FULL bench — the real 2B + its SAE, on-device. No other args needed:
 python serve_web.py --mlx
 
+# The base model the SAE was actually trained on (most faithful for SAE-feature / manifold work):
+python serve_web.py --mlx-base
+
 # Probe-only (skips the SAE download): detection + steering + manifold, no SAE-feature path:
 python serve_web.py --mlx --mlx-sae none
 ```
@@ -151,6 +154,54 @@ So the posture is **2B local-first on MLX, 27B + hosting on Modal.** See `bench-
 - **SAE:** the Qwen-Scope residual SAE, e.g. `Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100`
   (`--mlx-d-sae 32768`). It downloads as a per-layer `layerN.sae.pt`; the existing loader
   fetches and validates it, and `MlxModel` converts the encoder to MLX once and caches it.
+
+### Base vs. instruct — match the model to the SAE
+
+The Qwen-Scope 2B SAE is trained on the **base** model (its card: *"Base model: Qwen3.5-2B-Base"*),
+so the most faithful SAE-feature and manifold work runs the base model:
+
+```bash
+python serve_web.py --mlx-base     # Qwen/Qwen3.5-2B-Base + the base-trained SAE — the faithful pairing
+```
+
+`--mlx` defaults to the **instruct** model (`mlx-community/Qwen3.5-2B-bf16`, a finetune of that base)
+on purpose: the lab's headline behavioral demos — jailbreak detection, refusal suppression, the
+detect→suppress→prove control loop — only mean something on a model that follows instructions and
+refuses. A base model does neither.
+
+Rule of thumb: **`--mlx-base` for SAE-feature / manifold fidelity**, **`--mlx` (instruct) for anything
+behavioral.** Both use the same base-trained SAE; only the model changes. No pre-converted
+`mlx-community` base build exists yet, so mlx-lm converts the Qwen bf16 weights on first load — same
+`qwen3_5` architecture as the instruct build, so the backend's trunk-finding and hybrid masking are
+identical. (On CUDA/Modal, the equivalent pairing is `configs/qwen35_2b_base_l0_100.yaml`.)
+
+### How much does the base→instruct mismatch actually cost? (measured)
+
+We measured it rather than assume it — running the **same** base-trained
+SAE on both models at L12. The SAE is a **TopK-100** SAE (its true forward,
+recovered by picking the convention that best reconstructs the base model: `topk(pre, 100)` with
+`pre = x @ Wᵀ_enc + b_enc`, no `b_dec` pre-subtraction — matching `sae_math.py`). On 40 neutral texts:
+
+| metric (L12) | base (faithful) | instruct (default) |
+|---|---|---|
+| reconstruction FVU ↓ | 0.198 | 0.205 |
+| explained variance ↑ | 0.80 | 0.795 |
+| reconstruction cosine ↑ | 0.919 | 0.921 |
+
+So the **reconstruction cost of running the SAE on instruct is ~0.7 points of FVU — negligible.** The reason:
+the instruct L12 residuals are **0.965 cosine** to the base residuals (fine-tuning moved this layer only
+slightly). The lab uses the SAE as an *encoder* (top-k features), not to reconstruct, so the more relevant
+number is **feature agreement**: per-token activation cosine **0.94**, and **top-20 feature Jaccard 0.72**
+(≈28% of the *exact* top-20 feature identities shift between base and instruct). That 28% churn is the one
+real cost — it only matters if you read an **individual** feature's activation on instruct and assume it is
+the same feature the SAE learned on base, which is exactly the per-feature / manifold work `--mlx-base` is for.
+The behavioral demos don't read individual base-feature identities, so the instruct default is fine for them.
+
+We also re-ran the jailbreak **SAE-feature-vs-residual-probe shootout** on both models (same code path). On the
+faithful base pairing the SAE feature improves (AUC **0.78 → 0.84**) and the residual probe's lead narrows
+(**0.22 → 0.16**) — but the **raw-residual probe still wins (AUC 1.00 on both)**. So "a cheap probe beats the
+SAE feature" was mildly *conservative* on instruct (the SAE was off-distribution), not wrong: it survives the
+fair base-model test. (Banks are 8/8 → AUC granularity ~0.06; read the margins, not third decimals.)
 
 ### Hybrid architecture note
 

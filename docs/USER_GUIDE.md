@@ -40,7 +40,9 @@ Full setup + credentials are in `README.md`. Then pick a backend:
   printed URL. Bare `--mlx` runs the **real Qwen3.5-2B + its SAE on-device** via MLX —
   every mode in this guide works, private and offline, no Modal and no GPU bill. The first launch
   downloads the model (~4.5 GB) + SAE (~540 MB), then it's cached. (Add `--mlx-sae none` for the
-  probe/detection paths only — no SAE download.) Details: `docs/MLX.md`. **This is the recommended
+  probe/detection paths only — no SAE download.) For the **base** model the SAE was trained on —
+  most faithful for the Explore and Manifold modes — use `--mlx-base` instead; the instruct default
+  is better for the Control / jailbreak modes. Details: `docs/MLX.md`. **This is the recommended
   way to follow this guide on real text.**
 - **Real model (Modal, GPU):** `modal serve modal_app.py`, then open the **`web_gui`** URL it
   prints — the real Qwen3.5-2B (default; set `QWEN_GUI_TARGET=27b-a100` for 27B — the 27B is

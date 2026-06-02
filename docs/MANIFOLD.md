@@ -174,7 +174,10 @@ produce a recorded real-GPU result; stop the warm GPU with `modal app stop qwen-
 when done. **The entire manifold mode (fit / steer / compare / pullback / SAE coverage) also runs
 locally on the real 2B via the MLX backend** — `serve_web.py --mlx … --mlx-sae …` — no Modal/CUDA;
 the pullback's L-BFGS optimisation becomes an `mx.value_and_grad` + Adam loop on-device (see `MLX.md`).
-The 27B remains Modal-only.
+The 27B remains Modal-only. For maximal fidelity, run the **base** model the SAE was trained on with
+`serve_web.py --mlx-base` (or `configs/qwen35_2b_base_l0_100.yaml` on CUDA): the residual centroids and
+SAE-coverage tiling then come from the exact activations the SAE saw — see the base-vs-instruct note in
+`MLX.md`.
 
 The dead-end probes that produced §2's negatives were removed from the public tree but are
 preserved in git history.

@@ -22,7 +22,7 @@ python serve_web.py --mlx          # the real 2B + its SAE, entirely on-device
 # → open http://127.0.0.1:7870 in your browser — the whole lab is a visual GUI
 ```
 
-That one command runs the whole lab on the real `Qwen3.5-2B` and its Qwen-Scope SAE and serves the GUI in your browser — no Modal, CUDA, or API key needed. First launch downloads the model (~4.5 GB, bf16) and SAE (~540 MB), then caches them; every run after is offline. (Pass `--mlx-sae none` to skip the SAE download and use the probe-only paths; pass `--mlx <repo>` to override the model.)
+That one command runs the whole lab on the real `Qwen3.5-2B` and its Qwen-Scope SAE and serves the GUI in your browser — no Modal, CUDA, or API key needed. First launch downloads the model (~4.5 GB, bf16) and SAE (~540 MB), then caches them; every run after is offline. (Pass `--mlx-sae none` to skip the SAE download and use the probe-only paths; pass `--mlx <repo>` to override the model.) To run the **base** model the SAE was actually trained on — the most faithful pairing for SAE-feature and manifold work — use `python serve_web.py --mlx-base` instead; the instruct default is better for the behavioral demos (jailbreak, refusal, the control loop).
 
 **Just want to explore the interface, with no downloads at all?**
 
