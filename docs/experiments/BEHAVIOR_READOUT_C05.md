@@ -74,3 +74,47 @@ Single seed, greedy/teacher-forced scoring, six concepts at one layer each, n=1 
 this audit establishes *read-out sensitivity*, not a new global manifold-vs-linear ledger. The
 corrected per-concept verdicts above are point estimates; re-running the full §5 table under
 `full_string` (all concepts × layers) is the follow-up that would replace the "3/7" row.
+
+## Follow-up executed (2026-06-09) — corrected full §5 ledger
+
+The follow-up above was run. Every well-defined §5 census concept (integers degenerate → skipped)
+was re-scored with `manifold_compare` under **both** read-outs at the same layer/waypoints/params
+(`n_waypoints=5`, `max_new_tokens=4`, greedy), self-consistently in one MLX session — so the table
+below is internally comparable rather than reusing prior cells.
+
+Runner: `scripts/_c05_full_table.py`. Full numbers: `reports/manifold_c05/full_table_full_string.json`.
+
+| concept | layer | tok/value | collisions | first-token gap | full-string gap | flip |
+|---|---|---|---|---|---|---|
+| days_of_week | 14 | 1.00 | 0 | +0.0190 (manifold) | +0.0190 (manifold, bit-identical) | no |
+| rank | 20 | 1.13 | 0 | +0.0334 (manifold) | +0.0310 (manifold) | no |
+| size | 16 | 1.00 | 0 | −0.0024 (linear) | −0.0024 (linear, bit-identical) | no |
+| agreement | 8 | 1.40 | 1 | −0.0082 (linear) | **+0.0055 (manifold)** | **YES** |
+| education | 8 | 1.43 | 0 | +0.0062 (manifold) | **−0.0014 (linear)** | **YES** |
+| valence | 16 | 1.14 | 0 | +0.0020 (manifold) | +0.0019 (manifold) | no |
+
+(gap = linear energy − manifold energy; positive ⇒ manifold more faithful.)
+
+**Corrected verdict: under the multi-token-faithful full-string read-out, manifold beats linear
+4/6 — days, rank, agreement, valence** (vs first-token 4/6: days, rank, education, valence in this
+same harness). The two flips are exactly the multi-token concepts (agreement gains a win, education
+loses one); the four single-token comparisons (days, size, plus the two emotion controls below) are
+bit-identical across read-outs, re-confirming the implementation.
+
+**Param note vs the original §5 "3/7":** the historical "3/7 (rank, education, days)" came from the
+Modal naturalness probe with different params/pairs, so it is *not* cell-identical to this MLX run.
+Re-run first-token here actually yields 4/6 (it additionally counts valence, a sub-threshold win
+the original harness didn't surface). The headline that flips on multi-token concepts is robust; the
+exact denominator is harness-dependent, which is why the corrected ledger reports both columns from
+one self-consistent run.
+
+**Optional emotion section (single-token, expected bit-identical — confirmed):**
+
+| concept | layer | tok/value | full-string gap | manifold more faithful |
+|---|---|---|---|---|
+| emotion_arousal | 12 | 1.00 | +0.0300 | yes (bit-identical) |
+| emotion_valence_intensity | 8 | 1.29 | +0.0091 | yes (≈first-token +0.0090) |
+| emotion_fear | 8 | 1.00 | +0.0185 | yes (bit-identical) |
+
+All three emotion concepts win on manifold under both read-outs; the two single-token ones are
+bit-identical, and the one mildly-multi-token one (valence_intensity) barely moves.

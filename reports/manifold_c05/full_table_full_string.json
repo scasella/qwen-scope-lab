@@ -1,0 +1,283 @@
+{
+  "model_id": "mlx-community/Qwen3.5-2B-bf16",
+  "audit": "C05 follow-up \u2014 full \u00a75 manifold-vs-linear table, both read-outs",
+  "params": {
+    "n_waypoints": 5,
+    "max_new_tokens": 4,
+    "temperature": 0.0,
+    "skipped": [
+      "integers_0_20 (degenerate -> NA)"
+    ]
+  },
+  "census": {
+    "n_concepts": 6,
+    "first_token": {
+      "manifold_wins": 4,
+      "concepts": [
+        "days_of_week",
+        "education",
+        "rank",
+        "valence"
+      ]
+    },
+    "full_string": {
+      "manifold_wins": 4,
+      "concepts": [
+        "agreement",
+        "days_of_week",
+        "rank",
+        "valence"
+      ]
+    },
+    "n_verdict_flips": 2,
+    "results": [
+      {
+        "concept": "days_of_week",
+        "layer": 14,
+        "note": "census",
+        "source": "Monday",
+        "target": "Thursday",
+        "tokenization": {
+          "first_token_collisions": 0,
+          "mean_tokens_per_value": 1.0,
+          "multi_token": false
+        },
+        "first_token": {
+          "manifold_energy": 0.005,
+          "linear_energy": 0.024,
+          "energy_gap": 0.019,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9985
+        },
+        "full_string": {
+          "manifold_energy": 0.005,
+          "linear_energy": 0.024,
+          "energy_gap": 0.019,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9985
+        },
+        "verdict_flip": false
+      },
+      {
+        "concept": "rank",
+        "layer": 20,
+        "note": "census",
+        "source": "private",
+        "target": "general",
+        "tokenization": {
+          "first_token_collisions": 0,
+          "mean_tokens_per_value": 1.125,
+          "multi_token": true
+        },
+        "first_token": {
+          "manifold_energy": 0.0421,
+          "linear_energy": 0.0755,
+          "energy_gap": 0.0334,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9795
+        },
+        "full_string": {
+          "manifold_energy": 0.044,
+          "linear_energy": 0.075,
+          "energy_gap": 0.031,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9791
+        },
+        "verdict_flip": false
+      },
+      {
+        "concept": "size",
+        "layer": 16,
+        "note": "census",
+        "source": "tiny",
+        "target": "enormous",
+        "tokenization": {
+          "first_token_collisions": 0,
+          "mean_tokens_per_value": 1.0,
+          "multi_token": false
+        },
+        "first_token": {
+          "manifold_energy": 0.0064,
+          "linear_energy": 0.004,
+          "energy_gap": -0.0024,
+          "manifold_more_faithful": false,
+          "isometry_r": 0.965
+        },
+        "full_string": {
+          "manifold_energy": 0.0064,
+          "linear_energy": 0.004,
+          "energy_gap": -0.0024,
+          "manifold_more_faithful": false,
+          "isometry_r": 0.9649
+        },
+        "verdict_flip": false
+      },
+      {
+        "concept": "agreement",
+        "layer": 8,
+        "note": "census",
+        "source": "strongly disagree",
+        "target": "strongly agree",
+        "tokenization": {
+          "first_token_collisions": 1,
+          "mean_tokens_per_value": 1.4,
+          "multi_token": true
+        },
+        "first_token": {
+          "manifold_energy": 0.014,
+          "linear_energy": 0.0058,
+          "energy_gap": -0.0082,
+          "manifold_more_faithful": false,
+          "isometry_r": 0.9726
+        },
+        "full_string": {
+          "manifold_energy": 0.0241,
+          "linear_energy": 0.0296,
+          "energy_gap": 0.0055,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9986
+        },
+        "verdict_flip": true
+      },
+      {
+        "concept": "education",
+        "layer": 8,
+        "note": "census",
+        "source": "kindergarten",
+        "target": "doctorate",
+        "tokenization": {
+          "first_token_collisions": 0,
+          "mean_tokens_per_value": 1.429,
+          "multi_token": true
+        },
+        "first_token": {
+          "manifold_energy": 0.0118,
+          "linear_energy": 0.018,
+          "energy_gap": 0.0062,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9617
+        },
+        "full_string": {
+          "manifold_energy": 0.0174,
+          "linear_energy": 0.016,
+          "energy_gap": -0.0014,
+          "manifold_more_faithful": false,
+          "isometry_r": 0.9758
+        },
+        "verdict_flip": true
+      },
+      {
+        "concept": "valence",
+        "layer": 16,
+        "note": "census",
+        "source": "miserable",
+        "target": "ecstatic",
+        "tokenization": {
+          "first_token_collisions": 0,
+          "mean_tokens_per_value": 1.143,
+          "multi_token": true
+        },
+        "first_token": {
+          "manifold_energy": 0.0137,
+          "linear_energy": 0.0157,
+          "energy_gap": 0.002,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9457
+        },
+        "full_string": {
+          "manifold_energy": 0.0132,
+          "linear_energy": 0.0151,
+          "energy_gap": 0.0019,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.947
+        },
+        "verdict_flip": false
+      }
+    ]
+  },
+  "emotion": {
+    "results": [
+      {
+        "concept": "emotion_arousal",
+        "layer": 12,
+        "note": "emotion",
+        "source": "numb",
+        "target": "frantic",
+        "tokenization": {
+          "first_token_collisions": 0,
+          "mean_tokens_per_value": 1.0,
+          "multi_token": false
+        },
+        "first_token": {
+          "manifold_energy": 0.0228,
+          "linear_energy": 0.0528,
+          "energy_gap": 0.03,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9993
+        },
+        "full_string": {
+          "manifold_energy": 0.0228,
+          "linear_energy": 0.0528,
+          "energy_gap": 0.03,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9993
+        },
+        "verdict_flip": false
+      },
+      {
+        "concept": "emotion_valence_intensity",
+        "layer": 8,
+        "note": "emotion",
+        "source": "furious",
+        "target": "euphoric",
+        "tokenization": {
+          "first_token_collisions": 0,
+          "mean_tokens_per_value": 1.286,
+          "multi_token": true
+        },
+        "first_token": {
+          "manifold_energy": 0.0597,
+          "linear_energy": 0.0687,
+          "energy_gap": 0.009,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9979
+        },
+        "full_string": {
+          "manifold_energy": 0.0595,
+          "linear_energy": 0.0686,
+          "energy_gap": 0.0091,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9979
+        },
+        "verdict_flip": false
+      },
+      {
+        "concept": "emotion_fear",
+        "layer": 8,
+        "note": "emotion",
+        "source": "terrified",
+        "target": "calm",
+        "tokenization": {
+          "first_token_collisions": 0,
+          "mean_tokens_per_value": 1.0,
+          "multi_token": false
+        },
+        "first_token": {
+          "manifold_energy": 0.0026,
+          "linear_energy": 0.0211,
+          "energy_gap": 0.0185,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9952
+        },
+        "full_string": {
+          "manifold_energy": 0.0026,
+          "linear_energy": 0.0211,
+          "energy_gap": 0.0185,
+          "manifold_more_faithful": true,
+          "isometry_r": 0.9952
+        },
+        "verdict_flip": false
+      }
+    ]
+  }
+}
