@@ -185,6 +185,38 @@ directions; routing is the evidence. The four winning rings are promoted to
 `concept_presets.py::_ATLAS_EXTRA` (`hues_ring`, `compass_ring`, `months_ring`, `zodiac_ring`)
 as routing-validated presets with their position-readout prompts.
 
+## The manifold zoo — ideated candidates, pre-registered predictions, 2/6 validated (2026-06-10)
+
+A multi-agent ideation pass (5 diverse generators → 19 deduped candidates → 3 adversarial
+auditors → 6 survivors at ≥2/3 keep votes) proposed net-new candidates *with pre-registered
+predictions and falsification conditions*, then the survivors ran under the unchanged protocol.
+Runner: `scripts/_manifold_zoo.py`; data: `reports/manifold_census/manifold_zoo.json`.
+
+| candidate | class | n | layer | manifold | linear | shuffled | verdict |
+|---|---|---|---|---|---|---|---|
+| Chinese zodiac (Rat→Horse) | long ring | 12 | 16 | **1.00** | 0.29 | 0.86 | **routing win** |
+| card ranks (Ace→Seven) | long ring, ace-wrap bet | 13 | 6 | **1.00** | 0.29 | **0.57** | **routing win — cleanest margin yet** |
+| political horseshoe (communist→fascist) | fold | 7 | 6 | 1.00 | 0.29 | 1.00 | no win — shuffled ties |
+| solfège (Do→Sol) | ring | 7 | 6 | 1.00 | 0.40 | 1.00 | no win — shuffled ties |
+| cell cycle (interphase→anaphase) | process ring | 7 | 16 | 0.20 | 0.20 | 0.20 | steer-resistant |
+| engine cycle (intake→combustion) | process ring | 6 | 6 | 1.00 | 0.50 | 1.00 | no win — shuffled ties |
+
+Two results stand out. **Card ranks** is the cleanest gate margin of any ring tested in this
+program: the shuffled control drops to 0.57 on the 13-point ring (vs 0.86 on months/Chinese
+zodiac), so manifold − shuffled = +0.43 — and the walk is perfect (Ace, Two, Three, Four, Five,
+Six, Seven) while the chord snaps Ace×4, Seven×3. The ace-wrap was an explicit semantic-wrap
+*bet* — text rarely states King→Ace adjacency outside ace-high games — and the ring closed.
+**The political horseshoe** (a fold, not a ring) walks the entire ideology spectrum in perfect
+order — communist, socialist, liberal, centrist, conservative, reactionary, fascist — while the
+chord snaps to the extremes; but the shuffled control also routes 1.00 at n=7, so the gate
+withholds the win, exactly as its pre-registered falsification condition specified.
+
+The predictions scored well: 5/6 outcomes matched the auditors' pre-registered direction
+(zodiac win; card win with shuffled in the predicted 0.35–0.65 band; solfège and engine caught
+by the small-ring shuffled-tie trap they were flagged for; cell cycle steer-resistant on rare
+technical labels, the moon-phases failure mode). The two winners are promoted to
+`_ATLAS_EXTRA` (`chinese_zodiac_ring` L16, `card_rank_ring` L6).
+
 ## Why this matters
 
 The census turned a 3-concept result (arousal routes; valence, fear don't) into a 13-concept

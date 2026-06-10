@@ -177,6 +177,21 @@ _ATLAS_EXTRA.update({
         ("She is a {item}", "Born under {item}", "His sign is {item}",
          "The horoscope for {item}", "A typical {item}", "True to {item}"),
         "She was born under {item}. Her zodiac sign is", best_layer=6),
+    # Manifold-zoo winners (2026-06-10): ideated+vetted by a multi-agent pass, validated on MLX.
+    "chinese_zodiac_ring": Concept("chinese_zodiac_ring", "Chinese zodiac (ring)", "cyclic",
+        ("Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse",
+         "Goat", "Monkey", "Rooster", "Dog", "Pig"),
+        ("The zodiac animal is {item}", "She was born in the year of the {item}",
+         "His Chinese zodiac sign is {item}", "The calendar marks the year of the {item}",
+         "A person born that year is a {item}", "The lunar zodiac animal is {item}"),
+        "The Chinese zodiac animal is {item}. So the zodiac animal is", best_layer=16),
+    "card_rank_ring": Concept("card_rank_ring", "Card ranks (ring)", "cyclic",
+        ("Ace", "Two", "Three", "Four", "Five", "Six", "Seven",
+         "Eight", "Nine", "Ten", "Jack", "Queen", "King"),
+        ("The card rank is {item}", "She drew a card ranked {item}",
+         "The face value is {item}", "The playing card is a {item}",
+         "In ace-low rank order, the card is {item}", "In ace-high rank order, the card is {item}"),
+        "The Ace-through-King card rank is {item}. The rank is", best_layer=6),
 })
 
 ATLAS_CONCEPTS: list[Concept] = list(CONCEPTS.values()) + list(_ATLAS_EXTRA.values())
