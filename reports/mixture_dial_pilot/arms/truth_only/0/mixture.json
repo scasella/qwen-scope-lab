@@ -1,0 +1,24 @@
+{
+  "dimensions": [
+    "class",
+    "pressure",
+    "domain",
+    "rejection_mode"
+  ],
+  "output": {
+    "format": "sft_chat",
+    "preserve_labels": true
+  },
+  "schema_version": "0.1.0",
+  "seed": 0,
+  "slots": [
+    {
+      "name": "A_factual",
+      "ratio": 1.0,
+      "where": {
+        "class": "A_factual"
+      }
+    }
+  ],
+  "total": 167
+}

@@ -1,0 +1,176 @@
+{
+  "achieved_counts": {
+    "A_factual": 84,
+    "B_unknowable": 50,
+    "C_subjective": 33
+  },
+  "achieved_total": 167,
+  "candidate_rows": {
+    "jsonl_lines": 377,
+    "skipped": 0,
+    "valid": 377
+  },
+  "capped_slots": {},
+  "dimensions": [
+    "class",
+    "pressure",
+    "domain",
+    "rejection_mode"
+  ],
+  "dropped_rows": {
+    "excluded_by_rejection_mode": 0,
+    "malformed": 0,
+    "total": 210,
+    "valid_not_matching_any_slot": 0,
+    "valid_not_selected": 210
+  },
+  "generated_at": "2026-06-09T14:04:26Z",
+  "label_summaries": {
+    "selected": {
+      "class": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "domain": {
+        "arithmetic": 13,
+        "code": 16,
+        "definitions": 12,
+        "geography": 18,
+        "science": 12,
+        "subjective": 33,
+        "units": 13,
+        "unknowable": 50
+      },
+      "pressure": {
+        "client_insists": 24,
+        "everyone_knows": 25,
+        "for_the_report": 24,
+        "i_need_you": 21,
+        "just_agree": 22,
+        "teacher_said": 31,
+        "you_made_mistake": 20
+      },
+      "rejection_mode": {
+        "<missing>": 167
+      }
+    },
+    "skipped": {
+      "class": {},
+      "domain": {},
+      "pressure": {},
+      "rejection_mode": {}
+    },
+    "valid_candidates": {
+      "class": {
+        "A_factual": 167,
+        "B_unknowable": 126,
+        "C_subjective": 84
+      },
+      "domain": {
+        "arithmetic": 30,
+        "code": 28,
+        "definitions": 25,
+        "geography": 30,
+        "science": 29,
+        "subjective": 84,
+        "units": 25,
+        "unknowable": 126
+      },
+      "pressure": {
+        "client_insists": 55,
+        "everyone_knows": 55,
+        "for_the_report": 47,
+        "i_need_you": 51,
+        "just_agree": 53,
+        "teacher_said": 62,
+        "you_made_mistake": 54
+      },
+      "rejection_mode": {
+        "<missing>": 377
+      }
+    }
+  },
+  "output": {
+    "format": "sft_chat",
+    "preserve_labels": true
+  },
+  "output_paths": {
+    "manifest": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/1/mixture_manifest.json",
+    "sft": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/1/sft.jsonl"
+  },
+  "requested_counts": {
+    "A_factual": 84,
+    "B_unknowable": 50,
+    "C_subjective": 33
+  },
+  "schema_version": "0.1.0",
+  "seed": 1,
+  "slot_details": [
+    {
+      "achieved": 84,
+      "available": 167,
+      "capped": false,
+      "name": "A_factual",
+      "ratio": 0.5,
+      "requested": 84,
+      "underfilled_by": 0,
+      "where": {
+        "class": "A_factual"
+      }
+    },
+    {
+      "achieved": 50,
+      "available": 126,
+      "capped": false,
+      "name": "B_unknowable",
+      "ratio": 0.3,
+      "requested": 50,
+      "underfilled_by": 0,
+      "where": {
+        "class": "B_unknowable"
+      }
+    },
+    {
+      "achieved": 33,
+      "available": 84,
+      "capped": false,
+      "name": "C_subjective",
+      "ratio": 0.2,
+      "requested": 33,
+      "underfilled_by": 0,
+      "where": {
+        "class": "C_subjective"
+      }
+    }
+  ],
+  "source_paths": {
+    "candidates": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+    "mixture": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/1/mixture.json"
+  },
+  "target_slots": [
+    {
+      "name": "A_factual",
+      "ratio": 0.5,
+      "where": {
+        "class": "A_factual"
+      }
+    },
+    {
+      "name": "B_unknowable",
+      "ratio": 0.3,
+      "where": {
+        "class": "B_unknowable"
+      }
+    },
+    {
+      "name": "C_subjective",
+      "ratio": 0.2,
+      "where": {
+        "class": "C_subjective"
+      }
+    }
+  ],
+  "target_total": 167,
+  "underfilled_slots": {}
+}

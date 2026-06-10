@@ -1,0 +1,38 @@
+{
+  "concept": "rank",
+  "layer": 20,
+  "readout": "first_token",
+  "held_out_template": "Addressed as {item}",
+  "target": "general",
+  "arms": {
+    "base": {
+      "n_eval": 7,
+      "target_mass": 0.4229,
+      "expected_position": 0.7512,
+      "target_rank": 1.571
+    },
+    "gated_manifold": {
+      "n_eval": 7,
+      "target_mass": 0.4158,
+      "expected_position": 0.7409,
+      "target_rank": 1.857
+    },
+    "ungated_manifold": {
+      "n_eval": 7,
+      "target_mass": 0.2229,
+      "expected_position": 0.665,
+      "target_rank": 2.429
+    },
+    "linear": {
+      "n_eval": 7,
+      "target_mass": 0.2229,
+      "expected_position": 0.665,
+      "target_rank": 2.429
+    }
+  },
+  "delta_expected_position_vs_base": {
+    "gated_manifold": -0.0103,
+    "ungated_manifold": -0.0862,
+    "linear": -0.0862
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "rank": {
+    "4": {
+      "n_carriers": 6,
+      "mean_distinct_texts_per_sweep": 1.0,
+      "frac_manifold_text_differs_from_linear": 0.0
+    },
+    "12": {
+      "n_carriers": 6,
+      "mean_distinct_texts_per_sweep": 1.0,
+      "frac_manifold_text_differs_from_linear": 0.0
+    },
+    "20": {
+      "n_carriers": 6,
+      "mean_distinct_texts_per_sweep": 1.0,
+      "frac_manifold_text_differs_from_linear": 0.0
+    }
+  },
+  "education": {
+    "4": {
+      "n_carriers": 6,
+      "mean_distinct_texts_per_sweep": 2.333,
+      "frac_manifold_text_differs_from_linear": 0.5
+    },
+    "12": {
+      "n_carriers": 6,
+      "mean_distinct_texts_per_sweep": 1.167,
+      "frac_manifold_text_differs_from_linear": 0.167
+    },
+    "20": {
+      "n_carriers": 6,
+      "mean_distinct_texts_per_sweep": 1.333,
+      "frac_manifold_text_differs_from_linear": 0.167
+    }
+  }
+}

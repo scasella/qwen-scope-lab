@@ -1,0 +1,227 @@
+{
+  "datasets": {
+    "balanced_full": {
+      "class_counts": {
+        "A_factual": 167,
+        "B_unknowable": 126,
+        "C_subjective": 84
+      },
+      "kind": "balanced_full",
+      "n": 377,
+      "path": "reports/steering_distill/th_v10_publication/datasets/balanced_full.jsonl",
+      "source": "v10_combined"
+    },
+    "balanced_matched_n": {
+      "binding_pool": "A_factual",
+      "class_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "kind": "matched_size",
+      "matched_n": 167,
+      "n": 167,
+      "path": "reports/steering_distill/th_v10_publication/datasets/balanced_matched_n.jsonl",
+      "serious_run": true
+    },
+    "calibration_only_matched_n": {
+      "binding_pool": "A_factual",
+      "class_counts": {
+        "B_unknowable": 98,
+        "C_subjective": 69
+      },
+      "kind": "matched_size",
+      "matched_n": 167,
+      "n": 167,
+      "path": "reports/steering_distill/th_v10_publication/datasets/calibration_only_matched_n.jsonl",
+      "serious_run": true
+    },
+    "mix_A40_B40_C20": {
+      "achieved": {
+        "A_factual": 127,
+        "B_unknowable": 126,
+        "C_subjective": 63
+      },
+      "achieved_fraction": {
+        "A_factual": 0.4019,
+        "B_unknowable": 0.3987,
+        "C_subjective": 0.1994
+      },
+      "capped": {},
+      "class_counts": {
+        "A_factual": 127,
+        "B_unknowable": 126,
+        "C_subjective": 63
+      },
+      "kind": "mixture",
+      "n": 316,
+      "path": "reports/steering_distill/th_v10_publication/datasets/mix_A40_B40_C20.jsonl",
+      "ratio": "A40_B40_C20",
+      "requested_total": 316
+    },
+    "mix_A50_B25_C25": {
+      "achieved": {
+        "A_factual": 158,
+        "B_unknowable": 79,
+        "C_subjective": 79
+      },
+      "achieved_fraction": {
+        "A_factual": 0.5,
+        "B_unknowable": 0.25,
+        "C_subjective": 0.25
+      },
+      "capped": {},
+      "class_counts": {
+        "A_factual": 158,
+        "B_unknowable": 79,
+        "C_subjective": 79
+      },
+      "kind": "mixture",
+      "n": 316,
+      "path": "reports/steering_distill/th_v10_publication/datasets/mix_A50_B25_C25.jsonl",
+      "ratio": "A50_B25_C25",
+      "requested_total": 316
+    },
+    "truth_only_matched_n": {
+      "binding_pool": "A_factual",
+      "class_counts": {
+        "A_factual": 167
+      },
+      "kind": "matched_size",
+      "matched_n": 167,
+      "n": 167,
+      "path": "reports/steering_distill/th_v10_publication/datasets/truth_only_matched_n.jsonl",
+      "serious_run": true
+    }
+  },
+  "kept_counts": {
+    "A_factual": 167,
+    "B_unknowable": 126,
+    "C_subjective": 84,
+    "total": 377
+  },
+  "leakage_checks": {
+    "note": "training corpus only; eval harness frozen + leakage-checked at expand-corpus",
+    "ok": true
+  },
+  "matched_size_ablation": {
+    "binding_pool": "A_factual",
+    "matched_n": 167,
+    "serious_run": true
+  },
+  "matched_total_across_ratios": 316,
+  "min_examples_for_serious": 100,
+  "optional_plan": [],
+  "ratios": [
+    "A50_B25_C25",
+    "A40_B40_C20"
+  ],
+  "schema_version": "1.0.0",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "training_plan": [
+    {
+      "dataset": "mix_A50_B25_C25",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n": 316,
+      "name": "mix_A50_B25_C25_seed0",
+      "ratio": "A50_B25_C25",
+      "seed": 0,
+      "serious_run": true
+    },
+    {
+      "dataset": "mix_A50_B25_C25",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n": 316,
+      "name": "mix_A50_B25_C25_seed1",
+      "ratio": "A50_B25_C25",
+      "seed": 1,
+      "serious_run": true
+    },
+    {
+      "dataset": "mix_A50_B25_C25",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n": 316,
+      "name": "mix_A50_B25_C25_seed2",
+      "ratio": "A50_B25_C25",
+      "seed": 2,
+      "serious_run": true
+    },
+    {
+      "dataset": "mix_A40_B40_C20",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n": 316,
+      "name": "mix_A40_B40_C20_seed0",
+      "ratio": "A40_B40_C20",
+      "seed": 0,
+      "serious_run": true
+    },
+    {
+      "dataset": "mix_A40_B40_C20",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n": 316,
+      "name": "mix_A40_B40_C20_seed1",
+      "ratio": "A40_B40_C20",
+      "seed": 1,
+      "serious_run": true
+    },
+    {
+      "dataset": "mix_A40_B40_C20",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n": 316,
+      "name": "mix_A40_B40_C20_seed2",
+      "ratio": "A40_B40_C20",
+      "seed": 2,
+      "serious_run": true
+    },
+    {
+      "dataset": "truth_only_matched_n",
+      "epochs": 3,
+      "kind": "matched_size",
+      "lr": 0.00015,
+      "matched_ablation": true,
+      "n": 167,
+      "name": "truth_only_matched_n",
+      "seed": 0,
+      "serious_run": true
+    },
+    {
+      "dataset": "calibration_only_matched_n",
+      "epochs": 3,
+      "kind": "matched_size",
+      "lr": 0.00015,
+      "matched_ablation": true,
+      "n": 167,
+      "name": "calibration_only_matched_n",
+      "seed": 0,
+      "serious_run": true
+    },
+    {
+      "dataset": "balanced_matched_n",
+      "epochs": 3,
+      "kind": "matched_size",
+      "lr": 0.00015,
+      "matched_ablation": true,
+      "n": 167,
+      "name": "balanced_matched_n",
+      "seed": 0,
+      "serious_run": true
+    }
+  ],
+  "v10_kept_source": "reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl"
+}

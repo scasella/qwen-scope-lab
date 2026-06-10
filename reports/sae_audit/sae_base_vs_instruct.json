@@ -1,0 +1,125 @@
+{
+  "config": {
+    "instruct": "mlx-community/Qwen3.5-2B-bf16",
+    "base": "Qwen/Qwen3.5-2B-Base",
+    "sae": "Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100",
+    "d_sae": 32768,
+    "layer": 12
+  },
+  "partA_sae_fidelity": {
+    "layer": 12,
+    "n_texts": 40,
+    "n_tokens_instruct": 505,
+    "n_tokens_base": 505,
+    "reconstruction_by_convention": {
+      "base": {
+        "relu_nopresub": {
+          "fvu": 0.2685,
+          "explained_var": 0.7315,
+          "recon_cosine": 0.9303,
+          "l0": 752.3
+        },
+        "relu_presub": {
+          "fvu": 3.2651,
+          "explained_var": -2.2651,
+          "recon_cosine": 0.7883,
+          "l0": 2394.7
+        },
+        "topk100_nopresub": {
+          "fvu": 0.1979,
+          "explained_var": 0.8021,
+          "recon_cosine": 0.9193,
+          "l0": 100.0
+        },
+        "topk100_presub": {
+          "fvu": 0.4712,
+          "explained_var": 0.5288,
+          "recon_cosine": 0.8296,
+          "l0": 100.0
+        }
+      },
+      "instruct": {
+        "relu_nopresub": {
+          "fvu": 0.2299,
+          "explained_var": 0.7701,
+          "recon_cosine": 0.9341,
+          "l0": 692.6
+        },
+        "relu_presub": {
+          "fvu": 3.4593,
+          "explained_var": -2.4593,
+          "recon_cosine": 0.7646,
+          "l0": 2459.1
+        },
+        "topk100_nopresub": {
+          "fvu": 0.2051,
+          "explained_var": 0.7949,
+          "recon_cosine": 0.921,
+          "l0": 100.0
+        },
+        "topk100_presub": {
+          "fvu": 0.5097,
+          "explained_var": 0.4903,
+          "recon_cosine": 0.8163,
+          "l0": 100.0
+        }
+      }
+    },
+    "sae_true_convention_from_base_fvu": "topk100_nopresub",
+    "reconstruction_true_convention": {
+      "base": {
+        "fvu": 0.1979,
+        "explained_var": 0.8021,
+        "recon_cosine": 0.9193,
+        "l0": 100.0
+      },
+      "instruct": {
+        "fvu": 0.2051,
+        "explained_var": 0.7949,
+        "recon_cosine": 0.921,
+        "l0": 100.0
+      },
+      "fvu_delta_instruct_minus_base": 0.0072
+    },
+    "feature_agreement_base_vs_instruct": {
+      "aligned_tokens": 505,
+      "top20_feature_jaccard": 0.7196,
+      "activation_cosine": 0.9392
+    },
+    "raw_residual_cosine_base_vs_instruct": 0.9646
+  },
+  "partB_jailbreak_shootout": {
+    "instruct": {
+      "sae_auc": 0.7812,
+      "residual_diffmeans_auc": 1.0,
+      "residual_logistic_auc": 1.0,
+      "control_auc": 0.45,
+      "winner": "residual_probe",
+      "margin": -0.2188,
+      "reason": "a raw-residual linear probe (AUC 1.00) beats the SAE monitor (AUC 0.78) by 0.22 \u2014 interpretability is not buying detection power here (cf. arXiv 2502.16681).",
+      "n_test_pos": 4,
+      "n_test_neg": 4,
+      "sae_features": [
+        23581,
+        16765,
+        29121
+      ]
+    },
+    "base": {
+      "sae_auc": 0.8438,
+      "residual_diffmeans_auc": 1.0,
+      "residual_logistic_auc": 1.0,
+      "control_auc": 0.45,
+      "winner": "residual_probe",
+      "margin": -0.1562,
+      "reason": "a raw-residual linear probe (AUC 1.00) beats the SAE monitor (AUC 0.84) by 0.16 \u2014 interpretability is not buying detection power here (cf. arXiv 2502.16681).",
+      "n_test_pos": 4,
+      "n_test_neg": 4,
+      "sae_features": [
+        23581,
+        16765,
+        29121
+      ]
+    }
+  }
+}

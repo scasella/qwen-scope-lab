@@ -1,0 +1,518 @@
+{
+  "arm_count": 4,
+  "arm_seed_count": 8,
+  "arms": [
+    {
+      "calib_frac": 0.0,
+      "candidates_path": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "description": "truth-only arm; calibration fraction 0.0",
+      "kind": "truth_only",
+      "name": "truth_only",
+      "requested_class_counts": {
+        "A_factual": 167
+      },
+      "rung": "dose_response+matched_size_baseline",
+      "slots": [
+        {
+          "name": "A_factual",
+          "ratio": 1.0,
+          "where": {
+            "class": "A_factual"
+          }
+        }
+      ],
+      "target_class_weights": {
+        "A_factual": 1.0,
+        "B_unknowable": 0.0,
+        "C_subjective": 0.0
+      },
+      "target_total": 167
+    },
+    {
+      "calib_frac": 0.5,
+      "candidates_path": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "description": "dose-response arm with calibration fraction 0.50",
+      "kind": "calibration_dial",
+      "name": "calib_frac_0.50",
+      "requested_class_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "rung": "dose_response",
+      "slots": [
+        {
+          "name": "A_factual",
+          "ratio": 0.5,
+          "where": {
+            "class": "A_factual"
+          }
+        },
+        {
+          "name": "B_unknowable",
+          "ratio": 0.3,
+          "where": {
+            "class": "B_unknowable"
+          }
+        },
+        {
+          "name": "C_subjective",
+          "ratio": 0.2,
+          "where": {
+            "class": "C_subjective"
+          }
+        }
+      ],
+      "target_class_weights": {
+        "A_factual": 0.5,
+        "B_unknowable": 0.3,
+        "C_subjective": 0.2
+      },
+      "target_total": 167
+    },
+    {
+      "calib_frac": null,
+      "candidates_path": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "description": "unconstrained random sample from the kept corpus at the same N",
+      "kind": "random_same_size",
+      "name": "random_same_size",
+      "requested_class_counts": {
+        "<unconstrained>": 167
+      },
+      "rung": "matched_size_baseline",
+      "slots": [
+        {
+          "count": 167,
+          "name": "random_all",
+          "where": {}
+        }
+      ],
+      "target_class_weights": null,
+      "target_total": 167
+    },
+    {
+      "calib_frac": null,
+      "candidates_path": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "description": "class-stratified sample using natural A/B/C frequencies at the same N",
+      "kind": "naive_stratified",
+      "name": "naive_stratified",
+      "requested_class_counts": {
+        "A_factual": 74,
+        "B_unknowable": 56,
+        "C_subjective": 37
+      },
+      "rung": "matched_size_baseline",
+      "slots": [
+        {
+          "name": "A_factual",
+          "ratio": 0.44297082228116713,
+          "where": {
+            "class": "A_factual"
+          }
+        },
+        {
+          "name": "B_unknowable",
+          "ratio": 0.33421750663129973,
+          "where": {
+            "class": "B_unknowable"
+          }
+        },
+        {
+          "name": "C_subjective",
+          "ratio": 0.22281167108753316,
+          "where": {
+            "class": "C_subjective"
+          }
+        }
+      ],
+      "target_class_weights": {
+        "A_factual": 0.44297082228116713,
+        "B_unknowable": 0.33421750663129973,
+        "C_subjective": 0.22281167108753316
+      },
+      "target_total": 167
+    }
+  ],
+  "calib_fracs": [
+    0.0,
+    0.5
+  ],
+  "calibration_split": {
+    "B_unknowable": 0.6,
+    "C_subjective": 0.4
+  },
+  "candidate_source": {
+    "fixture_based": false,
+    "kind": "real",
+    "note": "auto-discovered truth-holding kept corpus",
+    "path": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl"
+  },
+  "candidate_vocabulary": {
+    "class_counts": {
+      "A_factual": 167,
+      "B_unknowable": 126,
+      "C_subjective": 84
+    },
+    "label_vocabulary": {
+      "class": {
+        "A_factual": 167,
+        "B_unknowable": 126,
+        "C_subjective": 84
+      },
+      "domain": {
+        "arithmetic": 30,
+        "code": 28,
+        "definitions": 25,
+        "geography": 30,
+        "science": 29,
+        "subjective": 84,
+        "units": 25,
+        "unknowable": 126
+      },
+      "pressure": {
+        "client_insists": 55,
+        "everyone_knows": 55,
+        "for_the_report": 47,
+        "i_need_you": 51,
+        "just_agree": 53,
+        "teacher_said": 62,
+        "you_made_mistake": 54
+      },
+      "rejection_mode": {}
+    },
+    "n_valid": 377
+  },
+  "compute_plan": {
+    "base_model": "Qwen/Qwen3.5-4B",
+    "batch_size": 8,
+    "epochs": 4,
+    "estimate": true,
+    "estimate_note": "Local scripts do not expose Tinker dollar pricing. The bill is expressed as LoRA train runs, optimizer steps, token upper-bound slots, eval sample calls, and eval report invocations.",
+    "estimated_dollars": null,
+    "estimated_eval_sample_calls": 4080,
+    "estimated_tinker_train_steps": 672,
+    "estimated_training_token_upper_bound": 5472256,
+    "eval_prompt_info": {
+      "count": 255,
+      "kind": "eval_prompts",
+      "source": "data/experiments/steering_distill/deference_calib_eval.jsonl"
+    },
+    "eval_report_runs": 8,
+    "eval_report_script": "scripts/steering_distill_eval_report.py",
+    "lora_train_runs": 8,
+    "lr": 0.00015,
+    "max_eval_tokens": 56,
+    "model_sampling_arms_per_train_run": 2,
+    "rank": 32,
+    "train_max_len_assumed": 1024,
+    "train_script": "scripts/steering_distill_train_tinker.py"
+  },
+  "dry_run": false,
+  "execute_requested": true,
+  "generated_at": "2026-06-09T14:04:26Z",
+  "kill_criteria": {
+    "K1": "dose-response is flat, non-monotone, or within seed noise",
+    "K2": "dials approximately equal naive_stratified at matched N",
+    "K3": "win does not survive matched-size vs truth_only"
+  },
+  "matrix": [
+    {
+      "achieved_class_counts": {
+        "A_factual": 167
+      },
+      "achieved_slot_counts": {
+        "A_factual": 167
+      },
+      "achieved_total": 167,
+      "arm": "truth_only",
+      "arm_dir": "/tmp/mixture_pilot_run/arms/truth_only/0",
+      "calib_frac": 0.0,
+      "candidates": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/truth_only/0/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/truth_only/0/eval_report",
+      "kind": "truth_only",
+      "manifest": "/tmp/mixture_pilot_run/arms/truth_only/0/mixture_manifest.json",
+      "mixture": "/tmp/mixture_pilot_run/arms/truth_only/0/mixture.json",
+      "requested_class_counts": {
+        "A_factual": 167
+      },
+      "requested_slot_counts": {
+        "A_factual": 167
+      },
+      "run_id": "truth_only_seed0",
+      "rung": "dose_response+matched_size_baseline",
+      "seed": 0,
+      "sft": "/tmp/mixture_pilot_run/arms/truth_only/0/sft.jsonl",
+      "status": "compiled_dry_run",
+      "target_total": 167,
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/truth_only/0/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/truth_only/0/eval_arms.json --name truth_only_seed0",
+      "underfilled_slots": {}
+    },
+    {
+      "achieved_class_counts": {
+        "A_factual": 167
+      },
+      "achieved_slot_counts": {
+        "A_factual": 167
+      },
+      "achieved_total": 167,
+      "arm": "truth_only",
+      "arm_dir": "/tmp/mixture_pilot_run/arms/truth_only/1",
+      "calib_frac": 0.0,
+      "candidates": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/truth_only/1/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/truth_only/1/eval_report",
+      "kind": "truth_only",
+      "manifest": "/tmp/mixture_pilot_run/arms/truth_only/1/mixture_manifest.json",
+      "mixture": "/tmp/mixture_pilot_run/arms/truth_only/1/mixture.json",
+      "requested_class_counts": {
+        "A_factual": 167
+      },
+      "requested_slot_counts": {
+        "A_factual": 167
+      },
+      "run_id": "truth_only_seed1",
+      "rung": "dose_response+matched_size_baseline",
+      "seed": 1,
+      "sft": "/tmp/mixture_pilot_run/arms/truth_only/1/sft.jsonl",
+      "status": "compiled_dry_run",
+      "target_total": 167,
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/truth_only/1/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/truth_only/1/eval_arms.json --name truth_only_seed1",
+      "underfilled_slots": {}
+    },
+    {
+      "achieved_class_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "achieved_slot_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "achieved_total": 167,
+      "arm": "calib_frac_0.50",
+      "arm_dir": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/0",
+      "calib_frac": 0.5,
+      "candidates": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/calib_frac_0.50/0/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/calib_frac_0.50/0/eval_report",
+      "kind": "calibration_dial",
+      "manifest": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/0/mixture_manifest.json",
+      "mixture": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/0/mixture.json",
+      "requested_class_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "requested_slot_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "run_id": "calib_frac_0.50_seed0",
+      "rung": "dose_response",
+      "seed": 0,
+      "sft": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/0/sft.jsonl",
+      "status": "compiled_dry_run",
+      "target_total": 167,
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/calib_frac_0.50/0/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/calib_frac_0.50/0/eval_arms.json --name calib_frac_0.50_seed0",
+      "underfilled_slots": {}
+    },
+    {
+      "achieved_class_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "achieved_slot_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "achieved_total": 167,
+      "arm": "calib_frac_0.50",
+      "arm_dir": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/1",
+      "calib_frac": 0.5,
+      "candidates": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/calib_frac_0.50/1/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/calib_frac_0.50/1/eval_report",
+      "kind": "calibration_dial",
+      "manifest": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/1/mixture_manifest.json",
+      "mixture": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/1/mixture.json",
+      "requested_class_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "requested_slot_counts": {
+        "A_factual": 84,
+        "B_unknowable": 50,
+        "C_subjective": 33
+      },
+      "run_id": "calib_frac_0.50_seed1",
+      "rung": "dose_response",
+      "seed": 1,
+      "sft": "/tmp/mixture_pilot_run/arms/calib_frac_0.50/1/sft.jsonl",
+      "status": "compiled_dry_run",
+      "target_total": 167,
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/calib_frac_0.50/1/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/calib_frac_0.50/1/eval_arms.json --name calib_frac_0.50_seed1",
+      "underfilled_slots": {}
+    },
+    {
+      "achieved_class_counts": {
+        "A_factual": 74,
+        "B_unknowable": 59,
+        "C_subjective": 34
+      },
+      "achieved_slot_counts": {
+        "random_all": 167
+      },
+      "achieved_total": 167,
+      "arm": "random_same_size",
+      "arm_dir": "/tmp/mixture_pilot_run/arms/random_same_size/0",
+      "calib_frac": null,
+      "candidates": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/random_same_size/0/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/random_same_size/0/eval_report",
+      "kind": "random_same_size",
+      "manifest": "/tmp/mixture_pilot_run/arms/random_same_size/0/mixture_manifest.json",
+      "mixture": "/tmp/mixture_pilot_run/arms/random_same_size/0/mixture.json",
+      "requested_class_counts": {
+        "<unconstrained>": 167
+      },
+      "requested_slot_counts": {
+        "random_all": 167
+      },
+      "run_id": "random_same_size_seed0",
+      "rung": "matched_size_baseline",
+      "seed": 0,
+      "sft": "/tmp/mixture_pilot_run/arms/random_same_size/0/sft.jsonl",
+      "status": "compiled_dry_run",
+      "target_total": 167,
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/random_same_size/0/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/random_same_size/0/eval_arms.json --name random_same_size_seed0",
+      "underfilled_slots": {}
+    },
+    {
+      "achieved_class_counts": {
+        "A_factual": 70,
+        "B_unknowable": 59,
+        "C_subjective": 38
+      },
+      "achieved_slot_counts": {
+        "random_all": 167
+      },
+      "achieved_total": 167,
+      "arm": "random_same_size",
+      "arm_dir": "/tmp/mixture_pilot_run/arms/random_same_size/1",
+      "calib_frac": null,
+      "candidates": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/random_same_size/1/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/random_same_size/1/eval_report",
+      "kind": "random_same_size",
+      "manifest": "/tmp/mixture_pilot_run/arms/random_same_size/1/mixture_manifest.json",
+      "mixture": "/tmp/mixture_pilot_run/arms/random_same_size/1/mixture.json",
+      "requested_class_counts": {
+        "<unconstrained>": 167
+      },
+      "requested_slot_counts": {
+        "random_all": 167
+      },
+      "run_id": "random_same_size_seed1",
+      "rung": "matched_size_baseline",
+      "seed": 1,
+      "sft": "/tmp/mixture_pilot_run/arms/random_same_size/1/sft.jsonl",
+      "status": "compiled_dry_run",
+      "target_total": 167,
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/random_same_size/1/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/random_same_size/1/eval_arms.json --name random_same_size_seed1",
+      "underfilled_slots": {}
+    },
+    {
+      "achieved_class_counts": {
+        "A_factual": 74,
+        "B_unknowable": 56,
+        "C_subjective": 37
+      },
+      "achieved_slot_counts": {
+        "A_factual": 74,
+        "B_unknowable": 56,
+        "C_subjective": 37
+      },
+      "achieved_total": 167,
+      "arm": "naive_stratified",
+      "arm_dir": "/tmp/mixture_pilot_run/arms/naive_stratified/0",
+      "calib_frac": null,
+      "candidates": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/naive_stratified/0/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/naive_stratified/0/eval_report",
+      "kind": "naive_stratified",
+      "manifest": "/tmp/mixture_pilot_run/arms/naive_stratified/0/mixture_manifest.json",
+      "mixture": "/tmp/mixture_pilot_run/arms/naive_stratified/0/mixture.json",
+      "requested_class_counts": {
+        "A_factual": 74,
+        "B_unknowable": 56,
+        "C_subjective": 37
+      },
+      "requested_slot_counts": {
+        "A_factual": 74,
+        "B_unknowable": 56,
+        "C_subjective": 37
+      },
+      "run_id": "naive_stratified_seed0",
+      "rung": "matched_size_baseline",
+      "seed": 0,
+      "sft": "/tmp/mixture_pilot_run/arms/naive_stratified/0/sft.jsonl",
+      "status": "compiled_dry_run",
+      "target_total": 167,
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/naive_stratified/0/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/naive_stratified/0/eval_arms.json --name naive_stratified_seed0",
+      "underfilled_slots": {}
+    },
+    {
+      "achieved_class_counts": {
+        "A_factual": 74,
+        "B_unknowable": 56,
+        "C_subjective": 37
+      },
+      "achieved_slot_counts": {
+        "A_factual": 74,
+        "B_unknowable": 56,
+        "C_subjective": 37
+      },
+      "achieved_total": 167,
+      "arm": "naive_stratified",
+      "arm_dir": "/tmp/mixture_pilot_run/arms/naive_stratified/1",
+      "calib_frac": null,
+      "candidates": "/Users/scasella/Downloads/qwen-steering/reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/naive_stratified/1/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/naive_stratified/1/eval_report",
+      "kind": "naive_stratified",
+      "manifest": "/tmp/mixture_pilot_run/arms/naive_stratified/1/mixture_manifest.json",
+      "mixture": "/tmp/mixture_pilot_run/arms/naive_stratified/1/mixture.json",
+      "requested_class_counts": {
+        "A_factual": 74,
+        "B_unknowable": 56,
+        "C_subjective": 37
+      },
+      "requested_slot_counts": {
+        "A_factual": 74,
+        "B_unknowable": 56,
+        "C_subjective": 37
+      },
+      "run_id": "naive_stratified_seed1",
+      "rung": "matched_size_baseline",
+      "seed": 1,
+      "sft": "/tmp/mixture_pilot_run/arms/naive_stratified/1/sft.jsonl",
+      "status": "compiled_dry_run",
+      "target_total": 167,
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/naive_stratified/1/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/naive_stratified/1/eval_arms.json --name naive_stratified_seed1",
+      "underfilled_slots": {}
+    }
+  ],
+  "n": 167,
+  "n_source": "matched_n_feasible from reports/steering_distill/th_v10_publication/v10_corpus_manifest.json",
+  "pass_criteria": "Monotone or near-monotone calibration dose-response; 0.50 dial improves B/C calibration without unacceptable A-class truth-holding loss; dialed arms beat random_same_size and naive_stratified at N.",
+  "prompt_only": {
+    "available": false,
+    "note": "No prompt-only candidate SFT corpus was found or supplied. Existing prompt_only_inference_4b artifacts are eval outputs, not teacher data; this plan does not fabricate a prompt-only SFT arm.",
+    "path": null
+  },
+  "schema_version": "0.1.0",
+  "seeds": [
+    0,
+    1
+  ],
+  "todo": []
+}

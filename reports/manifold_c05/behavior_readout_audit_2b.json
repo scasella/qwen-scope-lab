@@ -1,0 +1,157 @@
+{
+  "model_id": "mlx-community/Qwen3.5-2B-bf16",
+  "audit": "behavior_readout first_token vs full_string (C05)",
+  "n_verdict_flips": 2,
+  "results": [
+    {
+      "concept": "agreement",
+      "layer": 8,
+      "risk": "multi_token",
+      "tokenization": {
+        "first_token_collisions": 1,
+        "mean_tokens_per_value": 1.4,
+        "multi_token": true
+      },
+      "first_token": {
+        "manifold_energy": 0.014,
+        "linear_energy": 0.0058,
+        "energy_gap": -0.0082,
+        "manifold_more_faithful": false,
+        "isometry_r": 0.9726
+      },
+      "full_string": {
+        "manifold_energy": 0.0241,
+        "linear_energy": 0.0296,
+        "energy_gap": 0.0055,
+        "manifold_more_faithful": true,
+        "isometry_r": 0.9986
+      },
+      "verdict_flip": true
+    },
+    {
+      "concept": "education",
+      "layer": 8,
+      "risk": "multi_token",
+      "tokenization": {
+        "first_token_collisions": 0,
+        "mean_tokens_per_value": 1.429,
+        "multi_token": true
+      },
+      "first_token": {
+        "manifold_energy": 0.0118,
+        "linear_energy": 0.018,
+        "energy_gap": 0.0062,
+        "manifold_more_faithful": true,
+        "isometry_r": 0.9617
+      },
+      "full_string": {
+        "manifold_energy": 0.0174,
+        "linear_energy": 0.016,
+        "energy_gap": -0.0014,
+        "manifold_more_faithful": false,
+        "isometry_r": 0.9758
+      },
+      "verdict_flip": true
+    },
+    {
+      "concept": "rank",
+      "layer": 20,
+      "risk": "control",
+      "tokenization": {
+        "first_token_collisions": 0,
+        "mean_tokens_per_value": 1.125,
+        "multi_token": true
+      },
+      "first_token": {
+        "manifold_energy": 0.0421,
+        "linear_energy": 0.0755,
+        "energy_gap": 0.0334,
+        "manifold_more_faithful": true,
+        "isometry_r": 0.9795
+      },
+      "full_string": {
+        "manifold_energy": 0.044,
+        "linear_energy": 0.075,
+        "energy_gap": 0.031,
+        "manifold_more_faithful": true,
+        "isometry_r": 0.9791
+      },
+      "verdict_flip": false
+    },
+    {
+      "concept": "valence",
+      "layer": 16,
+      "risk": "control",
+      "tokenization": {
+        "first_token_collisions": 0,
+        "mean_tokens_per_value": 1.143,
+        "multi_token": true
+      },
+      "first_token": {
+        "manifold_energy": 0.0137,
+        "linear_energy": 0.0157,
+        "energy_gap": 0.002,
+        "manifold_more_faithful": true,
+        "isometry_r": 0.9457
+      },
+      "full_string": {
+        "manifold_energy": 0.0132,
+        "linear_energy": 0.0151,
+        "energy_gap": 0.0019,
+        "manifold_more_faithful": true,
+        "isometry_r": 0.947
+      },
+      "verdict_flip": false
+    },
+    {
+      "concept": "size",
+      "layer": 16,
+      "risk": "control",
+      "tokenization": {
+        "first_token_collisions": 0,
+        "mean_tokens_per_value": 1.0,
+        "multi_token": false
+      },
+      "first_token": {
+        "manifold_energy": 0.0064,
+        "linear_energy": 0.004,
+        "energy_gap": -0.0024,
+        "manifold_more_faithful": false,
+        "isometry_r": 0.965
+      },
+      "full_string": {
+        "manifold_energy": 0.0064,
+        "linear_energy": 0.004,
+        "energy_gap": -0.0024,
+        "manifold_more_faithful": false,
+        "isometry_r": 0.9649
+      },
+      "verdict_flip": false
+    },
+    {
+      "concept": "days_of_week",
+      "layer": 14,
+      "risk": "control",
+      "tokenization": {
+        "first_token_collisions": 0,
+        "mean_tokens_per_value": 1.0,
+        "multi_token": false
+      },
+      "first_token": {
+        "manifold_energy": 0.005,
+        "linear_energy": 0.024,
+        "energy_gap": 0.019,
+        "manifold_more_faithful": true,
+        "isometry_r": 0.9985
+      },
+      "full_string": {
+        "manifold_energy": 0.005,
+        "linear_energy": 0.024,
+        "energy_gap": 0.019,
+        "manifold_more_faithful": true,
+        "isometry_r": 0.9985
+      },
+      "verdict_flip": false
+    }
+  ]
+}

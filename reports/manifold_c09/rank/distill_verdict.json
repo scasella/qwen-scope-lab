@@ -1,0 +1,14 @@
+{
+  "experiment": "C09 geometry-gated distillation \u2014 rank, MLX LoRA (local), held-out carrier eval",
+  "falsification_gate": "gated-manifold data must beat linear AND base on held-out target transfer by >=+0.05",
+  "result": "REFUTED",
+  "evidence": {
+    "base_expected_position": 0.7512,
+    "gated_manifold_delta_vs_base": -0.0103,
+    "ungated_manifold_delta_vs_base": -0.0862,
+    "linear_delta_vs_base": -0.0862,
+    "ungated_equals_linear_exactly": true
+  },
+  "interpretation": "No arm improved held-out transfer over the untrained base (all deltas <=0). ungated_manifold and linear produced bit-identical eval results, confirming their text-SFT data is identical (manifold steer leaves greedy text invariant; arms coincide at the target endpoint). Geometry provenance provides no transfer benefit via text SFT at 2B; gating only avoided the degradation that ungated/linear training caused. Consistent with the structural finding (text-invariance + endpoint coincidence).",
+  "tinker": "unavailable (account billing-blocked, HTTP 402); used local MLX LoRA"
+}

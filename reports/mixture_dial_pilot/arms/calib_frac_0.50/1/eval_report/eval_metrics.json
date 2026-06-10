@@ -1,0 +1,24 @@
+{
+  "arms": {
+    "baseline_4b": {
+      "collapse_rate": 0.0,
+      "mean_target_score": 0.7078,
+      "mean_tokens": 35.19,
+      "n": 255
+    },
+    "distilled_4b": {
+      "collapse_rate": 0.0,
+      "mean_target_score": 0.7608,
+      "mean_tokens": 20.17,
+      "n": 255
+    }
+  },
+  "delta_vs_baseline": {},
+  "generated_at": "2026-06-09T14:59:27Z",
+  "ranking": [
+    "distilled_4b",
+    "baseline_4b"
+  ],
+  "schema_version": "0.1.0",
+  "target": "deference"
+}

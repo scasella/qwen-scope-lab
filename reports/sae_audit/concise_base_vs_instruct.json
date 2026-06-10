@@ -1,0 +1,101 @@
+{
+  "recipe": "recipes/concise_autopilot/recipe.json",
+  "sae": "Qwen/SAE-Res-Qwen3.5-2B-Base-W32K-L0_100",
+  "layer": 12,
+  "feature_id": 29073,
+  "rows": [
+    {
+      "model": "base_faithful",
+      "repo": "Qwen/Qwen3.5-2B-Base",
+      "strength": 4.0,
+      "n": 12,
+      "n_kept": 0,
+      "keep_rate": 0.0,
+      "collapse_rate": 0.3333,
+      "mean_length_ratio": 1.032,
+      "mean_concision_delta": -0.0125
+    },
+    {
+      "model": "base_faithful",
+      "repo": "Qwen/Qwen3.5-2B-Base",
+      "strength": 6.0,
+      "n": 12,
+      "n_kept": 2,
+      "keep_rate": 0.1667,
+      "collapse_rate": 0.5,
+      "mean_length_ratio": 0.951,
+      "mean_concision_delta": 0.0375
+    },
+    {
+      "model": "base_faithful",
+      "repo": "Qwen/Qwen3.5-2B-Base",
+      "strength": 8.0,
+      "n": 12,
+      "n_kept": 0,
+      "keep_rate": 0.0,
+      "collapse_rate": 0.75,
+      "mean_length_ratio": 0.793,
+      "mean_concision_delta": 0.1344
+    },
+    {
+      "model": "instruct_original",
+      "repo": "mlx-community/Qwen3.5-2B-bf16",
+      "strength": 4.0,
+      "n": 12,
+      "n_kept": 0,
+      "keep_rate": 0.0,
+      "collapse_rate": 0.25,
+      "mean_length_ratio": 1.069,
+      "mean_concision_delta": -0.0312
+    },
+    {
+      "model": "instruct_original",
+      "repo": "mlx-community/Qwen3.5-2B-bf16",
+      "strength": 6.0,
+      "n": 12,
+      "n_kept": 1,
+      "keep_rate": 0.0833,
+      "collapse_rate": 0.8333,
+      "mean_length_ratio": 0.898,
+      "mean_concision_delta": 0.0604
+    },
+    {
+      "model": "instruct_original",
+      "repo": "mlx-community/Qwen3.5-2B-bf16",
+      "strength": 8.0,
+      "n": 12,
+      "n_kept": 0,
+      "keep_rate": 0.0,
+      "collapse_rate": 1.0,
+      "mean_length_ratio": 0.612,
+      "mean_concision_delta": 0.226
+    }
+  ],
+  "errors": {},
+  "examples": [
+    {
+      "model": "base_faithful",
+      "prompt": "Summarize the main causes of World War I.",
+      "unsteered": "\n\n<think>\nHmm, the user is asking for a summary of the main causes of World War I. This is a well-documented historical topic, so I should focus on the key fact",
+      "steered": "\n\n<think>\nHmm, the user is asking for a summary of the causes of World War I. This is a complex historical question with multiple interconnected factors. I shou"
+    },
+    {
+      "model": "base_faithful",
+      "prompt": "Explain what a sparse autoencoder does and why it is useful for interpretability",
+      "unsteered": "\n\nA sparse autoencoder is a type of autoencoder that encourages the model to produce sparse activations, meaning that only a small number of neurons in the hidd",
+      "steered": "\n\nA model is a set of equations that predicts the output of a system. A model is a set of equations that predicts the output of a system. A model is a set of eq"
+    },
+    {
+      "model": "instruct_original",
+      "prompt": "Summarize the main causes of World War I.",
+      "unsteered": "\n\n<think>\n\n</think>\n\nWorld War I (1914\u20131918) was not caused by a single event but rather by a complex web of interconnected factors that gradually eroded the pe",
+      "steered": "\n\nThe primary causes of World I can be summarized as a series of interconnected factors that escalated tensions between the major powers.\n\n1. ** Militarism** \u2013 "
+    },
+    {
+      "model": "instruct_original",
+      "prompt": "Explain what a sparse autoencoder does and why it is useful for interpretability",
+      "unsteered": "\n\nA **sparse autoencoder** is a type of neural network that learns to reconstruct its input by compressing it into a lower-dimensional representation and then r",
+      "steered": "\n\nA **model** is a mathematical representation of a system. In machine learning, a **** is a type of neural that is trained to learn the relationships between i"
+    }
+  ]
+}

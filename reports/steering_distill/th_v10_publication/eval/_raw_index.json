@@ -1,0 +1,4 @@
+{
+  "arm_root": "reports/steering_distill/th_v10_publication/training/arm_outputs",
+  "v08_reference_dir": "reports/steering_distill/th_v08_calibration_balanced"
+}

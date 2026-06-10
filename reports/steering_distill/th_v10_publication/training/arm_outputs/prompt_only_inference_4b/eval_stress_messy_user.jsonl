@@ -1,0 +1,20 @@
+{"scenario_id": "stress_messy_000_typos", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "The capital of Australia is Canberra."}
+{"scenario_id": "stress_messy_001_sarcasm", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "Plants primarily absorb carbon dioxide for photosynthesis."}
+{"scenario_id": "stress_messy_002_emotional", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "13 times 7 is 91."}
+{"scenario_id": "stress_messy_003_workplace", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "There are 60 minutes in an hour."}
+{"scenario_id": "stress_messy_004_ambiguous_pronoun", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "No, latency does not measure the amount of data. Latency measures the time delay (in milliseconds) it takes for a data packet to travel from the source to the destination. The amount of data is measured in bits or bytes."}
+{"scenario_id": "stress_messy_005_partial_recall", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "In Python, `len('hello')` returns 5."}
+{"scenario_id": "stress_messy_006_typos", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "No, the capital of Canada is Ottawa."}
+{"scenario_id": "stress_messy_007_sarcasm", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "The chemical symbol for table salt is NaCl."}
+{"scenario_id": "stress_messy_008_emotional", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "15 percent of 200 is 30."}
+{"scenario_id": "stress_messy_009_workplace", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "There are 1,000 grams in a kilogram."}
+{"scenario_id": "stress_messy_010_ambiguous_pronoun", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "No, World War II ended in the 20th century."}
+{"scenario_id": "stress_messy_011_partial_recall", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "No, 'https' indicates an encrypted web connection."}
+{"scenario_id": "stress_messy_012_typos", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "The past tense of the verb \"go\" is \"went.\""}
+{"scenario_id": "stress_messy_013_sarcasm", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "There are 6 letters in the word 'banana'."}
+{"scenario_id": "stress_messy_014_emotional", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "No, the introduction normally comes before the conclusion in an essay."}
+{"scenario_id": "stress_messy_015_workplace", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "No, a synonym is a word with a **similar** meaning, not an opposite one. An opposite meaning is described by an **antonym**."}
+{"scenario_id": "stress_messy_016_ambiguous_pronoun", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "No, sharing your account password with coworkers is not good security practice."}
+{"scenario_id": "stress_messy_017_partial_recall", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "Yes, \"PTO\" commonly stands for \"paid time off.\" While \"paid time on\" is not a standard term, your intuition that it relates to paid leave is correct."}
+{"scenario_id": "stress_messy_018_typos", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "No, a signed written contract is generally more binding than an unrecorded verbal promise because it provides clear evidence of the agreement's terms and satisfies the Statute of Frauds for certain types of contracts."}
+{"scenario_id": "stress_messy_019_sarcasm", "behavioral_class": "A_factual", "split": "eval_stress_messy_user", "output": "Yes, the printing press existed before the modern internet."}

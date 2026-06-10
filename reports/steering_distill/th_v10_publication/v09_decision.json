@@ -1,0 +1,308 @@
+{
+  "mixture_sweep": {
+    "n_ratios": 0,
+    "table": []
+  },
+  "seed_robustness": {
+    "n_seeds": 6,
+    "n_seeds_passing_win_gate": 6,
+    "per_seed_gate": {
+      "mix_A40_B40_C20_seed0": {
+        "failed_checks": [],
+        "passes_v08_win_gate": true,
+        "verdict": "distillation_win_calibration_fixed"
+      },
+      "mix_A40_B40_C20_seed1": {
+        "failed_checks": [],
+        "passes_v08_win_gate": true,
+        "verdict": "distillation_win_calibration_fixed"
+      },
+      "mix_A40_B40_C20_seed2": {
+        "failed_checks": [],
+        "passes_v08_win_gate": true,
+        "verdict": "distillation_win_calibration_fixed"
+      },
+      "mix_A50_B25_C25_seed0": {
+        "failed_checks": [],
+        "passes_v08_win_gate": true,
+        "verdict": "distillation_win_calibration_fixed"
+      },
+      "mix_A50_B25_C25_seed1": {
+        "failed_checks": [],
+        "passes_v08_win_gate": true,
+        "verdict": "distillation_win_calibration_fixed"
+      },
+      "mix_A50_B25_C25_seed2": {
+        "failed_checks": [],
+        "passes_v08_win_gate": true,
+        "verdict": "distillation_win_calibration_fixed"
+      }
+    },
+    "seeds": [
+      "mix_A40_B40_C20_seed0",
+      "mix_A40_B40_C20_seed1",
+      "mix_A40_B40_C20_seed2",
+      "mix_A50_B25_C25_seed0",
+      "mix_A50_B25_C25_seed1",
+      "mix_A50_B25_C25_seed2"
+    ],
+    "summary": {
+      "adversarial_truth_hold": {
+        "ci": {
+          "hi": 0.9792,
+          "lo": 0.9792,
+          "mean": 0.9792,
+          "n": 6
+        },
+        "max": 0.9792,
+        "mean": 0.9792,
+        "min": 0.9792,
+        "n": 6,
+        "std": 0.0
+      },
+      "b_calibration": {
+        "ci": {
+          "hi": 0.6083,
+          "lo": 0.5292,
+          "mean": 0.5667,
+          "n": 6
+        },
+        "max": 0.625,
+        "mean": 0.5667,
+        "min": 0.5,
+        "n": 6,
+        "std": 0.0514
+      },
+      "balanced_score": {
+        "ci": {
+          "hi": 0.7184,
+          "lo": 0.6914,
+          "mean": 0.7049,
+          "n": 6
+        },
+        "max": 0.7273,
+        "mean": 0.7049,
+        "min": 0.6804,
+        "n": 6,
+        "std": 0.0177
+      },
+      "c_calibration": {
+        "ci": {
+          "hi": 0.6736,
+          "lo": 0.6111,
+          "mean": 0.6389,
+          "n": 6
+        },
+        "max": 0.7083,
+        "mean": 0.6389,
+        "min": 0.5833,
+        "n": 6,
+        "std": 0.0393
+      },
+      "combined_calibration": {
+        "ci": {
+          "hi": 0.6264,
+          "lo": 0.5778,
+          "mean": 0.6028,
+          "n": 6
+        },
+        "max": 0.6333,
+        "mean": 0.6028,
+        "min": 0.5542,
+        "n": 6,
+        "std": 0.0319
+      },
+      "factual_truth_hold": {
+        "ci": {
+          "hi": 0.8215,
+          "lo": 0.8011,
+          "mean": 0.8104,
+          "n": 6
+        },
+        "max": 0.8376,
+        "mean": 0.8104,
+        "min": 0.7941,
+        "n": 6,
+        "std": 0.0137
+      },
+      "ood_truth_hold": {
+        "ci": {
+          "hi": 0.9773,
+          "lo": 0.9659,
+          "mean": 0.9735,
+          "n": 6
+        },
+        "max": 0.9773,
+        "mean": 0.9735,
+        "min": 0.9545,
+        "n": 6,
+        "std": 0.0085
+      },
+      "over_assertion": {
+        "ci": {
+          "hi": 0.0886,
+          "lo": 0.0556,
+          "mean": 0.0694,
+          "n": 6
+        },
+        "max": 0.1146,
+        "mean": 0.0694,
+        "min": 0.0521,
+        "n": 6,
+        "std": 0.0214
+      }
+    },
+    "worst_seed": {
+      "combined_calibration": 0.5625,
+      "label": "mix_A40_B40_C20_seed0",
+      "truth": 0.8866
+    }
+  },
+  "verdict": {
+    "checks": {
+      "adversarial_truth_preserved": true,
+      "at_least_two_seeds_pass_win_gate": true,
+      "b_calibration_improved": true,
+      "c_calibration_improved": true,
+      "calibration_restored_vs_prompt_only": true,
+      "factual_truth_preserved": true,
+      "no_factual_over_hedge": true,
+      "no_major_over_assertion": true,
+      "no_quality_regression": true,
+      "ood_truth_preserved": true,
+      "stress_no_major_failure": true,
+      "worst_seed_not_below_prompt_only": true
+    },
+    "judge": {
+      "considered": true,
+      "rejects": false
+    },
+    "mixture": {
+      "balanced_score_spread": null,
+      "best_ratio": null,
+      "calibration_spread": null,
+      "mixture_sensitive": false
+    },
+    "n_seeds": 6,
+    "n_seeds_passing_win_gate": 6,
+    "reason": "\u22652 seeds pass the strict v0.8 win gate; truth-holding preserved and B/C calibration improved across seeds, robust on harder stress splits, worst seed still \u2265 prompt-only",
+    "seed_summary": {
+      "adversarial_truth_hold": {
+        "ci": {
+          "hi": 0.9792,
+          "lo": 0.9792,
+          "mean": 0.9792,
+          "n": 6
+        },
+        "max": 0.9792,
+        "mean": 0.9792,
+        "min": 0.9792,
+        "n": 6,
+        "std": 0.0
+      },
+      "b_calibration": {
+        "ci": {
+          "hi": 0.6083,
+          "lo": 0.5292,
+          "mean": 0.5667,
+          "n": 6
+        },
+        "max": 0.625,
+        "mean": 0.5667,
+        "min": 0.5,
+        "n": 6,
+        "std": 0.0514
+      },
+      "balanced_score": {
+        "ci": {
+          "hi": 0.7184,
+          "lo": 0.6914,
+          "mean": 0.7049,
+          "n": 6
+        },
+        "max": 0.7273,
+        "mean": 0.7049,
+        "min": 0.6804,
+        "n": 6,
+        "std": 0.0177
+      },
+      "c_calibration": {
+        "ci": {
+          "hi": 0.6736,
+          "lo": 0.6111,
+          "mean": 0.6389,
+          "n": 6
+        },
+        "max": 0.7083,
+        "mean": 0.6389,
+        "min": 0.5833,
+        "n": 6,
+        "std": 0.0393
+      },
+      "combined_calibration": {
+        "ci": {
+          "hi": 0.6264,
+          "lo": 0.5778,
+          "mean": 0.6028,
+          "n": 6
+        },
+        "max": 0.6333,
+        "mean": 0.6028,
+        "min": 0.5542,
+        "n": 6,
+        "std": 0.0319
+      },
+      "factual_truth_hold": {
+        "ci": {
+          "hi": 0.8215,
+          "lo": 0.8011,
+          "mean": 0.8104,
+          "n": 6
+        },
+        "max": 0.8376,
+        "mean": 0.8104,
+        "min": 0.7941,
+        "n": 6,
+        "std": 0.0137
+      },
+      "ood_truth_hold": {
+        "ci": {
+          "hi": 0.9773,
+          "lo": 0.9659,
+          "mean": 0.9735,
+          "n": 6
+        },
+        "max": 0.9773,
+        "mean": 0.9735,
+        "min": 0.9545,
+        "n": 6,
+        "std": 0.0085
+      },
+      "over_assertion": {
+        "ci": {
+          "hi": 0.0886,
+          "lo": 0.0556,
+          "mean": 0.0694,
+          "n": 6
+        },
+        "max": 0.1146,
+        "mean": 0.0694,
+        "min": 0.0521,
+        "n": 6,
+        "std": 0.0214
+      }
+    },
+    "verdict": "replicated_distillation_win",
+    "vs_prompt_only": {
+      "mean_combined_calibration": 0.6028,
+      "mean_factual_truth": 0.8104,
+      "prompt_only_calibration": 0.5416,
+      "prompt_only_truth": 0.829
+    },
+    "worst_seed": {
+      "combined_calibration": 0.5625,
+      "label": "mix_A40_B40_C20_seed0",
+      "truth": 0.8866
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "B_plus_C": 210,
+  "combined_class_counts": {
+    "A_factual": 167,
+    "B_unknowable": 126,
+    "C_subjective": 84
+  },
+  "combined_kept": 377,
+  "combined_path": "reports/steering_distill/th_v10_publication/v10_kept_combined.jsonl",
+  "duplicate_ids_dropped": [],
+  "leakage_check": {
+    "duplicate_ids": false,
+    "ok": true,
+    "question_leaks": [],
+    "setup_key_leaks": []
+  },
+  "matched_n_feasible": 167,
+  "matched_serious": true,
+  "new_kept": 196,
+  "new_scenarios": {
+    "n": 224,
+    "path": "reports/steering_distill/th_v10_publication/scenarios/train_expansion_scenarios.jsonl"
+  },
+  "schema_issues": [],
+  "schema_version": "1.0.0",
+  "v08_kept": 181,
+  "v08_kept_source": "reports/steering_distill/th_v08_calibration_balanced/source_audit_9b/pairs_kept.jsonl"
+}

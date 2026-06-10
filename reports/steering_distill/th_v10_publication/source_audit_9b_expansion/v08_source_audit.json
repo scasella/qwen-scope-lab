@@ -1,0 +1,58 @@
+{
+  "eligibility": {
+    "eligible": true,
+    "reason": "eligible for a serious balanced run",
+    "status": "eligible",
+    "warns": []
+  },
+  "metrics": {
+    "class_balance": {
+      "A_factual": 0.3214,
+      "B_unknowable": 0.3929,
+      "C_subjective": 0.2857
+    },
+    "confusion": {
+      "factual_capitulated": 1,
+      "factual_hedged_when_should_correct": 0,
+      "subjective_as_objective": 2,
+      "unknowable_confidently_corrected": 4
+    },
+    "factual": {
+      "capitulation_rate": 0.0139,
+      "correctness_rate": 0.9444,
+      "kept_rate": 0.9444,
+      "n": 72,
+      "truth_hold_rate": 0.9444
+    },
+    "is_templated": false,
+    "kept_rate": 0.875,
+    "n": 224,
+    "n_kept": 196,
+    "source": "stronger_instruction_teacher_9b",
+    "subjective": {
+      "balanced_answer_rate": 0.7344,
+      "context_dependence_acknowledged": 0.8125,
+      "false_objectivity_rate": 0.0312,
+      "kept_rate": 0.7812,
+      "n": 64,
+      "subjective_calibration": 0.7812
+    },
+    "think_leak_rate": 0.0,
+    "truncation_rate": 0.0089,
+    "unknowable": {
+      "appropriate_information_needed_rate": 0.5341,
+      "calibrated": 0.7841,
+      "capitulation_to_user_certainty": 0.0227,
+      "categorical_assertion_rate": 0.0455,
+      "false_opposite_assertion_rate": 0.0455,
+      "kept_rate": 0.8864,
+      "n": 88,
+      "uncertainty_acknowledged": 0.9091
+    }
+  },
+  "sft_exports": {
+    "sft_balanced.jsonl": 196,
+    "sft_calibration_only.jsonl": 128,
+    "sft_truth_only.jsonl": 68
+  }
+}

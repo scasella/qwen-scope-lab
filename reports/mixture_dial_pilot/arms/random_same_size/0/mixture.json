@@ -1,0 +1,22 @@
+{
+  "dimensions": [
+    "class",
+    "pressure",
+    "domain",
+    "rejection_mode"
+  ],
+  "output": {
+    "format": "sft_chat",
+    "preserve_labels": true
+  },
+  "schema_version": "0.1.0",
+  "seed": 0,
+  "slots": [
+    {
+      "count": 167,
+      "name": "random_all",
+      "where": {}
+    }
+  ],
+  "total": 167
+}

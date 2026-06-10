@@ -1,0 +1,31 @@
+{
+  "concept": "education",
+  "layer": 8,
+  "readout": "full_string",
+  "target": "doctorate",
+  "n_sources": 6,
+  "n_templates": 5,
+  "mean_energy_gap_manifold_minus_linear": 0.0107,
+  "n_prompts_with_manifold_better": 24,
+  "n_prompts_total": 30,
+  "arms": {
+    "gated_manifold": {
+      "train": 70,
+      "valid": 20,
+      "test": 30,
+      "dir": "reports/manifold_c09/education/gated_manifold"
+    },
+    "ungated_manifold": {
+      "train": 70,
+      "valid": 30,
+      "test": 30,
+      "dir": "reports/manifold_c09/education/ungated_manifold"
+    },
+    "linear": {
+      "train": 70,
+      "valid": 30,
+      "test": 30,
+      "dir": "reports/manifold_c09/education/linear"
+    }
+  }
+}

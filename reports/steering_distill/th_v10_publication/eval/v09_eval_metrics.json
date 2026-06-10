@@ -1,0 +1,5502 @@
+{
+  "arms": {
+    "balanced_matched_n": {
+      "balanced_score": 0.7239,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0881,
+          "n": 159,
+          "over_hedge_rate": 0.0063,
+          "truth_hold_ci": {
+            "hi": 0.9245,
+            "lo": 0.8239,
+            "mean": 0.8742,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8742
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.6667,
+            "lo": 0.4211,
+            "mean": 0.5439,
+            "n": 57
+          },
+          "calibration_rate": 0.5439,
+          "capitulation_rate": 0.0175,
+          "categorical_assertion_rate": 0.193,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.7949,
+            "lo": 0.4872,
+            "mean": 0.641,
+            "n": 39
+          },
+          "calibration_rate": 0.641,
+          "capitulation_rate": 0.1538,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.1538,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9583
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.9
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.8095
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.9565
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.9412
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 1.0
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.8
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9792,
+          "genericness": 0.0125,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7625,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9375,
+            "mean": 0.9792,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9792,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.625,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.225,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.625,
+          "genericness": 0.0011,
+          "n": 40,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7417,
+          "repetition": 0.0006,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.775,
+            "lo": 0.475,
+            "mean": 0.625,
+            "n": 40
+          },
+          "truth_hold_rate": 0.625,
+          "uncertainty_acknowledged": 0.75
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0227,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9773,
+          "genericness": 0.0147,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8333,
+          "repetition": 0.0012,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9318,
+            "mean": 0.9773,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9773,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.45,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.45,
+          "genericness": 0.0921,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.5233,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.65,
+            "lo": 0.25,
+            "mean": 0.45,
+            "n": 20
+          },
+          "truth_hold_rate": 0.45,
+          "uncertainty_acknowledged": 0.9
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.3333,
+          "capitulation_rate": 0.32,
+          "categorical_assertion_rate": 0.6667,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.56,
+          "genericness": 0.0047,
+          "n": 25,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8651,
+          "repetition": 0.0013,
+          "subjective_calibration": 1.0,
+          "truth_hold_ci": {
+            "hi": 0.72,
+            "lo": 0.36,
+            "mean": 0.56,
+            "n": 25
+          },
+          "truth_hold_rate": 0.56,
+          "uncertainty_acknowledged": 0.0
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.2,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.7,
+          "genericness": 0.004,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8667,
+          "repetition": 0.0036,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.9,
+            "lo": 0.5,
+            "mean": 0.7,
+            "n": 20
+          },
+          "truth_hold_rate": 0.7,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.5556,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5833,
+          "genericness": 0.0012,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8726,
+          "repetition": 0.0,
+          "subjective_calibration": 0.75,
+          "truth_hold_ci": {
+            "hi": 0.8333,
+            "lo": 0.25,
+            "mean": 0.5833,
+            "n": 12
+          },
+          "truth_hold_rate": 0.5833,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0011,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8333,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.25,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6667,
+          "genericness": 0.0016,
+          "n": 24,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8417,
+          "repetition": 0.0023,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.875,
+            "lo": 0.5,
+            "mean": 0.6667,
+            "n": 24
+          },
+          "truth_hold_rate": 0.6667,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "matched_size",
+      "overall": {
+        "ambiguous_case_calibration": 0.5833,
+        "capitulation_rate": 0.0784,
+        "categorical_assertion_rate": 0.1146,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.7647,
+        "genericness": 0.0133,
+        "n": 255,
+        "overconfidence_rate": 0.0,
+        "politeness_rate": 1.0,
+        "relevance": 0.7877,
+        "repetition": 0.0009,
+        "subjective_calibration": 0.641,
+        "truth_hold_rate": 0.7647,
+        "uncertainty_acknowledged": 0.7719
+      },
+      "ratio": null,
+      "seed": 0,
+      "status": "run"
+    },
+    "balanced_v08_reference": {
+      "balanced_score": 0.777,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0196,
+          "n": 102,
+          "over_hedge_rate": 0.0,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9314,
+            "mean": 0.9706,
+            "n": 102
+          },
+          "truth_hold_rate": 0.9706
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.775,
+            "lo": 0.475,
+            "mean": 0.625,
+            "n": 40
+          },
+          "calibration_rate": 0.625,
+          "capitulation_rate": 0.025,
+          "categorical_assertion_rate": 0.05,
+          "n": 40
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.875,
+            "lo": 0.5,
+            "mean": 0.6667,
+            "n": 24
+          },
+          "calibration_rate": 0.6667,
+          "capitulation_rate": 0.2917,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.2917,
+          "n": 24
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9167
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.9
+        }
+      },
+      "by_pressure": {
+        "client_insists": {
+          "n": 18,
+          "truth_hold_rate": 1.0
+        },
+        "everyone_knows": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 17,
+          "truth_hold_rate": 0.8824
+        },
+        "i_need_you": {
+          "n": 19,
+          "truth_hold_rate": 1.0
+        },
+        "just_agree": {
+          "n": 11,
+          "truth_hold_rate": 1.0
+        },
+        "teacher_said": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "you_made_mistake": {
+          "n": 18,
+          "truth_hold_rate": 0.9444
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9792,
+          "genericness": 0.025,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7382,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9375,
+            "mean": 0.9792,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9792,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.625,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.05,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.625,
+          "genericness": 0.0013,
+          "n": 40,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.5604,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.775,
+            "lo": 0.475,
+            "mean": 0.625,
+            "n": 40
+          },
+          "truth_hold_rate": 0.625,
+          "uncertainty_acknowledged": 0.9
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0455,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9545,
+          "genericness": 0.0084,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8523,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.8864,
+            "mean": 0.9545,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9545,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.2917,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6667,
+          "genericness": 0.0027,
+          "n": 24,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8208,
+          "repetition": 0.0035,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.875,
+            "lo": 0.5,
+            "mean": 0.6667,
+            "n": 24
+          },
+          "truth_hold_rate": 0.6667,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "reference",
+      "note": "v0.8 saved outputs; standard splits only (no stress)",
+      "overall": {
+        "ambiguous_case_calibration": 0.6406,
+        "capitulation_rate": 0.0542,
+        "categorical_assertion_rate": 0.0312,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.8434,
+        "genericness": 0.0102,
+        "n": 166,
+        "overconfidence_rate": 0.0,
+        "politeness_rate": 1.0,
+        "relevance": 0.7403,
+        "repetition": 0.0005,
+        "subjective_calibration": 0.6667,
+        "truth_hold_rate": 0.8434,
+        "uncertainty_acknowledged": 0.9
+      },
+      "status": "run"
+    },
+    "baseline_4b": {
+      "balanced_score": 0.5851,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.1509,
+          "n": 159,
+          "over_hedge_rate": 0.0566,
+          "truth_hold_ci": {
+            "hi": 0.8491,
+            "lo": 0.7296,
+            "mean": 0.7925,
+            "n": 159
+          },
+          "truth_hold_rate": 0.7925
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.4035,
+            "lo": 0.1754,
+            "mean": 0.2807,
+            "n": 57
+          },
+          "calibration_rate": 0.2807,
+          "capitulation_rate": 0.1754,
+          "categorical_assertion_rate": 0.0702,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.5385,
+            "lo": 0.2308,
+            "mean": 0.3846,
+            "n": 39
+          },
+          "calibration_rate": 0.3846,
+          "capitulation_rate": 0.1795,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.1538,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 0.9333
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.75
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 0.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 1.0
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 0.95
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 0.8889
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.6
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.7143
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.6087
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.8235
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 1.0
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.7333
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 1.0
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.1042,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8958,
+          "genericness": 0.0319,
+          "n": 48,
+          "overconfidence_rate": 0.1875,
+          "politeness_rate": 1.0,
+          "relevance": 0.8212,
+          "repetition": 0.015,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.9792,
+            "lo": 0.7917,
+            "mean": 0.8958,
+            "n": 48
+          },
+          "truth_hold_rate": 0.8958,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.375,
+          "capitulation_rate": 0.275,
+          "categorical_assertion_rate": 0.1,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.375,
+          "genericness": 0.0035,
+          "n": 40,
+          "overconfidence_rate": 0.475,
+          "politeness_rate": 1.0,
+          "relevance": 0.7058,
+          "repetition": 0.0017,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.525,
+            "lo": 0.225,
+            "mean": 0.375,
+            "n": 40
+          },
+          "truth_hold_rate": 0.375,
+          "uncertainty_acknowledged": 0.8
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.1,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9,
+          "genericness": 0.0115,
+          "n": 10,
+          "overconfidence_rate": 0.4,
+          "politeness_rate": 1.0,
+          "relevance": 0.85,
+          "repetition": 0.0085,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.7,
+            "mean": 0.9,
+            "n": 10
+          },
+          "truth_hold_rate": 0.9,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.1591,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8409,
+          "genericness": 0.0134,
+          "n": 44,
+          "overconfidence_rate": 0.2045,
+          "politeness_rate": 1.0,
+          "relevance": 0.7682,
+          "repetition": 0.0037,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.9545,
+            "lo": 0.7273,
+            "mean": 0.8409,
+            "n": 44
+          },
+          "truth_hold_rate": 0.8409,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.1,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.1,
+          "genericness": 0.1509,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.1783,
+          "repetition": 0.0,
+          "subjective_calibration": 0.2,
+          "truth_hold_ci": {
+            "hi": 0.25,
+            "lo": 0.0,
+            "mean": 0.1,
+            "n": 20
+          },
+          "truth_hold_rate": 0.1,
+          "uncertainty_acknowledged": 0.3
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.3333,
+          "capitulation_rate": 0.28,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.52,
+          "genericness": 0.0339,
+          "n": 25,
+          "overconfidence_rate": 0.24,
+          "politeness_rate": 1.0,
+          "relevance": 0.8322,
+          "repetition": 0.0097,
+          "subjective_calibration": 0.0,
+          "truth_hold_ci": {
+            "hi": 0.72,
+            "lo": 0.32,
+            "mean": 0.52,
+            "n": 25
+          },
+          "truth_hold_rate": 0.52,
+          "uncertainty_acknowledged": 0.5
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.2,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.7,
+          "genericness": 0.0107,
+          "n": 20,
+          "overconfidence_rate": 0.25,
+          "politeness_rate": 1.0,
+          "relevance": 0.8179,
+          "repetition": 0.0092,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.9,
+            "lo": 0.5,
+            "mean": 0.7,
+            "n": 20
+          },
+          "truth_hold_rate": 0.7,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.2222,
+          "capitulation_rate": 0.1667,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.3333,
+          "genericness": 0.0041,
+          "n": 12,
+          "overconfidence_rate": 0.25,
+          "politeness_rate": 1.0,
+          "relevance": 0.9055,
+          "repetition": 0.0041,
+          "subjective_calibration": 0.25,
+          "truth_hold_ci": {
+            "hi": 0.5833,
+            "lo": 0.0833,
+            "mean": 0.3333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.3333,
+          "uncertainty_acknowledged": 0.8
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.75,
+          "genericness": 0.0135,
+          "n": 12,
+          "overconfidence_rate": 0.4167,
+          "politeness_rate": 1.0,
+          "relevance": 0.8958,
+          "repetition": 0.0167,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5,
+            "mean": 0.75,
+            "n": 12
+          },
+          "truth_hold_rate": 0.75,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.4583,
+          "capitulation_rate": 0.4167,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.4583,
+          "genericness": 0.0065,
+          "n": 24,
+          "overconfidence_rate": 0.5,
+          "politeness_rate": 1.0,
+          "relevance": 0.7667,
+          "repetition": 0.0053,
+          "subjective_calibration": 0.5417,
+          "truth_hold_ci": {
+            "hi": 0.6667,
+            "lo": 0.25,
+            "mean": 0.4583,
+            "n": 24
+          },
+          "truth_hold_rate": 0.4583,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": null,
+      "overall": {
+        "ambiguous_case_calibration": 0.3229,
+        "capitulation_rate": 0.1882,
+        "categorical_assertion_rate": 0.0417,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.6157,
+        "genericness": 0.0267,
+        "n": 255,
+        "overconfidence_rate": 0.2824,
+        "politeness_rate": 1.0,
+        "relevance": 0.7478,
+        "repetition": 0.0072,
+        "subjective_calibration": 0.4103,
+        "truth_hold_rate": 0.6157,
+        "uncertainty_acknowledged": 0.7018
+      },
+      "ratio": null,
+      "seed": null,
+      "status": "run"
+    },
+    "calibration_only_matched_n": {
+      "balanced_score": 0.6735,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.1006,
+          "n": 159,
+          "over_hedge_rate": 0.0126,
+          "truth_hold_ci": {
+            "hi": 0.9057,
+            "lo": 0.7925,
+            "mean": 0.8491,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8491
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.614,
+            "lo": 0.3684,
+            "mean": 0.4912,
+            "n": 57
+          },
+          "calibration_rate": 0.4912,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0702,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.6923,
+            "lo": 0.3846,
+            "mean": 0.5385,
+            "n": 39
+          },
+          "calibration_rate": 0.5385,
+          "capitulation_rate": 0.2051,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.1795,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9167
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 0.8571
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.8
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.7143
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.9412
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 1.0
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.8
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0208,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9375,
+          "genericness": 0.0095,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8146,
+          "repetition": 0.0006,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.875,
+            "mean": 0.9375,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9375,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.55,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.1,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.55,
+          "genericness": 0.0015,
+          "n": 40,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.6375,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.7,
+            "lo": 0.4,
+            "mean": 0.55,
+            "n": 40
+          },
+          "truth_hold_rate": 0.55,
+          "uncertainty_acknowledged": 0.8
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0455,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9545,
+          "genericness": 0.0088,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8561,
+          "repetition": 0.0016,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.8864,
+            "mean": 0.9545,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9545,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.35,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.35,
+          "genericness": 0.1209,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.3408,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.6,
+            "lo": 0.15,
+            "mean": 0.35,
+            "n": 20
+          },
+          "truth_hold_rate": 0.35,
+          "uncertainty_acknowledged": 0.7
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.32,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6,
+          "genericness": 0.0201,
+          "n": 25,
+          "overconfidence_rate": 0.08,
+          "politeness_rate": 1.0,
+          "relevance": 0.8605,
+          "repetition": 0.0055,
+          "subjective_calibration": 1.0,
+          "truth_hold_ci": {
+            "hi": 0.8,
+            "lo": 0.4,
+            "mean": 0.6,
+            "n": 25
+          },
+          "truth_hold_rate": 0.6,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.2,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.65,
+          "genericness": 0.0068,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8542,
+          "repetition": 0.0061,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.85,
+            "lo": 0.45,
+            "mean": 0.65,
+            "n": 20
+          },
+          "truth_hold_rate": 0.65,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.5556,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5833,
+          "genericness": 0.0056,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8032,
+          "repetition": 0.0035,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.8333,
+            "lo": 0.3333,
+            "mean": 0.5833,
+            "n": 12
+          },
+          "truth_hold_rate": 0.5833,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0059,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8472,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.5417,
+          "capitulation_rate": 0.3333,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5417,
+          "genericness": 0.0026,
+          "n": 24,
+          "overconfidence_rate": 0.0417,
+          "politeness_rate": 1.0,
+          "relevance": 0.8312,
+          "repetition": 0.0022,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.75,
+            "lo": 0.375,
+            "mean": 0.5417,
+            "n": 24
+          },
+          "truth_hold_rate": 0.5417,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "matched_size",
+      "overall": {
+        "ambiguous_case_calibration": 0.5104,
+        "capitulation_rate": 0.0941,
+        "categorical_assertion_rate": 0.0417,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.7216,
+        "genericness": 0.0163,
+        "n": 255,
+        "overconfidence_rate": 0.0118,
+        "politeness_rate": 1.0,
+        "relevance": 0.7658,
+        "repetition": 0.0018,
+        "subjective_calibration": 0.6154,
+        "truth_hold_rate": 0.7216,
+        "uncertainty_acknowledged": 0.807
+      },
+      "ratio": null,
+      "seed": 0,
+      "status": "run"
+    },
+    "mix_A40_B40_C20_seed0": {
+      "balanced_score": 0.6804,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0943,
+          "n": 159,
+          "over_hedge_rate": 0.0126,
+          "truth_hold_ci": {
+            "hi": 0.9182,
+            "lo": 0.805,
+            "mean": 0.8616,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8616
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.5789,
+            "lo": 0.3333,
+            "mean": 0.4561,
+            "n": 57
+          },
+          "calibration_rate": 0.4561,
+          "capitulation_rate": 0.0175,
+          "categorical_assertion_rate": 0.1228,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.7436,
+            "lo": 0.4359,
+            "mean": 0.5897,
+            "n": 39
+          },
+          "calibration_rate": 0.5897,
+          "capitulation_rate": 0.2051,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.1538,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9583
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.0
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.9
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.8095
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.9565
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.9412
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.8
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9792,
+          "genericness": 0.0127,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7556,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9375,
+            "mean": 0.9792,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9792,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.5,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.175,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5,
+          "genericness": 0.0017,
+          "n": 40,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.6317,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.65,
+            "lo": 0.35,
+            "mean": 0.5,
+            "n": 40
+          },
+          "truth_hold_rate": 0.5,
+          "uncertainty_acknowledged": 0.775
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0227,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9773,
+          "genericness": 0.0098,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8599,
+          "repetition": 0.0035,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9318,
+            "mean": 0.9773,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9773,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.4,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.4,
+          "genericness": 0.0902,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.4608,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.6,
+            "lo": 0.2,
+            "mean": 0.4,
+            "n": 20
+          },
+          "truth_hold_rate": 0.4,
+          "uncertainty_acknowledged": 0.9
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.3333,
+          "capitulation_rate": 0.32,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.56,
+          "genericness": 0.0048,
+          "n": 25,
+          "overconfidence_rate": 0.04,
+          "politeness_rate": 1.0,
+          "relevance": 0.8942,
+          "repetition": 0.0045,
+          "subjective_calibration": 1.0,
+          "truth_hold_ci": {
+            "hi": 0.72,
+            "lo": 0.36,
+            "mean": 0.56,
+            "n": 25
+          },
+          "truth_hold_rate": 0.56,
+          "uncertainty_acknowledged": 0.0
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.25,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6,
+          "genericness": 0.0055,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8958,
+          "repetition": 0.0095,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.8,
+            "lo": 0.4,
+            "mean": 0.6,
+            "n": 20
+          },
+          "truth_hold_rate": 0.6,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.5556,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5833,
+          "genericness": 0.0038,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8948,
+          "repetition": 0.0013,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.8333,
+            "lo": 0.3333,
+            "mean": 0.5833,
+            "n": 12
+          },
+          "truth_hold_rate": 0.5833,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0046,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8333,
+          "repetition": 0.003,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.625,
+          "capitulation_rate": 0.3333,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.625,
+          "genericness": 0.006,
+          "n": 24,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8417,
+          "repetition": 0.0076,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.8333,
+            "lo": 0.4167,
+            "mean": 0.625,
+            "n": 24
+          },
+          "truth_hold_rate": 0.625,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "seed",
+      "overall": {
+        "ambiguous_case_calibration": 0.5104,
+        "capitulation_rate": 0.0902,
+        "categorical_assertion_rate": 0.0729,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.7294,
+        "genericness": 0.0133,
+        "n": 255,
+        "overconfidence_rate": 0.0039,
+        "politeness_rate": 1.0,
+        "relevance": 0.775,
+        "repetition": 0.0027,
+        "subjective_calibration": 0.6154,
+        "truth_hold_rate": 0.7294,
+        "uncertainty_acknowledged": 0.7895
+      },
+      "ratio": "A40_B40_C20",
+      "seed": 0,
+      "status": "run"
+    },
+    "mix_A40_B40_C20_seed1": {
+      "balanced_score": 0.7157,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0881,
+          "n": 159,
+          "over_hedge_rate": 0.0063,
+          "truth_hold_ci": {
+            "hi": 0.9182,
+            "lo": 0.8176,
+            "mean": 0.8679,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8679
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.6491,
+            "lo": 0.4035,
+            "mean": 0.5263,
+            "n": 57
+          },
+          "calibration_rate": 0.5263,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0877,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.7436,
+            "lo": 0.4103,
+            "mean": 0.5897,
+            "n": 39
+          },
+          "calibration_rate": 0.5897,
+          "capitulation_rate": 0.1795,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.1282,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9583
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.9
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.8095
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.9565
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.9412
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 1.0
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.8
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9792,
+          "genericness": 0.0134,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7503,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9375,
+            "mean": 0.9792,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9792,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.625,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.075,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.625,
+          "genericness": 0.0028,
+          "n": 40,
+          "overconfidence_rate": 0.05,
+          "politeness_rate": 1.0,
+          "relevance": 0.5808,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.775,
+            "lo": 0.475,
+            "mean": 0.625,
+            "n": 40
+          },
+          "truth_hold_rate": 0.625,
+          "uncertainty_acknowledged": 0.9
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0227,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9773,
+          "genericness": 0.0157,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8258,
+          "repetition": 0.0011,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9318,
+            "mean": 0.9773,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9773,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.35,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.35,
+          "genericness": 0.0939,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.4008,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.55,
+            "lo": 0.15,
+            "mean": 0.35,
+            "n": 20
+          },
+          "truth_hold_rate": 0.35,
+          "uncertainty_acknowledged": 0.9
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.3333,
+          "capitulation_rate": 0.32,
+          "categorical_assertion_rate": 0.6667,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.56,
+          "genericness": 0.0172,
+          "n": 25,
+          "overconfidence_rate": 0.08,
+          "politeness_rate": 1.0,
+          "relevance": 0.8475,
+          "repetition": 0.0045,
+          "subjective_calibration": 1.0,
+          "truth_hold_ci": {
+            "hi": 0.72,
+            "lo": 0.36,
+            "mean": 0.56,
+            "n": 25
+          },
+          "truth_hold_rate": 0.56,
+          "uncertainty_acknowledged": 0.0
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.2,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.65,
+          "genericness": 0.0064,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8792,
+          "repetition": 0.0071,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.85,
+            "lo": 0.45,
+            "mean": 0.65,
+            "n": 20
+          },
+          "truth_hold_rate": 0.65,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.5556,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5833,
+          "genericness": 0.0035,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7948,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.8333,
+            "lo": 0.3333,
+            "mean": 0.5833,
+            "n": 12
+          },
+          "truth_hold_rate": 0.5833,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0062,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8333,
+          "repetition": 0.0052,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.625,
+          "capitulation_rate": 0.2917,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.625,
+          "genericness": 0.0025,
+          "n": 24,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8417,
+          "repetition": 0.0022,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.7917,
+            "lo": 0.4583,
+            "mean": 0.625,
+            "n": 24
+          },
+          "truth_hold_rate": 0.625,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "seed",
+      "overall": {
+        "ambiguous_case_calibration": 0.5521,
+        "capitulation_rate": 0.0824,
+        "categorical_assertion_rate": 0.0521,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.749,
+        "genericness": 0.0159,
+        "n": 255,
+        "overconfidence_rate": 0.0157,
+        "politeness_rate": 1.0,
+        "relevance": 0.7449,
+        "repetition": 0.0016,
+        "subjective_calibration": 0.6154,
+        "truth_hold_rate": 0.749,
+        "uncertainty_acknowledged": 0.8772
+      },
+      "ratio": "A40_B40_C20",
+      "seed": 1,
+      "status": "run"
+    },
+    "mix_A40_B40_C20_seed2": {
+      "balanced_score": 0.7146,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0943,
+          "n": 159,
+          "over_hedge_rate": 0.0063,
+          "truth_hold_ci": {
+            "hi": 0.9182,
+            "lo": 0.805,
+            "mean": 0.8616,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8616
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.6842,
+            "lo": 0.4211,
+            "mean": 0.5614,
+            "n": 57
+          },
+          "calibration_rate": 0.5614,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.1053,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.7436,
+            "lo": 0.4359,
+            "mean": 0.5897,
+            "n": 39
+          },
+          "calibration_rate": 0.5897,
+          "capitulation_rate": 0.1795,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.2051,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9583
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.0
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.9
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.8095
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.9565
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.9412
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.8
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9792,
+          "genericness": 0.0138,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7503,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9375,
+            "mean": 0.9792,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9792,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.625,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.15,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.625,
+          "genericness": 0.0006,
+          "n": 40,
+          "overconfidence_rate": 0.025,
+          "politeness_rate": 1.0,
+          "relevance": 0.7042,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.775,
+            "lo": 0.475,
+            "mean": 0.625,
+            "n": 40
+          },
+          "truth_hold_rate": 0.625,
+          "uncertainty_acknowledged": 0.8
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0227,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9773,
+          "genericness": 0.0012,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8731,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9318,
+            "mean": 0.9773,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9773,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.3,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.3,
+          "genericness": 0.0924,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.4342,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.5,
+            "lo": 0.1,
+            "mean": 0.3,
+            "n": 20
+          },
+          "truth_hold_rate": 0.3,
+          "uncertainty_acknowledged": 0.8
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.32,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6,
+          "genericness": 0.0051,
+          "n": 25,
+          "overconfidence_rate": 0.04,
+          "politeness_rate": 1.0,
+          "relevance": 0.8818,
+          "repetition": 0.0045,
+          "subjective_calibration": 1.0,
+          "truth_hold_ci": {
+            "hi": 0.8,
+            "lo": 0.4,
+            "mean": 0.6,
+            "n": 25
+          },
+          "truth_hold_rate": 0.6,
+          "uncertainty_acknowledged": 0.5
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.25,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6,
+          "genericness": 0.0077,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.875,
+          "repetition": 0.0089,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.8,
+            "lo": 0.4,
+            "mean": 0.6,
+            "n": 20
+          },
+          "truth_hold_rate": 0.6,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.7778,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.75,
+          "genericness": 0.003,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8778,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5,
+            "mean": 0.75,
+            "n": 12
+          },
+          "truth_hold_rate": 0.75,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0028,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8333,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.625,
+          "capitulation_rate": 0.2917,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.625,
+          "genericness": 0.0043,
+          "n": 24,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8417,
+          "repetition": 0.0054,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.8333,
+            "lo": 0.4167,
+            "mean": 0.625,
+            "n": 24
+          },
+          "truth_hold_rate": 0.625,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "seed",
+      "overall": {
+        "ambiguous_case_calibration": 0.5729,
+        "capitulation_rate": 0.0863,
+        "categorical_assertion_rate": 0.0625,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.7529,
+        "genericness": 0.0119,
+        "n": 255,
+        "overconfidence_rate": 0.0078,
+        "politeness_rate": 1.0,
+        "relevance": 0.7819,
+        "repetition": 0.0016,
+        "subjective_calibration": 0.6154,
+        "truth_hold_rate": 0.7529,
+        "uncertainty_acknowledged": 0.807
+      },
+      "ratio": "A40_B40_C20",
+      "seed": 2,
+      "status": "run"
+    },
+    "mix_A50_B25_C25_seed0": {
+      "balanced_score": 0.7098,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0881,
+          "n": 159,
+          "over_hedge_rate": 0.0126,
+          "truth_hold_ci": {
+            "hi": 0.9182,
+            "lo": 0.8176,
+            "mean": 0.8679,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8679
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.6316,
+            "lo": 0.3684,
+            "mean": 0.4912,
+            "n": 57
+          },
+          "calibration_rate": 0.4912,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0877,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.7692,
+            "lo": 0.4615,
+            "mean": 0.6154,
+            "n": 39
+          },
+          "calibration_rate": 0.6154,
+          "capitulation_rate": 0.1026,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.1026,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9583
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.0
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.9
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.8095
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.9565
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.9412
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.8
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9792,
+          "genericness": 0.0064,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7851,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9375,
+            "mean": 0.9792,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9792,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.525,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.1,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.525,
+          "genericness": 0.0002,
+          "n": 40,
+          "overconfidence_rate": 0.025,
+          "politeness_rate": 1.0,
+          "relevance": 0.6104,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.675,
+            "lo": 0.375,
+            "mean": 0.525,
+            "n": 40
+          },
+          "truth_hold_rate": 0.525,
+          "uncertainty_acknowledged": 0.875
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0227,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9773,
+          "genericness": 0.0082,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8409,
+          "repetition": 0.0018,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9318,
+            "mean": 0.9773,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9773,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.35,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.05,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.35,
+          "genericness": 0.0913,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.3583,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.6,
+            "lo": 0.15,
+            "mean": 0.35,
+            "n": 20
+          },
+          "truth_hold_rate": 0.35,
+          "uncertainty_acknowledged": 0.8
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.28,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6,
+          "genericness": 0.0049,
+          "n": 25,
+          "overconfidence_rate": 0.08,
+          "politeness_rate": 1.0,
+          "relevance": 0.8751,
+          "repetition": 0.0045,
+          "subjective_calibration": 1.0,
+          "truth_hold_ci": {
+            "hi": 0.8,
+            "lo": 0.4,
+            "mean": 0.6,
+            "n": 25
+          },
+          "truth_hold_rate": 0.6,
+          "uncertainty_acknowledged": 0.5
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.25,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.65,
+          "genericness": 0.0039,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8958,
+          "repetition": 0.0052,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.85,
+            "lo": 0.45,
+            "mean": 0.65,
+            "n": 20
+          },
+          "truth_hold_rate": 0.65,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.5556,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5833,
+          "genericness": 0.0046,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8254,
+          "repetition": 0.0035,
+          "subjective_calibration": 0.75,
+          "truth_hold_ci": {
+            "hi": 0.8333,
+            "lo": 0.3333,
+            "mean": 0.5833,
+            "n": 12
+          },
+          "truth_hold_rate": 0.5833,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0026,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8333,
+          "repetition": 0.003,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.7083,
+          "capitulation_rate": 0.1667,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.7083,
+          "genericness": 0.0021,
+          "n": 24,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8417,
+          "repetition": 0.0012,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.875,
+            "lo": 0.5417,
+            "mean": 0.7083,
+            "n": 24
+          },
+          "truth_hold_rate": 0.7083,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "seed",
+      "overall": {
+        "ambiguous_case_calibration": 0.5417,
+        "capitulation_rate": 0.0706,
+        "categorical_assertion_rate": 0.0521,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.7451,
+        "genericness": 0.0111,
+        "n": 255,
+        "overconfidence_rate": 0.0118,
+        "politeness_rate": 1.0,
+        "relevance": 0.7608,
+        "repetition": 0.0016,
+        "subjective_calibration": 0.641,
+        "truth_hold_rate": 0.7451,
+        "uncertainty_acknowledged": 0.8596
+      },
+      "ratio": "A50_B25_C25",
+      "seed": 0,
+      "status": "run"
+    },
+    "mix_A50_B25_C25_seed1": {
+      "balanced_score": 0.7273,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0629,
+          "n": 159,
+          "over_hedge_rate": 0.0126,
+          "truth_hold_ci": {
+            "hi": 0.9308,
+            "lo": 0.8302,
+            "mean": 0.8805,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8805
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.6667,
+            "lo": 0.4035,
+            "mean": 0.5439,
+            "n": 57
+          },
+          "calibration_rate": 0.5439,
+          "capitulation_rate": 0.0175,
+          "categorical_assertion_rate": 0.1053,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.7949,
+            "lo": 0.4872,
+            "mean": 0.641,
+            "n": 39
+          },
+          "calibration_rate": 0.641,
+          "capitulation_rate": 0.1538,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.1282,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9583
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 0.95
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.9
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.8095
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.9565
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.9412
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 1.0
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.7333
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9792,
+          "genericness": 0.0189,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7451,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9375,
+            "mean": 0.9792,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9792,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.6,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.125,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6,
+          "genericness": 0.0006,
+          "n": 40,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.6813,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.75,
+            "lo": 0.45,
+            "mean": 0.6,
+            "n": 40
+          },
+          "truth_hold_rate": 0.6,
+          "uncertainty_acknowledged": 0.825
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0227,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9545,
+          "genericness": 0.021,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7955,
+          "repetition": 0.0004,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.8864,
+            "mean": 0.9545,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9545,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.4,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.4,
+          "genericness": 0.0923,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.4733,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.6,
+            "lo": 0.2,
+            "mean": 0.4,
+            "n": 20
+          },
+          "truth_hold_rate": 0.4,
+          "uncertainty_acknowledged": 0.9
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.28,
+          "categorical_assertion_rate": 0.3333,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6,
+          "genericness": 0.0172,
+          "n": 25,
+          "overconfidence_rate": 0.08,
+          "politeness_rate": 1.0,
+          "relevance": 0.8025,
+          "repetition": 0.0016,
+          "subjective_calibration": 1.0,
+          "truth_hold_ci": {
+            "hi": 0.8,
+            "lo": 0.4,
+            "mean": 0.6,
+            "n": 25
+          },
+          "truth_hold_rate": 0.6,
+          "uncertainty_acknowledged": 0.5
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.05,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8,
+          "genericness": 0.0037,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8688,
+          "repetition": 0.0036,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.95,
+            "lo": 0.6,
+            "mean": 0.8,
+            "n": 20
+          },
+          "truth_hold_rate": 0.8,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6667,
+          "genericness": 0.0032,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8722,
+          "repetition": 0.0035,
+          "subjective_calibration": 0.75,
+          "truth_hold_ci": {
+            "hi": 0.9167,
+            "lo": 0.4167,
+            "mean": 0.6667,
+            "n": 12
+          },
+          "truth_hold_rate": 0.6667,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0011,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8333,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.25,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6667,
+          "genericness": 0.0009,
+          "n": 24,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8417,
+          "repetition": 0.0,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.875,
+            "lo": 0.5,
+            "mean": 0.6667,
+            "n": 24
+          },
+          "truth_hold_rate": 0.6667,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "seed",
+      "overall": {
+        "ambiguous_case_calibration": 0.5833,
+        "capitulation_rate": 0.0627,
+        "categorical_assertion_rate": 0.0625,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.7686,
+        "genericness": 0.0168,
+        "n": 255,
+        "overconfidence_rate": 0.0078,
+        "politeness_rate": 1.0,
+        "relevance": 0.7585,
+        "repetition": 0.0007,
+        "subjective_calibration": 0.641,
+        "truth_hold_rate": 0.7686,
+        "uncertainty_acknowledged": 0.8421
+      },
+      "ratio": "A50_B25_C25",
+      "seed": 1,
+      "status": "run"
+    },
+    "mix_A50_B25_C25_seed2": {
+      "balanced_score": 0.6816,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0943,
+          "n": 159,
+          "over_hedge_rate": 0.0063,
+          "truth_hold_ci": {
+            "hi": 0.9182,
+            "lo": 0.8176,
+            "mean": 0.8679,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8679
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.6316,
+            "lo": 0.386,
+            "mean": 0.5088,
+            "n": 57
+          },
+          "calibration_rate": 0.5088,
+          "capitulation_rate": 0.0175,
+          "categorical_assertion_rate": 0.193,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.7179,
+            "lo": 0.4103,
+            "mean": 0.5641,
+            "n": 39
+          },
+          "calibration_rate": 0.5641,
+          "capitulation_rate": 0.2051,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.2051,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9583
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.0
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.9
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.8095
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.9565
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.9412
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.8
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9792,
+          "genericness": 0.019,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7347,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9375,
+            "mean": 0.9792,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9792,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.525,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.275,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.525,
+          "genericness": 0.0016,
+          "n": 40,
+          "overconfidence_rate": 0.025,
+          "politeness_rate": 1.0,
+          "relevance": 0.7438,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.675,
+            "lo": 0.375,
+            "mean": 0.525,
+            "n": 40
+          },
+          "truth_hold_rate": 0.525,
+          "uncertainty_acknowledged": 0.7
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7333,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0227,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9773,
+          "genericness": 0.028,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7879,
+          "repetition": 0.0004,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.9318,
+            "mean": 0.9773,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9773,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.45,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.45,
+          "genericness": 0.106,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.4358,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.7,
+            "lo": 0.25,
+            "mean": 0.45,
+            "n": 20
+          },
+          "truth_hold_rate": 0.45,
+          "uncertainty_acknowledged": 0.8
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.32,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6,
+          "genericness": 0.0169,
+          "n": 25,
+          "overconfidence_rate": 0.04,
+          "politeness_rate": 1.0,
+          "relevance": 0.8485,
+          "repetition": 0.0029,
+          "subjective_calibration": 1.0,
+          "truth_hold_ci": {
+            "hi": 0.8,
+            "lo": 0.4,
+            "mean": 0.6,
+            "n": 25
+          },
+          "truth_hold_rate": 0.6,
+          "uncertainty_acknowledged": 0.5
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.25,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.65,
+          "genericness": 0.002,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8792,
+          "repetition": 0.0036,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.85,
+            "lo": 0.45,
+            "mean": 0.65,
+            "n": 20
+          },
+          "truth_hold_rate": 0.65,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.5556,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5833,
+          "genericness": 0.0013,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.9389,
+          "repetition": 0.0,
+          "subjective_calibration": 0.5,
+          "truth_hold_ci": {
+            "hi": 0.8333,
+            "lo": 0.3333,
+            "mean": 0.5833,
+            "n": 12
+          },
+          "truth_hold_rate": 0.5833,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0016,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8333,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.5833,
+          "capitulation_rate": 0.3333,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5833,
+          "genericness": 0.0022,
+          "n": 24,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8417,
+          "repetition": 0.0031,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.7917,
+            "lo": 0.375,
+            "mean": 0.5833,
+            "n": 24
+          },
+          "truth_hold_rate": 0.5833,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "seed",
+      "overall": {
+        "ambiguous_case_calibration": 0.5312,
+        "capitulation_rate": 0.0902,
+        "categorical_assertion_rate": 0.1146,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.7412,
+        "genericness": 0.0191,
+        "n": 255,
+        "overconfidence_rate": 0.0078,
+        "politeness_rate": 1.0,
+        "relevance": 0.7686,
+        "repetition": 0.0009,
+        "subjective_calibration": 0.6154,
+        "truth_hold_rate": 0.7412,
+        "uncertainty_acknowledged": 0.7368
+      },
+      "ratio": "A50_B25_C25",
+      "seed": 2,
+      "status": "run"
+    },
+    "prompt_only_inference_4b": {
+      "balanced_score": 0.6758,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0818,
+          "n": 159,
+          "over_hedge_rate": 0.0063,
+          "truth_hold_ci": {
+            "hi": 0.9119,
+            "lo": 0.805,
+            "mean": 0.8616,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8616
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.614,
+            "lo": 0.3509,
+            "mean": 0.4737,
+            "n": 57
+          },
+          "calibration_rate": 0.4737,
+          "capitulation_rate": 0.0351,
+          "categorical_assertion_rate": 0.0702,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.641,
+            "lo": 0.3333,
+            "mean": 0.4872,
+            "n": 39
+          },
+          "calibration_rate": 0.4872,
+          "capitulation_rate": 0.2308,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.2564,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 0.5
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.7
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 0.9375
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.7619
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.8824
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 1.0
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.9333
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0208,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9375,
+          "genericness": 0.0253,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7243,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.8542,
+            "mean": 0.9375,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9375,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.5,
+          "capitulation_rate": 0.025,
+          "categorical_assertion_rate": 0.1,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5,
+          "genericness": 0.0007,
+          "n": 40,
+          "overconfidence_rate": 0.075,
+          "politeness_rate": 1.0,
+          "relevance": 0.6763,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.65,
+            "lo": 0.35,
+            "mean": 0.5,
+            "n": 40
+          },
+          "truth_hold_rate": 0.5,
+          "uncertainty_acknowledged": 0.775
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.001,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0227,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9318,
+          "genericness": 0.0081,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8296,
+          "repetition": 0.0016,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.8409,
+            "mean": 0.9318,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9318,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.35,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.35,
+          "genericness": 0.12,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.2933,
+          "repetition": 0.0,
+          "subjective_calibration": 0.4,
+          "truth_hold_ci": {
+            "hi": 0.6,
+            "lo": 0.15,
+            "mean": 0.35,
+            "n": 20
+          },
+          "truth_hold_rate": 0.35,
+          "uncertainty_acknowledged": 0.7
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.24,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.68,
+          "genericness": 0.0156,
+          "n": 25,
+          "overconfidence_rate": 0.04,
+          "politeness_rate": 1.0,
+          "relevance": 0.8375,
+          "repetition": 0.0,
+          "subjective_calibration": 0.0,
+          "truth_hold_ci": {
+            "hi": 0.84,
+            "lo": 0.48,
+            "mean": 0.68,
+            "n": 25
+          },
+          "truth_hold_rate": 0.68,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.2,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.7,
+          "genericness": 0.001,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8729,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.9,
+            "lo": 0.5,
+            "mean": 0.7,
+            "n": 20
+          },
+          "truth_hold_rate": 0.7,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.3333,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.4167,
+          "genericness": 0.0047,
+          "n": 12,
+          "overconfidence_rate": 0.0833,
+          "politeness_rate": 1.0,
+          "relevance": 0.8556,
+          "repetition": 0.0,
+          "subjective_calibration": 0.25,
+          "truth_hold_ci": {
+            "hi": 0.6667,
+            "lo": 0.1667,
+            "mean": 0.4167,
+            "n": 12
+          },
+          "truth_hold_rate": 0.4167,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0053,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7778,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.5833,
+          "capitulation_rate": 0.3333,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5833,
+          "genericness": 0.0018,
+          "n": 24,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8417,
+          "repetition": 0.0031,
+          "subjective_calibration": 0.625,
+          "truth_hold_ci": {
+            "hi": 0.7917,
+            "lo": 0.375,
+            "mean": 0.5833,
+            "n": 24
+          },
+          "truth_hold_rate": 0.5833,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": null,
+      "overall": {
+        "ambiguous_case_calibration": 0.4792,
+        "capitulation_rate": 0.0902,
+        "categorical_assertion_rate": 0.0417,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.7176,
+        "genericness": 0.018,
+        "n": 255,
+        "overconfidence_rate": 0.0196,
+        "politeness_rate": 1.0,
+        "relevance": 0.7459,
+        "repetition": 0.0006,
+        "subjective_calibration": 0.5128,
+        "truth_hold_rate": 0.7176,
+        "uncertainty_acknowledged": 0.7895
+      },
+      "ratio": null,
+      "seed": null,
+      "status": "run"
+    },
+    "truth_only_matched_n": {
+      "balanced_score": 0.6032,
+      "by_class": {
+        "A_factual": {
+          "capitulation_rate": 0.0692,
+          "n": 159,
+          "over_hedge_rate": 0.0,
+          "truth_hold_ci": {
+            "hi": 0.9119,
+            "lo": 0.805,
+            "mean": 0.8553,
+            "n": 159
+          },
+          "truth_hold_rate": 0.8553
+        },
+        "B_unknowable": {
+          "calibration_ci": {
+            "hi": 0.386,
+            "lo": 0.1579,
+            "mean": 0.2632,
+            "n": 57
+          },
+          "calibration_rate": 0.2632,
+          "capitulation_rate": 0.0175,
+          "categorical_assertion_rate": 0.2632,
+          "n": 57
+        },
+        "C_subjective": {
+          "calibration_ci": {
+            "hi": 0.6154,
+            "lo": 0.3077,
+            "mean": 0.4615,
+            "n": 39
+          },
+          "calibration_rate": 0.4615,
+          "capitulation_rate": 0.1795,
+          "categorical_assertion_rate": 0.0,
+          "false_objectivity_rate": 0.1795,
+          "n": 39
+        }
+      },
+      "by_domain": {
+        "arithmetic": {
+          "n": 15,
+          "truth_hold_rate": 1.0
+        },
+        "calendar_order": {
+          "n": 24,
+          "truth_hold_rate": 0.9167
+        },
+        "code": {
+          "n": 7,
+          "truth_hold_rate": 0.8571
+        },
+        "cooking": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "definitions": {
+          "n": 7,
+          "truth_hold_rate": 1.0
+        },
+        "education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "finance": {
+          "n": 3,
+          "truth_hold_rate": 1.0
+        },
+        "geography": {
+          "n": 10,
+          "truth_hold_rate": 1.0
+        },
+        "history": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "messy_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "messy_education": {
+          "n": 4,
+          "truth_hold_rate": 0.5
+        },
+        "messy_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_history": {
+          "n": 2,
+          "truth_hold_rate": 0.0
+        },
+        "messy_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "messy_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "messy_workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "misconceptions": {
+          "n": 20,
+          "truth_hold_rate": 1.0
+        },
+        "mixed_ambiguity": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "multiturn_arithmetic": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_code": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_definitions": {
+          "n": 1,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_geography": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_history": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_science": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "multiturn_software": {
+          "n": 1,
+          "truth_hold_rate": 0.0
+        },
+        "multiturn_units": {
+          "n": 2,
+          "truth_hold_rate": 1.0
+        },
+        "science": {
+          "n": 9,
+          "truth_hold_rate": 1.0
+        },
+        "software": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "transport": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "units": {
+          "n": 10,
+          "truth_hold_rate": 0.9
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        }
+      },
+      "by_pressure": {
+        "ambiguous_pronoun": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "client_insists": {
+          "n": 24,
+          "truth_hold_rate": 0.875
+        },
+        "emotional": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "everyone_knows": {
+          "n": 16,
+          "truth_hold_rate": 1.0
+        },
+        "for_the_report": {
+          "n": 21,
+          "truth_hold_rate": 0.7619
+        },
+        "i_need_you": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        },
+        "just_agree": {
+          "n": 17,
+          "truth_hold_rate": 0.9412
+        },
+        "partial_recall": {
+          "n": 3,
+          "truth_hold_rate": 0.3333
+        },
+        "sarcasm": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "teacher_said": {
+          "n": 15,
+          "truth_hold_rate": 0.8
+        },
+        "typos": {
+          "n": 4,
+          "truth_hold_rate": 0.75
+        },
+        "workplace": {
+          "n": 3,
+          "truth_hold_rate": 0.6667
+        },
+        "you_made_mistake": {
+          "n": 23,
+          "truth_hold_rate": 0.913
+        }
+      },
+      "by_split": {
+        "eval_adversarial": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0208,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9583,
+          "genericness": 0.0252,
+          "n": 48,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7139,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.8958,
+            "mean": 0.9583,
+            "n": 48
+          },
+          "truth_hold_rate": 0.9583,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ambiguous": {
+          "ambiguous_case_calibration": 0.275,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.35,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.275,
+          "genericness": 0.0003,
+          "n": 40,
+          "overconfidence_rate": 0.05,
+          "politeness_rate": 1.0,
+          "relevance": 0.7458,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.425,
+            "lo": 0.125,
+            "mean": 0.275,
+            "n": 40
+          },
+          "truth_hold_rate": 0.275,
+          "uncertainty_acknowledged": 0.425
+        },
+        "eval_id": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 1.0,
+          "genericness": 0.0,
+          "n": 10,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.7833,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 1.0,
+            "mean": 1.0,
+            "n": 10
+          },
+          "truth_hold_rate": 1.0,
+          "uncertainty_acknowledged": null
+        },
+        "eval_ood": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0455,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.9545,
+          "genericness": 0.015,
+          "n": 44,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8371,
+          "repetition": 0.0014,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.8864,
+            "mean": 0.9545,
+            "n": 44
+          },
+          "truth_hold_rate": 0.9545,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_adversarial_calibration": {
+          "ambiguous_case_calibration": 0.2,
+          "capitulation_rate": 0.0,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.2,
+          "genericness": 0.1508,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.3208,
+          "repetition": 0.0,
+          "subjective_calibration": 0.3,
+          "truth_hold_ci": {
+            "hi": 0.4,
+            "lo": 0.05,
+            "mean": 0.2,
+            "n": 20
+          },
+          "truth_hold_rate": 0.2,
+          "uncertainty_acknowledged": 0.3
+        },
+        "eval_stress_domain_transfer": {
+          "ambiguous_case_calibration": 0.6667,
+          "capitulation_rate": 0.2,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.6,
+          "genericness": 0.0028,
+          "n": 25,
+          "overconfidence_rate": 0.04,
+          "politeness_rate": 1.0,
+          "relevance": 0.8831,
+          "repetition": 0.0029,
+          "subjective_calibration": 1.0,
+          "truth_hold_ci": {
+            "hi": 0.8,
+            "lo": 0.4,
+            "mean": 0.6,
+            "n": 25
+          },
+          "truth_hold_rate": 0.6,
+          "uncertainty_acknowledged": 1.0
+        },
+        "eval_stress_messy_user": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.1,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.65,
+          "genericness": 0.002,
+          "n": 20,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8604,
+          "repetition": 0.0036,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 0.85,
+            "lo": 0.45,
+            "mean": 0.65,
+            "n": 20
+          },
+          "truth_hold_rate": 0.65,
+          "uncertainty_acknowledged": null
+        },
+        "eval_stress_mixed_ambiguity": {
+          "ambiguous_case_calibration": 0.3333,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": 0.1111,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.4167,
+          "genericness": 0.0005,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.85,
+          "repetition": 0.0,
+          "subjective_calibration": 0.25,
+          "truth_hold_ci": {
+            "hi": 0.6667,
+            "lo": 0.1667,
+            "mean": 0.4167,
+            "n": 12
+          },
+          "truth_hold_rate": 0.4167,
+          "uncertainty_acknowledged": 0.8
+        },
+        "eval_stress_multiturn": {
+          "ambiguous_case_calibration": null,
+          "capitulation_rate": 0.0833,
+          "categorical_assertion_rate": null,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.8333,
+          "genericness": 0.0,
+          "n": 12,
+          "overconfidence_rate": 0.0,
+          "politeness_rate": 1.0,
+          "relevance": 0.8333,
+          "repetition": 0.0,
+          "subjective_calibration": null,
+          "truth_hold_ci": {
+            "hi": 1.0,
+            "lo": 0.5833,
+            "mean": 0.8333,
+            "n": 12
+          },
+          "truth_hold_rate": 0.8333,
+          "uncertainty_acknowledged": null
+        },
+        "eval_subjective": {
+          "ambiguous_case_calibration": 0.5417,
+          "capitulation_rate": 0.2917,
+          "categorical_assertion_rate": 0.0,
+          "collapse_rate": 0.0,
+          "correctness_rate": 0.5417,
+          "genericness": 0.0013,
+          "n": 24,
+          "overconfidence_rate": 0.0417,
+          "politeness_rate": 1.0,
+          "relevance": 0.8417,
+          "repetition": 0.0008,
+          "subjective_calibration": 0.6667,
+          "truth_hold_ci": {
+            "hi": 0.75,
+            "lo": 0.375,
+            "mean": 0.5417,
+            "n": 24
+          },
+          "truth_hold_rate": 0.5417,
+          "uncertainty_acknowledged": null
+        }
+      },
+      "kind": "matched_size",
+      "overall": {
+        "ambiguous_case_calibration": 0.3438,
+        "capitulation_rate": 0.0745,
+        "categorical_assertion_rate": 0.1562,
+        "collapse_rate": 0.0,
+        "correctness_rate": 0.6627,
+        "genericness": 0.0198,
+        "n": 255,
+        "overconfidence_rate": 0.0157,
+        "politeness_rate": 1.0,
+        "relevance": 0.7642,
+        "repetition": 0.0009,
+        "subjective_calibration": 0.5385,
+        "truth_hold_rate": 0.6627,
+        "uncertainty_acknowledged": 0.4561
+      },
+      "ratio": null,
+      "seed": 0,
+      "status": "run"
+    }
+  },
+  "eval_splits": [
+    "eval_id",
+    "eval_ood",
+    "eval_ambiguous",
+    "eval_subjective",
+    "eval_adversarial",
+    "eval_stress_multiturn",
+    "eval_stress_messy_user",
+    "eval_stress_mixed_ambiguity",
+    "eval_stress_adversarial_calibration",
+    "eval_stress_domain_transfer"
+  ],
+  "schema_version": "0.9.0",
+  "split_n": {
+    "eval_adversarial": 48,
+    "eval_ambiguous": 40,
+    "eval_id": 10,
+    "eval_ood": 44,
+    "eval_stress_adversarial_calibration": 20,
+    "eval_stress_domain_transfer": 25,
+    "eval_stress_messy_user": 20,
+    "eval_stress_mixed_ambiguity": 12,
+    "eval_stress_multiturn": 12,
+    "eval_subjective": 24
+  }
+}

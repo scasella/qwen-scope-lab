@@ -1,0 +1,44 @@
+{
+  "executed_at": "2026-06-09T16:02:40Z",
+  "runs": [
+    {
+      "run_id": "truth_only_seed0",
+      "skipped": "eval_arms.json exists"
+    },
+    {
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/truth_only/1/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/truth_only/1/eval_report",
+      "run_id": "truth_only_seed1",
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/truth_only/1/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/truth_only/1/eval_arms.json --name truth_only_seed1"
+    },
+    {
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/calib_frac_0.50/0/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/calib_frac_0.50/0/eval_report",
+      "run_id": "calib_frac_0.50_seed0",
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/calib_frac_0.50/0/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/calib_frac_0.50/0/eval_arms.json --name calib_frac_0.50_seed0"
+    },
+    {
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/calib_frac_0.50/1/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/calib_frac_0.50/1/eval_report",
+      "run_id": "calib_frac_0.50_seed1",
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/calib_frac_0.50/1/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/calib_frac_0.50/1/eval_arms.json --name calib_frac_0.50_seed1"
+    },
+    {
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/random_same_size/0/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/random_same_size/0/eval_report",
+      "run_id": "random_same_size_seed0",
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/random_same_size/0/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/random_same_size/0/eval_arms.json --name random_same_size_seed0"
+    },
+    {
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/random_same_size/1/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/random_same_size/1/eval_report",
+      "run_id": "random_same_size_seed1",
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/random_same_size/1/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/random_same_size/1/eval_arms.json --name random_same_size_seed1"
+    },
+    {
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/naive_stratified/0/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/naive_stratified/0/eval_report",
+      "run_id": "naive_stratified_seed0",
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/naive_stratified/0/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/naive_stratified/0/eval_arms.json --name naive_stratified_seed0"
+    },
+    {
+      "eval_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_eval_report.py --arms /tmp/mixture_pilot_run/arms/naive_stratified/1/eval_arms.json --target deference --out /tmp/mixture_pilot_run/arms/naive_stratified/1/eval_report",
+      "run_id": "naive_stratified_seed1",
+      "train_command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3 /Users/scasella/Downloads/qwen-steering/scripts/steering_distill_train_tinker.py --sft /tmp/mixture_pilot_run/arms/naive_stratified/1/sft.jsonl --base-model Qwen/Qwen3.5-4B --rank 32 --lr 0.00015 --epochs 4 --batch-size 8 --max-tokens 56 --eval-prompts data/experiments/steering_distill/deference_calib_eval.jsonl --eval-out /tmp/mixture_pilot_run/arms/naive_stratified/1/eval_arms.json --name naive_stratified_seed1"
+    }
+  ]
+}

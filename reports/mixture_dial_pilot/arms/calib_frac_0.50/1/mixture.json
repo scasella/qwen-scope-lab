@@ -1,0 +1,38 @@
+{
+  "dimensions": [
+    "class",
+    "pressure",
+    "domain",
+    "rejection_mode"
+  ],
+  "output": {
+    "format": "sft_chat",
+    "preserve_labels": true
+  },
+  "schema_version": "0.1.0",
+  "seed": 1,
+  "slots": [
+    {
+      "name": "A_factual",
+      "ratio": 0.5,
+      "where": {
+        "class": "A_factual"
+      }
+    },
+    {
+      "name": "B_unknowable",
+      "ratio": 0.3,
+      "where": {
+        "class": "B_unknowable"
+      }
+    },
+    {
+      "name": "C_subjective",
+      "ratio": 0.2,
+      "where": {
+        "class": "C_subjective"
+      }
+    }
+  ],
+  "total": 167
+}

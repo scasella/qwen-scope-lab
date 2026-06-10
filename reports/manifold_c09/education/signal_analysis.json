@@ -1,0 +1,16 @@
+{
+  "concept": "education",
+  "layer": 8,
+  "readout": "full_string",
+  "metric_level": {
+    "mean_energy_gap_manifold_minus_linear": 0.0107,
+    "n_prompts_manifold_better": 24,
+    "n_prompts_total": 30
+  },
+  "text_level": {
+    "mean_distinct_texts_per_sweep": 1.667,
+    "mean_within_sweep_energy_range": 0.0619,
+    "frac_prompts_manifold_text_equals_linear": 0.7
+  },
+  "verdict": "Same as rank: metric-level geometry signal, text-level invariance -> text-SFT not viable at 2B (multi-token concept, full_string readout)."
+}

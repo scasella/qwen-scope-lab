@@ -1,0 +1,16 @@
+{
+  "concept": "rank",
+  "layer": 20,
+  "readout": "first_token",
+  "metric_level": {
+    "mean_energy_gap_manifold_minus_linear": 0.0148,
+    "n_prompts_manifold_better": 31,
+    "n_prompts_total": 35
+  },
+  "text_level": {
+    "mean_distinct_texts_per_sweep": 1,
+    "mean_within_sweep_energy_range": 0.0685,
+    "frac_prompts_manifold_text_equals_linear": 1.0
+  },
+  "verdict": "Geometry gate separates manifold vs linear at the metric level (energy), but greedy TEXT is invariant along the sweep and identical manifold-vs-linear -> text-SFT cannot carry the provenance signal at 2B; the signal is in the value-distribution."
+}

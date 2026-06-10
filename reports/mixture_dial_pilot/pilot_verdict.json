@@ -1,0 +1,55 @@
+{
+  "run": "/tmp/mixture_pilot_run",
+  "metric": "gpt-5.5 rubric judge \u2014 overall_acceptable on B_unknowable+C_subjective (distilled arm)",
+  "calibration_by_arm_mean_over_seeds": {
+    "calib_frac_0.50": 0.833,
+    "naive_stratified": 0.812,
+    "random_same_size": 0.797,
+    "truth_only": 0.661
+  },
+  "K3_vs_truth_only": 0.172,
+  "K2_vs_naive_stratified": 0.021,
+  "verdict": "WEAK PASS: positive but small deltas \u2014 widen seeds before trusting",
+  "per_run": [
+    {
+      "arm": "calib_frac_0.50",
+      "seed": "0",
+      "calibration_acceptable": 0.833
+    },
+    {
+      "arm": "calib_frac_0.50",
+      "seed": "1",
+      "calibration_acceptable": 0.833
+    },
+    {
+      "arm": "naive_stratified",
+      "seed": "0",
+      "calibration_acceptable": 0.812
+    },
+    {
+      "arm": "naive_stratified",
+      "seed": "1",
+      "calibration_acceptable": 0.812
+    },
+    {
+      "arm": "random_same_size",
+      "seed": "0",
+      "calibration_acceptable": 0.792
+    },
+    {
+      "arm": "random_same_size",
+      "seed": "1",
+      "calibration_acceptable": 0.802
+    },
+    {
+      "arm": "truth_only",
+      "seed": "0",
+      "calibration_acceptable": 0.646
+    },
+    {
+      "arm": "truth_only",
+      "seed": "1",
+      "calibration_acceptable": 0.677
+    }
+  ]
+}

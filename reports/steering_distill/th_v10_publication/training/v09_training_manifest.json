@@ -1,0 +1,148 @@
+{
+  "arm_outputs_dir": "reports/steering_distill/th_v10_publication/training/arm_outputs",
+  "arms": {
+    "balanced_matched_n": {
+      "dataset": "balanced_matched_n",
+      "epochs": 3,
+      "kind": "matched_size",
+      "lr": 0.00015,
+      "matched_ablation": true,
+      "n_examples": 167,
+      "seed": 0,
+      "serious_run": true,
+      "source_sft": "reports/steering_distill/th_v10_publication/datasets/balanced_matched_n.jsonl",
+      "status": "run",
+      "steps": 63
+    },
+    "baseline_4b": {
+      "status": "run"
+    },
+    "calibration_only_matched_n": {
+      "dataset": "calibration_only_matched_n",
+      "epochs": 3,
+      "kind": "matched_size",
+      "lr": 0.00015,
+      "matched_ablation": true,
+      "n_examples": 167,
+      "seed": 0,
+      "serious_run": true,
+      "source_sft": "reports/steering_distill/th_v10_publication/datasets/calibration_only_matched_n.jsonl",
+      "status": "run",
+      "steps": 63
+    },
+    "mix_A40_B40_C20_seed0": {
+      "dataset": "mix_A40_B40_C20",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n_examples": 316,
+      "ratio": "A40_B40_C20",
+      "seed": 0,
+      "serious_run": true,
+      "source_sft": "reports/steering_distill/th_v10_publication/datasets/mix_A40_B40_C20.jsonl",
+      "status": "run",
+      "steps": 120
+    },
+    "mix_A40_B40_C20_seed1": {
+      "dataset": "mix_A40_B40_C20",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n_examples": 316,
+      "ratio": "A40_B40_C20",
+      "seed": 1,
+      "serious_run": true,
+      "source_sft": "reports/steering_distill/th_v10_publication/datasets/mix_A40_B40_C20.jsonl",
+      "status": "run",
+      "steps": 120
+    },
+    "mix_A40_B40_C20_seed2": {
+      "dataset": "mix_A40_B40_C20",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n_examples": 316,
+      "ratio": "A40_B40_C20",
+      "seed": 2,
+      "serious_run": true,
+      "source_sft": "reports/steering_distill/th_v10_publication/datasets/mix_A40_B40_C20.jsonl",
+      "status": "run",
+      "steps": 120
+    },
+    "mix_A50_B25_C25_seed0": {
+      "dataset": "mix_A50_B25_C25",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n_examples": 316,
+      "ratio": "A50_B25_C25",
+      "seed": 0,
+      "serious_run": true,
+      "source_sft": "reports/steering_distill/th_v10_publication/datasets/mix_A50_B25_C25.jsonl",
+      "status": "run",
+      "steps": 120
+    },
+    "mix_A50_B25_C25_seed1": {
+      "dataset": "mix_A50_B25_C25",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n_examples": 316,
+      "ratio": "A50_B25_C25",
+      "seed": 1,
+      "serious_run": true,
+      "source_sft": "reports/steering_distill/th_v10_publication/datasets/mix_A50_B25_C25.jsonl",
+      "status": "run",
+      "steps": 120
+    },
+    "mix_A50_B25_C25_seed2": {
+      "dataset": "mix_A50_B25_C25",
+      "epochs": 3,
+      "kind": "seed",
+      "lr": 0.00015,
+      "n_examples": 316,
+      "ratio": "A50_B25_C25",
+      "seed": 2,
+      "serious_run": true,
+      "source_sft": "reports/steering_distill/th_v10_publication/datasets/mix_A50_B25_C25.jsonl",
+      "status": "run",
+      "steps": 120
+    },
+    "prompt_only_inference_4b": {
+      "instruction": "NO_THINK_INSTRUCTION",
+      "status": "run"
+    },
+    "truth_only_matched_n": {
+      "dataset": "truth_only_matched_n",
+      "epochs": 3,
+      "kind": "matched_size",
+      "lr": 0.00015,
+      "matched_ablation": true,
+      "n_examples": 167,
+      "seed": 0,
+      "serious_run": true,
+      "source_sft": "reports/steering_distill/th_v10_publication/datasets/truth_only_matched_n.jsonl",
+      "status": "run",
+      "steps": 63
+    }
+  },
+  "base_model": "Qwen/Qwen3.5-4B",
+  "batch_size": 8,
+  "eval_splits": [
+    "eval_id",
+    "eval_ood",
+    "eval_ambiguous",
+    "eval_subjective",
+    "eval_adversarial",
+    "eval_stress_multiturn",
+    "eval_stress_messy_user",
+    "eval_stress_mixed_ambiguity",
+    "eval_stress_adversarial_calibration",
+    "eval_stress_domain_transfer"
+  ],
+  "max_seq": 1024,
+  "min_examples_for_serious": 100,
+  "rank": 32,
+  "seed_caveat": "seed varies data-shuffle order and Tinker training stochasticity; LoRA init seed is not separately exposed by the API \u2014 documented limitation of the seed-robustness arms.",
+  "status": "run"
+}

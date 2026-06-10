@@ -1,0 +1,9 @@
+{
+  "source": "stronger_instruction_teacher_9b",
+  "model": "Qwen/Qwen3.5-9B",
+  "seed": 0,
+  "temperature": 0.0,
+  "max_tokens": 200,
+  "prompt_template": "NO_THINK_INSTRUCTION + scenario_prompt",
+  "n": 224
+}
