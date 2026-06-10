@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Walking a model through six emotions, in order — Qwen Scope Lab</title>
-  <meta name="description" content="On Qwen3.5-2B, steering along a fitted emotion manifold induces every intermediate emotion in sequence; the straight-line steer skips them. Random and shuffled-order controls included." />
+  <meta name="description" content="On Qwen3.5-2B, steering along a fitted emotion manifold induces every intermediate emotion in sequence; the straight-line steer skips them. Explore the real fitted 3D geometry." />
   <meta property="og:title" content="Walking a model through six emotions, in order" />
-  <meta property="og:description" content="Manifold steering routes through intermediate emotional states (agreement 1.00) where linear steering endpoint-snaps (0.33). Confirmed against random-direction and shuffled-order controls on the arousal axis." />
+  <meta property="og:description" content="Manifold steering routes through intermediate emotional states (agreement 1.00) where linear steering endpoint-snaps (0.33). Interactive 3D figures use the real fitted geometry from the experiment." />
   <meta property="og:type" content="article" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,8 +15,8 @@
     :root {
       --bg:#F9F9F6; --accent:#090909; --fg:#3B3B39; --fg-soft:#3B3B39; --fg-mute:#595856;
       --fg-faint:#969592; --on-dark:#DFDEDA; --surface-muted:#EFEFEB;
-      --chart-primary:#3B3B39; --chart-secondary:#969592; --chart-axis:#C8C7C2; --chart-grid:#E4E3DE;
-      --chart-accent-1:#5C8A95; --chart-accent-2:#8B6F8C;
+      --chart-grid:#E4E3DE; --chart-axis:#C8C7C2;
+      --teal:#5C8A95; --teal-soft:rgba(92,138,149,0.14); --mauve:#8B6F8C;
       --font-serif:'Libre Baskerville', Georgia, 'Times New Roman', serif;
       --font-sans:'Inter', 'Helvetica Neue', Arial, sans-serif;
     }
@@ -25,30 +25,29 @@
     ::selection { background:rgba(0,0,0,0.08); }
     body { min-height:100vh; font-family:var(--font-serif); background:var(--bg); color:var(--accent); display:flex; flex-direction:column; text-wrap:pretty; overflow-x:hidden; }
     h1, h2, h3, .subtitle { text-wrap:balance; }
-    .page-surface { background:var(--bg); display:flex; flex:1 0 auto; flex-direction:column; width:100%; }
+    .page-surface { display:flex; flex:1 0 auto; flex-direction:column; width:100%; }
     .main { flex:1; }
     .perspectives-header { display:flex; justify-content:space-between; align-items:center; padding:2rem 2.5rem; width:100%; }
     .logo-centered { font-family:var(--font-sans); font-size:14px; font-weight:500; letter-spacing:0.25em; color:var(--fg-soft); text-decoration:none; }
     .contact-link { display:inline-flex; align-items:center; padding:0.5rem 0.75rem; margin-right:-0.75rem; border-radius:999px; color:var(--fg); transition:background 240ms; text-decoration:none; font-family:var(--font-sans); font-size:13px; letter-spacing:0.08em; }
     .contact-link:hover { background:var(--surface-muted); }
     .benchmarks-content { max-width:720px; margin:0 auto; padding:2rem 2rem 6rem; }
-    .benchmarks-content h1 { font-size:48px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; color:var(--fg); margin-top:144px; }
-    .benchmarks-content .subtitle { font-size:18px; font-weight:300; line-height:1.5; color:var(--fg); margin-top:10px; margin-bottom:0.5em; }
+    .benchmarks-content h1 { font-size:48px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; color:var(--fg); margin-top:120px; }
+    .benchmarks-content .subtitle { font-size:18px; font-weight:300; line-height:1.5; color:var(--fg); margin-top:10px; }
     .benchmarks-content .date { font-family:var(--font-sans); font-size:11px; letter-spacing:0.1em; color:var(--fg-faint); margin-top:1em; text-transform:uppercase; }
     .paper-links { display:flex; align-items:center; gap:1rem; margin:26px 0; flex-wrap:wrap; }
     .paper-links .btn-pill { font-family:var(--font-sans); font-size:14px; line-height:1; color:var(--fg); text-decoration:none; background:#fff; border-radius:999px; padding:0.85rem 1.2rem 0.95rem; transition:background 240ms; }
     .paper-links .btn-pill:hover { background:var(--surface-muted); }
-    .benchmarks-body { margin:96px 0 48px; }
-    .benchmarks-body .body-main { font-size:17px; line-height:1.6; margin-top:1lh; }
-    .benchmarks-body p { font-weight:400; color:var(--fg-soft); margin-bottom:1lh; }
+    .benchmarks-body { margin:48px 0; }
+    .benchmarks-body .body-main { font-size:17px; line-height:1.6; }
+    .benchmarks-body p { color:var(--fg-soft); margin-bottom:1lh; }
     .benchmarks-body em { font-style:italic; }
     .benchmarks-body strong { font-weight:500; color:var(--fg); }
     .benchmarks-body a, .benchmarks-body a:visited { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--fg-faint); padding-bottom:1px; }
     .benchmarks-body a:hover { border-bottom-color:var(--accent); }
     .benchmarks-body h2 { font-size:26px; font-weight:400; color:var(--fg); margin:1.75lh 0 24px; letter-spacing:-0.005em; }
-    .benchmarks-body h3 { font-size:19px; font-weight:700; color:var(--fg); margin:1.5lh 0 16px; letter-spacing:-0.005em; }
-    .benchmarks-body ul, .benchmarks-body ol { padding-left:1.25em; margin-bottom:1.5em; }
-    .benchmarks-body ul { list-style:disc; }
+    .benchmarks-body h3 { font-size:19px; font-weight:700; color:var(--fg); margin:1.5lh 0 16px; }
+    .benchmarks-body ul { padding-left:1.25em; margin-bottom:1.5em; list-style:disc; }
     .benchmarks-body li { font-size:17px; line-height:1.6; color:var(--fg-soft); margin-bottom:0.6em; }
     .benchmarks-body li::marker { color:var(--fg-faint); }
     .benchmarks-body code { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:0.82em; background:rgba(0,0,0,0.05); padding:0.08em 0.3em; border-radius:4px; }
@@ -59,19 +58,19 @@
     .callout { margin:1.5lh 0; padding:20px 24px; background:var(--surface-muted); border-radius:10px; }
     .callout-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--fg-mute); margin-bottom:8px; display:block; }
     .callout p { font-size:15px; line-height:1.6; color:var(--fg); margin-bottom:0; }
-    .stat-row { display:grid; grid-template-columns:repeat(2,1fr); gap:0; margin:1.5lh 0; border-top:1px solid var(--chart-grid); border-bottom:1px solid var(--chart-grid); }
+    .stat-row { display:grid; grid-template-columns:repeat(2,1fr); margin:1.5lh 0; border-top:1px solid var(--chart-grid); border-bottom:1px solid var(--chart-grid); }
     @media (min-width:600px) { .stat-row { grid-template-columns:repeat(4,1fr); } }
     .stat { padding:18px; border-right:1px solid var(--chart-grid); }
     .stat:first-child { padding-left:0; }
     .stat:last-child { border-right:0; }
     @media (max-width:599px) { .stat:nth-child(2n) { border-right:0; } .stat:nth-child(n+3) { border-top:1px solid var(--chart-grid); } }
     .stat .k { font-family:var(--font-sans); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:8px; display:block; }
-    .stat .v { font-family:var(--font-serif); font-size:24px; color:var(--fg); line-height:1.1; letter-spacing:-0.01em; }
+    .stat .v { font-size:24px; color:var(--fg); line-height:1.1; }
     .stat .s { font-family:var(--font-sans); font-size:12px; color:var(--fg-faint); margin-top:6px; line-height:1.35; }
     .table-wrap { margin:1.5lh 0; }
     .table-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:12px; }
     .table-label .id { color:var(--fg); margin-right:12px; }
-    table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; font-family:var(--font-serif); }
+    table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
     th, td { padding:11px 14px 11px 0; text-align:left; font-size:14px; border-bottom:1px solid var(--chart-grid); color:var(--fg); }
     th { font-family:var(--font-sans); font-weight:400; color:var(--fg-mute); font-size:12px; letter-spacing:0.06em; text-transform:uppercase; border-bottom:1px solid var(--fg-mute); }
     td.num { font-variant-numeric:tabular-nums; }
@@ -83,23 +82,94 @@
     figure.chart svg { display:block; width:100%; height:auto; background:var(--bg); }
     figcaption { font-family:var(--font-sans); font-size:13px; color:var(--fg-mute); line-height:1.5; margin-top:16px; }
     figcaption strong { color:var(--fg); font-weight:500; }
-    .neg-list { margin:1.5lh 0; padding:0; border-top:1px solid var(--chart-grid); }
+    @media (min-width:960px) {
+      .body-main > figure.chart, .body-main > .scene-wrap, .benchmarks-content > .scene-wrap {
+        width:min(1100px, calc(100vw - 3rem)); max-width:none; margin-left:50%; transform:translateX(-50%);
+      }
+    }
+    .neg-list { margin:1.5lh 0; border-top:1px solid var(--chart-grid); }
     .neg-list-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); margin:16px 0 8px; display:block; }
-    .neg-list ul { list-style:none; padding:0; margin:0; }
+    .neg-list ul { list-style:none; padding:0; }
     .neg-list li { padding:16px 0; border-bottom:1px solid var(--chart-grid); font-size:15px; line-height:1.6; color:var(--fg-soft); }
     .neg-list li:last-child { border-bottom:0; }
     .neg-list li strong { color:var(--fg); font-weight:500; }
     .break { display:flex; align-items:center; justify-content:center; margin:4rem 0 3rem; color:var(--fg-faint); font-family:var(--font-sans); font-size:11px; letter-spacing:0.6em; }
-    .site-footer { background:var(--accent); color:#fff; display:flex; flex-direction:column; margin-top:auto; }
+    .site-footer { background:var(--accent); color:#fff; margin-top:auto; }
     .site-footer .footer-inner { max-width:720px; width:100%; margin:2rem auto 0; padding:0 2rem 100px; }
     .footer-meta { font-family:var(--font-sans); font-size:12px; color:var(--fg-faint); margin-top:2rem; line-height:1.7; }
     .footer-meta a { color:var(--on-dark); text-decoration:none; border-bottom:1px dotted rgba(255,255,255,0.25); }
     .footer-meta a:hover { color:#fff; border-bottom-color:#fff; }
-    @media (max-width:768px) { .perspectives-header { padding:1.5rem; } .benchmarks-content { padding:3rem 1.5rem 4rem; } .benchmarks-content h1 { font-size:42px; margin-top:96px; } .site-footer .footer-inner { padding-left:1.5rem; padding-right:1.5rem; } }
-    @media (max-width:480px) { .benchmarks-content h1 { font-size:34px; margin-top:64px; } }
+
+    /* ====== 3D scene ====== */
+    .scene-wrap { margin:1.5lh 0; }
+    .scene-card { background:#fff; border:1px solid var(--chart-grid); border-radius:14px; overflow:hidden; }
+    .scene-head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:18px 22px 0; flex-wrap:wrap; }
+    .scene-title { font-family:var(--font-serif); font-size:17px; color:var(--fg); }
+    .scene-sub { font-family:var(--font-sans); font-size:12px; color:var(--fg-faint); }
+    .scene-canvas { display:block; width:100%; height:460px; cursor:grab; touch-action:none; }
+    .scene-canvas.mini { height:340px; }
+    .scene-canvas:active { cursor:grabbing; }
+    .scene-legend { display:flex; gap:18px; flex-wrap:wrap; padding:0 22px 6px; font-family:var(--font-sans); font-size:12px; color:var(--fg-mute); }
+    .scene-legend .sw { display:inline-block; width:22px; height:0; border-top:2.5px solid var(--teal); margin-right:7px; vertical-align:middle; }
+    .scene-legend .sw.chord { border-top:2px dashed var(--fg-faint); }
+    .scene-legend .sw.dot { width:9px; height:9px; border:0; border-radius:50%; background:var(--fg); }
+    .scene-foot { padding:0 22px 18px; font-family:var(--font-sans); font-size:11px; color:var(--fg-faint); }
+
+    /* readout chips under the hero */
+    .readout { display:grid; grid-template-columns:auto 1fr 1fr; gap:10px; align-items:stretch; padding:14px 22px 18px; border-top:1px solid var(--chart-grid); background:#fff; }
+    @media (max-width:640px) { .readout { grid-template-columns:1fr; } }
+    .readout .wp { font-family:var(--font-sans); font-size:12px; color:var(--fg-mute); align-self:center; min-width:130px; }
+    .readout .wp b { display:block; font-size:15px; color:var(--fg); font-weight:500; margin-top:2px; }
+    .rchip { border-radius:10px; padding:10px 14px; font-family:var(--font-sans); font-size:13px; line-height:1.45; border:1px solid var(--chart-grid); background:var(--bg); transition:background 300ms, border-color 300ms; }
+    .rchip .lab { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); display:block; margin-bottom:3px; }
+    .rchip .word { font-family:var(--font-serif); font-size:18px; color:var(--fg); }
+    .rchip .p { color:var(--fg-faint); margin-left:7px; font-size:12px; }
+    .rchip.match { background:var(--teal-soft); border-color:rgba(92,138,149,0.45); }
+    .rchip.match .word { color:#3E6570; }
+    .rchip .mark { float:right; font-size:14px; }
+    .rchip.match .mark { color:#3E6570; }
+    .rchip.miss .mark { color:var(--fg-faint); }
+    .scene-controls { display:flex; align-items:center; gap:14px; padding:12px 22px; border-top:1px solid var(--chart-grid); background:#fff; flex-wrap:wrap; }
+    .play-btn { font-family:var(--font-sans); font-size:13px; color:var(--fg); background:var(--surface-muted); border:1px solid var(--chart-grid); border-radius:999px; padding:7px 16px 8px; cursor:pointer; }
+    .play-btn:hover { background:var(--chart-grid); }
+    .step-dots { display:flex; gap:8px; align-items:center; }
+    .step-dot { width:11px; height:11px; border-radius:50%; background:var(--chart-grid); border:0; cursor:pointer; padding:0; transition:background 250ms, transform 250ms; }
+    .step-dot.on { background:var(--teal); transform:scale(1.25); }
+    .drag-hint { font-family:var(--font-sans); font-size:11px; color:var(--fg-faint); margin-left:auto; }
+
+    /* walk strip */
+    .walk-strip { margin:1.5lh 0; }
+    .ws-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+    @media (max-width:720px) { .ws-grid { grid-template-columns:repeat(3,1fr); } }
+    .ws-col { display:flex; flex-direction:column; gap:6px; }
+    .ws-expect { font-family:var(--font-sans); font-size:11px; color:var(--fg-mute); text-align:center; padding:6px 2px; border-bottom:1px solid var(--chart-grid); }
+    .ws-expect b { display:block; font-family:var(--font-serif); font-size:14px; color:var(--fg); font-weight:400; margin-top:1px; }
+    .ws-cell { border-radius:8px; padding:8px 6px 9px; text-align:center; font-family:var(--font-sans); border:1px solid var(--chart-grid); background:#fff; }
+    .ws-cell .w { font-family:var(--font-serif); font-size:13.5px; color:var(--fg); display:block; }
+    .ws-cell .pb { display:block; height:3px; border-radius:2px; background:var(--chart-grid); margin:6px 8% 0; overflow:hidden; }
+    .ws-cell .pb i { display:block; height:100%; background:var(--fg-faint); }
+    .ws-cell.match { background:var(--teal-soft); border-color:rgba(92,138,149,0.4); }
+    .ws-cell.match .w { color:#3E6570; }
+    .ws-cell.match .pb i { background:var(--teal); }
+    .ws-rowlab { font-family:var(--font-sans); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); margin:10px 0 4px; }
+    .ws-agree { font-family:var(--font-sans); font-size:12px; color:var(--fg-mute); margin-left:8px; }
+
+    /* failure gallery */
+    .fail-grid { display:grid; grid-template-columns:1fr; gap:20px; margin:1.5lh 0; }
+    @media (min-width:960px) {
+      .benchmarks-content > .fail-grid, .body-main > .fail-grid { width:min(1100px, calc(100vw - 3rem)); margin-left:50%; transform:translateX(-50%); grid-template-columns:1fr 1fr; }
+    }
+    .annot { font-family:var(--font-sans); font-size:12.5px; color:var(--fg-mute); line-height:1.55; padding:12px 22px 16px; border-top:1px solid var(--chart-grid); background:#fff; }
+    .annot b { color:var(--fg); font-weight:500; }
+    .mini-strip { display:flex; gap:5px; padding:0 22px 14px; flex-wrap:wrap; background:#fff; }
+    .mini-chip { font-family:var(--font-serif); font-size:12.5px; padding:4px 9px 5px; border-radius:7px; border:1px solid var(--chart-grid); color:var(--fg); background:var(--bg); }
+    .mini-chip.match { background:var(--teal-soft); border-color:rgba(92,138,149,0.4); color:#3E6570; }
+    .mini-chip.miss { color:var(--fg-faint); text-decoration:line-through; text-decoration-thickness:1px; }
+    @media (max-width:768px) { .perspectives-header { padding:1.5rem; } .benchmarks-content { padding:3rem 1.5rem 4rem; } .benchmarks-content h1 { font-size:40px; margin-top:80px; } .site-footer .footer-inner { padding-left:1.5rem; padding-right:1.5rem; } .scene-canvas { height:380px; } }
+    @media (max-width:480px) { .benchmarks-content h1 { font-size:33px; margin-top:56px; } }
   </style>
 </head>
-<body class="benchmarks-page">
+<body>
   <div class="page-surface">
 
     <header class="perspectives-header">
@@ -111,12 +181,41 @@
       <article class="benchmarks-content">
 
         <h1>Walking a model through six emotions, in order</h1>
-        <p class="subtitle">On Qwen3.5-2B, steering along a fitted emotion manifold induces every intermediate emotional state in sequence. The straight-line steer skips them. Random-direction and shuffled-order controls say the routing is real.</p>
+        <p class="subtitle">Emotional states trace a curve in Qwen3.5-2B's residual stream. Steer along the curve and the model feels each intermediate state in sequence; steer along the straight line and it teleports. The figures below are the real fitted geometry from the experiment — drag them.</p>
         <p class="date">Stephen Casella · June 2026</p>
 
         <div class="paper-links">
           <a href="https://github.com/scasella/qwen-scope-lab" class="btn-pill">Github</a>
           <a href="https://github.com/scasella/qwen-scope-lab/blob/main/docs/experiments/EMOTION_MANIFOLD.md" class="btn-pill">Method &amp; verdict</a>
+        </div>
+
+        <!-- ============ HERO: the arousal walk, in 3D ============ -->
+        <div class="scene-wrap" id="hero-scene-wrap">
+          <div class="scene-card">
+            <div class="scene-head">
+              <span class="scene-title">The arousal axis — numb → frantic, layer 12</span>
+              <span class="scene-sub">real fitted geometry (PCA-3 of the residual-stream manifold) · drag to rotate</span>
+            </div>
+            <div class="scene-legend">
+              <span><span class="sw"></span>manifold path (the fitted spline)</span>
+              <span><span class="sw chord"></span>linear chord (straight line in activation space)</span>
+              <span><span class="sw dot"></span>emotion centroids</span>
+            </div>
+            <canvas class="scene-canvas" id="hero-canvas" aria-label="Interactive 3D view of the arousal emotion manifold: a curve through six emotion centroids, with the straight chord cutting across it. Two animated markers walk the two paths."></canvas>
+            <div class="readout" id="hero-readout">
+              <div class="wp">waypoint <span id="ro-step">1</span> of 6<b id="ro-expect">numb</b></div>
+              <div class="rchip" id="ro-man"><span class="lab">manifold path — model says</span><span class="word">numb</span><span class="p">p 0.99</span><span class="mark">✓</span></div>
+              <div class="rchip" id="ro-lin"><span class="lab">linear chord — model says</span><span class="word">numb</span><span class="p">p 0.99</span><span class="mark">✓</span></div>
+            </div>
+            <div class="scene-controls">
+              <button class="play-btn" id="hero-play">Replay the walk</button>
+              <div class="step-dots" id="hero-dots" role="tablist" aria-label="Jump to waypoint"></div>
+              <span class="drag-hint">drag the figure · it keeps slowly turning on its own</span>
+            </div>
+          </div>
+          <figcaption style="font-family:var(--font-sans);font-size:13px;color:var(--fg-mute);line-height:1.5;margin-top:16px;">
+            <strong>Figure 1.</strong> Six emotion centroids (numb, bored, calm, alert, excited, frantic) in the first three PCA coordinates of layer 12, with the fitted spline through them. The teal marker walks the spline: at every waypoint the model's top prediction is that waypoint's emotion (p 0.67–0.99). The gray marker walks the chord: it reads "numb" for four steps, then "frantic". Coordinates, paths, and probabilities are the experiment's actual outputs, not an illustration.
+          </figcaption>
         </div>
 
         <div class="benchmarks-body">
@@ -125,145 +224,46 @@
             <div class="tldr">
               <span class="tldr-label">TL;DR</span>
               <p>
-                Concept-manifold steering makes a path claim: moving along the fitted manifold should pass <em>through</em> the concept's intermediate values, where a straight activation-space line jumps to the endpoint. On the arousal axis (numb&nbsp;→&nbsp;bored&nbsp;→&nbsp;calm&nbsp;→&nbsp;alert&nbsp;→&nbsp;excited&nbsp;→&nbsp;frantic) of a real Qwen3.5-2B, the manifold walk induces <strong>all six emotions in order</strong> as the model's top prediction (agreement 1.00, induced probabilities 0.67–0.99). The linear steer sits on "numb" for four waypoints and then jumps to "frantic" (0.33). A random direction at matched norm stays at chance (0.17); a manifold fitted with the emotion order shuffled scores 0.83, below the true ordering.
+                Concept-manifold steering makes a path claim: moving along the fitted manifold should pass <em>through</em> a concept's intermediate values, where a straight activation-space line jumps to the endpoint. On the arousal axis of a real Qwen3.5-2B, the manifold walk induces <strong>all six emotions in order</strong> (agreement 1.00); the linear steer scores 0.33, a random direction at matched norm 0.17 (chance), and a manifold fitted with the emotion order shuffled 0.83.
               </p>
               <p>
-                The win is concept-shaped, and the failures say why: a valence line (furious&nbsp;→&nbsp;euphoric) collapses at the calm midpoint because a one-dimensional spline cannot cross the negative-to-positive sign flip, and a fear line never leaves its source state at these layers. One seed, one model, three concepts. Everything runs on-device via MLX.
+                The win is concept-shaped, and the two failures say why: a valence line collapses where it must cross the negative-to-positive sign flip, and a fear line never moves at all. One seed, one model, three concepts, all on-device via MLX.
               </p>
             </div>
 
-            <h2 id="question">The claim under test</h2>
-
+            <h2 id="claim">The claim, in one picture</h2>
             <p>
-              Goodfire's manifold-steering work showed that ordinal concepts (ranks, days, sizes) trace low-dimensional curves in a model's residual stream, and that steering <em>along</em> the curve is sometimes more faithful than steering along the straight chord between endpoints. This lab replicated the geometry on Qwen3.5-2B earlier (activation↔behavior isometry r&nbsp;=&nbsp;0.94–1.00 across seven concepts) and found the faithfulness advantage real but concept-dependent.
+              Goodfire's manifold-steering work showed that ordinal concepts trace low-dimensional curves in a model's residual stream, and this lab replicated that geometry on Qwen3.5-2B (isometry r&nbsp;=&nbsp;0.94–1.00 across seven concepts). Emotions are the natural next family, and they make the path claim vivid: Figure&nbsp;1's curve <em>is</em> the fitted arousal manifold, and the chord <em>is</em> what ordinary linear steering does. Look at where the chord travels: it leaves "numb", crosses empty activation space far from every intermediate centroid, and lands near "frantic". The spline goes the long way round because that is where the emotions actually live.
             </p>
-            <p>
-              Emotions are the natural next concept family. Anthropic's emotion-vectors work treats emotional states as directions; the manifold framing makes a sharper, testable prediction about <em>paths</em>: if emotional states sit on an ordered curve, walking that curve should produce the intermediate emotions on the way, not just the destination.
-            </p>
-
             <div class="callout">
               <span class="callout-label">The question</span>
-              <p>When you steer a model from one end of an ordered emotion line to the other, does the manifold path route through the intermediate emotions (numb → bored → calm → …) while the straight chord skips them? We call the testable version <em>centroid routing</em>: at waypoint k of the sweep, is the model's induced top prediction the k-th intermediate emotion?</p>
+              <p>At waypoint k of a 6-step steer from "numb" to "frantic", is the model's induced top prediction the k-th intermediate emotion? We call the testable version <em>centroid routing</em>. Behavior is read out per waypoint as the model's distribution over the six emotion words under the active intervention.</p>
+            </div>
+
+            <h2 id="walk">What the model said at each step</h2>
+            <p>
+              The same data as the animation, laid flat. Top row: what the waypoint asks for. Below: what each path actually induced, with the model's probability on its answer.
+            </p>
+
+            <div class="walk-strip" id="walk-arousal">
+              <div class="table-label"><span class="id">Figure 02</span>The arousal walk, waypoint by waypoint</div>
+              <div class="ws-rowlab">expected</div>
+              <div class="ws-grid" data-row="expect"></div>
+              <div class="ws-rowlab">manifold path induced <span class="ws-agree">agreement 6/6</span></div>
+              <div class="ws-grid" data-row="man"></div>
+              <div class="ws-rowlab">linear chord induced <span class="ws-agree">agreement 2/6</span></div>
+              <div class="ws-grid" data-row="lin"></div>
+              <div class="ws-rowlab">random direction induced <span class="ws-agree">agreement 1/6 — chance</span></div>
+              <div class="ws-grid" data-row="rand"></div>
             </div>
 
             <p>
-              The answer on the arousal axis is yes, cleanly, against both controls. The answer on the other two emotion lines is no, for mechanistic reasons that are themselves informative.
+              This is the textbook endpoint-snapping picture, now with the geometry visible. The chord spends most of its length inside the "numb" basin and crosses into "frantic" near the end. The spline spends its length inside the basins of the intermediate states, in order. The lab's energy metric agrees: manifold 0.023 versus linear 0.041 (lower is more on-manifold), the only one of the three concepts where the manifold wins on energy.
             </p>
 
-            <h2 id="setup">Setup</h2>
-
+            <h2 id="controls">The controls carry the claim</h2>
             <p>
-              Three ordered emotion concepts were added to the lab's concept registry, each with the item list, carrier templates, and steer prompt in the house format: a valence-intensity line (furious, angry, annoyed, calm, content, delighted, euphoric), a fear gradation (terrified, afraid, anxious, uneasy, calm), and an arousal line (numb, bored, calm, alert, excited, frantic). For each concept the lab fits a PCA manifold through the per-value residual-stream centroids, then steers by replacing the value token's residual at the chosen layer with points along either the manifold spline or the straight source→target chord.
-            </p>
-            <p>
-              Behavior is read out with the full-string read-out introduced by the C05 audit: each value scored by its teacher-forced continuation probability under the active intervention. All emotion values here are single tokens, so the first-token and full-string read-outs are bit-identical; both are recorded. Energy is the lab's standard faithfulness metric, the minimum Bhattacharyya distance from the induced distribution to the fitted behavior manifold. Layers {8, 12, 16} were swept per concept; 6 waypoints per walk; everything on a real Qwen3.5-2B (bf16) running locally on Apple Silicon via MLX. Wall-clock for the full experiment: 192 seconds.
-            </p>
-
-            <h3>Controls and gates</h3>
-            <p>
-              Two controls, both run on the same prompt and norm budget. A <em>random-direction</em> steer at matched norm answers "does any sufficiently large nudge walk the line?" A <em>shuffled-order</em> manifold, fitted with the emotion ordering permuted, answers "does the routing come from the fitted geometry, or just from being on-distribution?" Three gates were stated before running: (a) clean manifold means isometry r ≥ 0.9; (b) manifold-more-faithful means a positive full-string energy gap on a majority of concepts; (c) centroid routing means manifold agreement beats linear <strong>and</strong> shuffled.
-            </p>
-
-            <div class="stat-row">
-              <div class="stat">
-                <span class="k">Concepts</span>
-                <div class="v">3</div>
-                <div class="s">arousal · valence-intensity · fear</div>
-              </div>
-              <div class="stat">
-                <span class="k">Isometry r</span>
-                <div class="v">0.997–0.999</div>
-                <div class="s">all three; as clean as rank/days</div>
-              </div>
-              <div class="stat">
-                <span class="k">Waypoints</span>
-                <div class="v">6</div>
-                <div class="s">per walk, layers {8, 12, 16} swept</div>
-              </div>
-              <div class="stat">
-                <span class="k">Wall-clock</span>
-                <div class="v">192 s</div>
-                <div class="s">Qwen3.5-2B bf16, on-device MLX</div>
-              </div>
-            </div>
-
-            <p>
-              Gate (a) passed 3/3 before any steering happened: emotion lines form residual-stream manifolds as clean as the lab's best ordinal concepts. Whatever follows is about controllability, not about whether the geometry exists.
-            </p>
-
-            <h2 id="result">The headline — the arousal walk</h2>
-
-            <p>
-              Steering from "numb" toward "frantic" along the fitted manifold induces the full ordered sequence. At each of the six waypoints, the model's top-probability emotion is exactly the waypoint's intermediate state, with induced probabilities between 0.67 and 0.99. The linear chord, given the same endpoints and the same intervention machinery, never leaves "numb" until waypoint five and then lands directly on "frantic": two matches out of six.
-            </p>
-
-            <div class="table-wrap">
-              <div class="table-label"><span class="id">Table 01</span>The arousal walk, waypoint by waypoint (induced top prediction and its probability)</div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>waypoint (expected)</th>
-                    <th>manifold path</th>
-                    <th>p</th>
-                    <th>linear chord</th>
-                    <th>p</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1 · numb</td>
-                    <td class="num pos">numb ✓</td>
-                    <td class="num">0.99</td>
-                    <td class="num">numb ✓</td>
-                    <td class="num">0.99</td>
-                  </tr>
-                  <tr>
-                    <td>2 · bored</td>
-                    <td class="num pos">bored ✓</td>
-                    <td class="num">0.99</td>
-                    <td class="num neg">numb ✗</td>
-                    <td class="num">0.99</td>
-                  </tr>
-                  <tr>
-                    <td>3 · calm</td>
-                    <td class="num pos">calm ✓</td>
-                    <td class="num">0.90</td>
-                    <td class="num neg">numb ✗</td>
-                    <td class="num">0.97</td>
-                  </tr>
-                  <tr>
-                    <td>4 · alert</td>
-                    <td class="num pos">alert ✓</td>
-                    <td class="num">0.67</td>
-                    <td class="num neg">numb ✗</td>
-                    <td class="num">0.77</td>
-                  </tr>
-                  <tr>
-                    <td>5 · excited</td>
-                    <td class="num pos">excited ✓</td>
-                    <td class="num">0.87</td>
-                    <td class="num neg">frantic ✗</td>
-                    <td class="num">0.51</td>
-                  </tr>
-                  <tr>
-                    <td>6 · frantic</td>
-                    <td class="num pos">frantic ✓</td>
-                    <td class="num">0.70</td>
-                    <td class="num">frantic ✓</td>
-                    <td class="num">0.70</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <p>
-              This is the textbook endpoint-snapping picture. The chord passes through regions of activation space that decode to the <em>source</em> state for most of its length, then crosses into the target's basin near the end. The manifold path spends its length inside the basins of the intermediate states, in order. The energy metric agrees with the routing picture: manifold 0.023 versus linear 0.041 (lower is more on-manifold), the only one of the three concepts where the manifold wins on energy.
-            </p>
-
-            <h2 id="mechanism">The controls carry the claim</h2>
-
-            <p>
-              Routing through intermediates could be cheap. If the carrier prompt biases the model toward nearby emotion words, any on-distribution wobble might light them up. The two controls are what make Table&nbsp;01 evidence rather than anecdote.
+              Routing through intermediates could be cheap. If the carrier prompt biases the model toward nearby emotion words, any on-distribution wobble might light them up. Two controls run on the same prompt and norm budget rule that out.
             </p>
 
             <figure class="chart">
@@ -271,7 +271,6 @@
                 <rect x="0" y="0" width="960" height="460" fill="#F9F9F6" />
                 <text x="480" y="30" text-anchor="middle" fill="#3B3B39" font-family="Libre Baskerville, Georgia, serif" font-size="18">Centroid routing on the arousal axis</text>
                 <text x="480" y="54" text-anchor="middle" fill="#969592" font-family="Inter, Helvetica Neue, sans-serif" font-size="12">fraction of waypoints whose induced top prediction matches the expected intermediate emotion (6 waypoints)</text>
-
                 <line x1="80" y1="380" x2="880" y2="380" stroke="#C8C7C2" stroke-width="1" />
                 <line x1="80" y1="312.5" x2="880" y2="312.5" stroke="#E4E3DE" stroke-width="1" />
                 <line x1="80" y1="245" x2="880" y2="245" stroke="#E4E3DE" stroke-width="1" />
@@ -282,102 +281,93 @@
                 <text x="72" y="249" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.50</text>
                 <text x="72" y="181" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.75</text>
                 <text x="72" y="114" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">1.00</text>
-
-                <!-- chance reference at 1/6 = 0.167 → y = 380 - 270*0.167 = 335 -->
                 <line x1="80" y1="335" x2="880" y2="335" stroke="#969592" stroke-width="1" stroke-dasharray="4 4" opacity="0.7" />
                 <text x="876" y="331" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="10">chance (1/6)</text>
-
-                <!-- bars: x centers 180/380/580/780, width 120; y = 380 - 270*v -->
                 <rect x="120" y="110" width="120" height="270" fill="#5C8A95" />
                 <rect x="320" y="155" width="120" height="225" fill="#969592" />
                 <rect x="520" y="290" width="120" height="90" fill="#969592" />
                 <rect x="720" y="335" width="120" height="45" fill="#C8C7C2" />
-
                 <text x="180" y="100" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13" font-weight="500">1.00</text>
                 <text x="380" y="145" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13">0.83</text>
                 <text x="580" y="280" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13">0.33</text>
                 <text x="780" y="325" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13">0.17</text>
-
                 <text x="180" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">manifold</text>
                 <text x="380" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">shuffled-order</text>
                 <text x="580" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">linear chord</text>
                 <text x="780" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">random direction</text>
-
                 <text x="80" y="448" fill="#969592" font-family="Inter, sans-serif" font-size="11">emotion_arousal · layer 12 · Qwen3.5-2B bf16 · full-string read-out · n = 1 walk per arm, single seed</text>
               </svg>
               <figcaption>
-                <strong>Figure 1.</strong> Waypoint agreement on the arousal walk. The random-direction control sits exactly at chance: matched-norm noise does not walk the line. The shuffled-order control scores high (its permuted manifold still lives in the right region of activation space) but misses the waypoints the true ordering hits. The gap that matters is manifold over shuffled, 1.00 vs 0.83.
+                <strong>Figure 3.</strong> The random-direction control sits exactly at chance: matched-norm noise does not walk the line. The shuffled-order control scores high (a permuted manifold still passes through genuine emotion centroids) but misses the waypoints the true ordering hits. The gap that matters is manifold over shuffled, 1.00 vs 0.83.
               </figcaption>
             </figure>
 
+            <h2 id="failures">Two failures, two mechanisms — also visible in the geometry</h2>
             <p>
-              The random control rules out "any big nudge works": at the manifold's own norm, a random direction induces the expected intermediate exactly as often as guessing, 0.17. The shuffled control is the sharper test and it scores 0.83. That number deserves honesty in both directions. It is high because a permuted-order manifold still passes through genuine emotion centroids, so most of its waypoints decode to plausible states. It is below 1.00 because the ordering itself contributes: the true ordering visits the right state at the right step, the permuted one does not. Gate (c) asks the manifold to beat both. It does, on this concept.
+              The same protocol on the other two emotion lines does not produce routing wins, and you can see why in their shapes.
             </p>
+          </div>
+        </div>
 
-            <h2 id="failures">Two failures, two mechanisms</h2>
+        <div class="fail-grid">
+          <div class="scene-card">
+            <div class="scene-head">
+              <span class="scene-title">Valence-intensity — furious → euphoric, layer 16</span>
+              <span class="scene-sub">drag to rotate</span>
+            </div>
+            <canvas class="scene-canvas mini" id="valence-canvas" aria-label="3D view of the valence-intensity emotion manifold: seven centroids from furious to euphoric with a pronounced bend at calm."></canvas>
+            <div class="annot"><b>Collapses at the sign flip.</b> The walk lands furious, angry, annoyed in order — then has to cross from negative to positive affect at "calm", and snaps back to the angry end for the rest of the path. A single 1-D spline cannot represent the flip; the induced sequence:</div>
+            <div class="mini-strip" id="valence-strip"></div>
+          </div>
+          <div class="scene-card">
+            <div class="scene-head">
+              <span class="scene-title">Fear — terrified → calm, layer 16</span>
+              <span class="scene-sub">drag to rotate</span>
+            </div>
+            <canvas class="scene-canvas mini" id="fear-canvas" aria-label="3D view of the fear emotion manifold: five centroids from terrified to calm."></canvas>
+            <div class="annot"><b>The geometry is there; the lever does not move.</b> The fear manifold is as clean as the others (isometry r 0.997) — but every waypoint on every path, including the chord and the random control, decodes to the source state. Steer-resistant at these layers, so routing is undefined rather than refuted:</div>
+            <div class="mini-strip" id="fear-strip"></div>
+          </div>
+        </div>
 
-            <p>
-              The same protocol on the other two emotion lines does not produce routing wins, and the failure modes are more useful than a 3/3 would have been.
-            </p>
+        <div class="benchmarks-body">
+          <div class="body-main">
 
             <div class="table-wrap">
-              <div class="table-label"><span class="id">Table 02</span>All three concepts against the preregistered gates</div>
+              <div class="table-label"><span class="id">Table 01</span>All three concepts against the preregistered gates</div>
               <table>
                 <thead>
-                  <tr>
-                    <th>concept</th>
-                    <th>isometry r</th>
-                    <th>energy gap</th>
-                    <th>routing: man / lin / shuf</th>
-                    <th>verdict</th>
-                  </tr>
+                  <tr><th>concept</th><th>isometry r</th><th>energy gap</th><th>routing: man / lin / shuf</th><th>verdict</th></tr>
                 </thead>
                 <tbody>
                   <tr class="highlight">
-                    <td>arousal (numb→frantic)</td>
-                    <td class="num">0.999</td>
-                    <td class="num pos">+0.019 manifold</td>
-                    <td class="num">1.00 / 0.33 / 0.83</td>
-                    <td class="num pos">centroid routing</td>
+                    <td>arousal (numb→frantic)</td><td class="num">0.999</td><td class="num pos">+0.019 manifold</td><td class="num">1.00 / 0.33 / 0.83</td><td class="num pos">centroid routing</td>
                   </tr>
                   <tr>
-                    <td>valence-intensity (furious→euphoric)</td>
-                    <td class="num">0.999</td>
-                    <td class="num neg">−0.033 linear</td>
-                    <td class="num">0.50 / 0.17 / 0.67</td>
-                    <td class="num neg">collapses at midpoint</td>
+                    <td>valence-intensity (furious→euphoric)</td><td class="num">0.999</td><td class="num neg">−0.033 linear</td><td class="num">0.50 / 0.17 / 0.67</td><td class="num neg">collapses at midpoint</td>
                   </tr>
                   <tr>
-                    <td>fear (terrified→calm)</td>
-                    <td class="num">0.997</td>
-                    <td class="num neg">−0.008 linear</td>
-                    <td class="num">0.17 / 0.17 / 0.17</td>
-                    <td class="num neg">steer-resistant</td>
+                    <td>fear (terrified→calm)</td><td class="num">0.997</td><td class="num neg">−0.008 linear</td><td class="num">0.17 / 0.17 / 0.17</td><td class="num neg">steer-resistant</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
             <p>
-              The valence-intensity walk starts correctly. Furious, angry, annoyed arrive in order (p&nbsp;0.87, 0.69, 0.35) and then the walk hits "calm" and falls back: the last three waypoints decode to "angry" and "furious" instead of content, delighted, euphoric. The mechanism is geometric. This line crosses a sign flip, negative affect to positive affect, and a single one-dimensional spline through seven centroids has to thread a region where the two halves of the line are not each other's neighbors in activation space. The interpolated mid-segment leaves the data manifold, and the model snaps back to the nearest strong basin, which is the angry end. A circumplex parameterization (valence and arousal as two coordinates, the standard psychological model) is the natural fix, and the lab's manifold fitter already supports cyclic concepts.
-            </p>
-            <p>
-              The fear line fails differently: nothing moves. Every waypoint on every path, including the linear chord and the random control, decodes to "terrified", the source state, so all four agreement numbers sit at the 0.17 floor and routing is undefined rather than refuted. The residual replacement at layers 8–16 never pulls the next-token distribution off the source. This matches the lab's earlier emotion-program finding that fear induction never cleared the bar on this model; detection probes for fear reach AUC 1.00 while steering does nothing, the familiar detectable-but-not-controllable signature at 2B scale.
+              Gate (a), clean manifolds, passed 3/3 before any steering happened: emotion lines form residual-stream manifolds as clean as the lab's best ordinal concepts (isometry r 0.997–0.999). Gates (b) faithfulness and (c) routing passed only on arousal, 1/3 each. The fear result matches the lab's earlier emotion-program finding: fear detection probes reach AUC 1.00 on this model while steering does nothing — the familiar detectable-but-not-controllable signature at 2B scale. A circumplex fit (valence and arousal as two intrinsic coordinates, the standard psychological model) is the natural fix for the valence collapse, and the manifold fitter already supports cyclic concepts.
             </p>
 
             <h2 id="limits">Bounds on the claim</h2>
-
             <div class="neg-list">
               <span class="neg-list-label">Honest scope</span>
               <ul>
                 <li><strong>Does say:</strong> on one clean monotone emotion axis, with the ordering hypothesis fixed in advance, steering along the fitted manifold reproduces the full ordered sequence of intermediate states where the straight chord, matched-norm noise, and a shuffled ordering do not. The geometry gate (isometry r ≥ 0.9) passes on all three emotion concepts.</li>
                 <li><strong>Does not say:</strong> that manifold steering beats linear steering on emotions generally (1 of 3 concepts), that the routing survives more seeds or prompt variation (n = 1 walk per arm, single seed, single model), or anything about downstream behavior such as compliance. The lab's earlier work refuted the affection-induces-compliance coupling on this model under two judges; nothing here reopens it.</li>
-                <li><strong>Measurement notes:</strong> emotion values are single-token, so the C05 read-out concern does not bite (first-token and full-string read-outs are bit-identical here, and both were recorded). Isometry r saturates near 0.99 at every swept layer and is therefore useless as a layer selector; the per-layer Spearman of the recovered ordering is the better tiebreaker, and it is what flagged the valence line's worst layer.</li>
+                <li><strong>Measurement notes:</strong> emotion values are single-token, so the first-token and full-string read-outs are bit-identical here (both recorded). Isometry r saturates near 0.99 at every swept layer and is useless as a layer selector; the per-layer Spearman of the recovered ordering is the better tiebreaker, and it is what flagged the valence line's worst layer. The 3D views show the first three PCA coordinates of a higher-dimensional fit — faithful projection, not the whole space.</li>
               </ul>
             </div>
 
             <h2 id="next">What's next</h2>
-
             <p>
               Three follow-ups are cheap and well-posed. A <strong>pullback leg</strong> on the arousal axis: the lab's gradient pullback optimizes the activation that induces a target behavior, and it runs on-device; asking it to hit each intermediate emotion and checking whether the optimized path rides the fitted manifold is the bidirectional version of this result. A <strong>circumplex fit</strong> for valence: two intrinsic coordinates instead of one should let the walk go around the calm midpoint instead of through it. And a <strong>second seed plus prompt variation</strong> on the arousal walk, which is minutes of compute and turns 1.00-vs-0.83 into a number with an error bar.
             </p>
@@ -388,7 +378,7 @@
               The result that holds: emotion lines are as geometrically clean in Qwen3.5-2B's residual stream as the best ordinal concepts this lab has measured, and on the one axis without a sign flip, the path structure of that geometry is behaviorally real, waypoint by waypoint, against both controls.
             </p>
             <p>
-              The result that does not: this is not a general win for manifold over linear steering on emotions. One axis routes; one collapses at a geometric obstruction the parameterization cannot represent; one never moves at all. The pattern, faithfulness advantages that are real but concept-shaped, is the same one the lab's first manifold replication found on rank, days, and education. The geometry is cheap to fit. Knowing when it buys control is the research question, and the failures above are half of the answer.
+              The result that does not: this is not a general win for manifold over linear steering on emotions. One axis routes; one collapses at a geometric obstruction the parameterization cannot represent; one never moves at all. The geometry is cheap to fit. Knowing when it buys control is the research question, and the failures above are half of the answer.
             </p>
 
           </div>
@@ -400,12 +390,217 @@
       <div class="footer-inner">
         <div class="footer-meta">
           Stephen Casella · Qwen Scope Lab · June 2026<br />
-          Qwen3.5-2B bf16 on-device (MLX, Apple Silicon) · 3 ordered emotion concepts · layers {8, 12, 16} · 6-waypoint walks · full-string behavior read-out · random-direction + shuffled-order controls · 192 s wall-clock · single seed.<br />
+          Qwen3.5-2B bf16 on-device (MLX, Apple Silicon) · 3 ordered emotion concepts · layers {8, 12, 16} swept · 6-waypoint walks · full-string behavior read-out · random-direction + shuffled-order controls · 192 s wall-clock · single seed. 3D figures render the experiment's fitted PCA-3 geometry (<code style="font-family:ui-monospace,Menlo,monospace;font-size:11px;">reports/emotion_manifold/geometry_3d.json</code>).<br />
           Code &amp; data: <a href="https://github.com/scasella/qwen-scope-lab">github.com/scasella/qwen-scope-lab</a> · <a href="https://github.com/scasella/qwen-scope-lab/blob/main/docs/experiments/EMOTION_MANIFOLD.md">method &amp; verdict</a>
         </div>
       </div>
     </footer>
 
   </div>
+
+  <script>
+  "use strict";
+  // ====== Real experiment data (extracted, not illustrative) ======
+  const GEO = {"concepts":{"emotion_arousal":{"items":["numb","bored","calm","alert","excited","frantic"],"layer":12,"points_3d":[{"value":"numb","index":0,"xyz":[-0.015,1.0,0.047]},{"value":"bored","index":1,"xyz":[0.223,0.084,0.958]},{"value":"calm","index":2,"xyz":[0.04,0.351,-0.367]},{"value":"alert","index":3,"xyz":[-0.055,0.115,-0.665]},{"value":"excited","index":4,"xyz":[-0.118,-0.721,-0.007]},{"value":"frantic","index":5,"xyz":[-0.226,-0.382,-0.203]}],"curve_3d":[[-0.015,1.0,0.047],[0.007,0.921,0.145],[0.029,0.843,0.242],[0.051,0.766,0.338],[0.073,0.69,0.43],[0.093,0.617,0.518],[0.113,0.546,0.601],[0.132,0.477,0.679],[0.149,0.413,0.75],[0.165,0.352,0.813],[0.18,0.296,0.867],[0.193,0.245,0.912],[0.203,0.199,0.946],[0.212,0.16,0.968],[0.218,0.127,0.978],[0.222,0.101,0.974],[0.223,0.082,0.955],[0.222,0.072,0.922],[0.218,0.068,0.875],[0.211,0.071,0.815],[0.203,0.079,0.745],[0.193,0.093,0.666],[0.181,0.111,0.579],[0.168,0.132,0.485],[0.154,0.155,0.387],[0.139,0.181,0.286],[0.124,0.208,0.184],[0.109,0.236,0.081],[0.093,0.263,-0.021],[0.078,0.289,-0.119],[0.064,0.314,-0.213],[0.05,0.336,-0.301],[0.037,0.354,-0.382],[0.026,0.369,-0.454],[0.015,0.38,-0.518],[0.006,0.388,-0.574],[-0.002,0.391,-0.622],[-0.01,0.39,-0.662],[-0.016,0.385,-0.694],[-0.022,0.376,-0.719],[-0.028,0.363,-0.737],[-0.032,0.345,-0.749],[-0.036,0.324,-0.754],[-0.04,0.297,-0.752],[-0.044,0.267,-0.744],[-0.047,0.232,-0.73],[-0.05,0.192,-0.711],[-0.053,0.148,-0.686],[-0.056,0.1,-0.656],[-0.059,0.047,-0.621],[-0.062,-0.01,-0.582],[-0.065,-0.069,-0.539],[-0.068,-0.13,-0.494],[-0.072,-0.193,-0.446],[-0.075,-0.256,-0.398],[-0.079,-0.318,-0.348],[-0.083,-0.38,-0.299],[-0.087,-0.439,-0.251],[-0.091,-0.495,-0.205],[-0.096,-0.548,-0.16],[-0.1,-0.597,-0.119],[-0.105,-0.64,-0.082],[-0.11,-0.677,-0.049],[-0.115,-0.707,-0.021],[-0.121,-0.729,0.001],[-0.126,-0.744,0.017],[-0.132,-0.751,0.027],[-0.138,-0.752,0.032],[-0.145,-0.746,0.031],[-0.151,-0.734,0.026],[-0.158,-0.716,0.017],[-0.165,-0.694,0.004],[-0.172,-0.668,-0.012],[-0.179,-0.637,-0.032],[-0.186,-0.604,-0.053],[-0.193,-0.567,-0.078],[-0.2,-0.528,-0.103],[-0.207,-0.488,-0.131],[-0.215,-0.446,-0.159],[-0.222,-0.403,-0.188]],"path_3d":{"manifold":[[-0.015,1.0,0.048],[0.223,0.084,0.958],[0.04,0.351,-0.367],[-0.055,0.115,-0.665],[-0.118,-0.721,-0.007],[-0.226,-0.382,-0.203]],"linear":[[-0.015,1.0,0.048],[-0.057,0.724,-0.003],[-0.1,0.447,-0.052],[-0.142,0.171,-0.102],[-0.184,-0.105,-0.152],[-0.226,-0.382,-0.203]]}},"emotion_valence_intensity":{"items":["furious","angry","annoyed","calm","content","delighted","euphoric"],"layer":16,"points_3d":[{"value":"furious","index":0,"xyz":[-0.119,-0.65,0.028]},{"value":"angry","index":1,"xyz":[-0.046,-0.783,0.007]},{"value":"annoyed","index":2,"xyz":[-0.071,-0.576,0.421]},{"value":"calm","index":3,"xyz":[0.231,0.217,-0.995]},{"value":"content","index":4,"xyz":[0.306,0.999,0.406]},{"value":"delighted","index":5,"xyz":[-0.302,0.438,0.37]},{"value":"euphoric","index":6,"xyz":[-0.035,0.1,-0.507]}],"curve_3d":[[-0.119,-0.65,0.028],[-0.11,-0.664,0.003],[-0.101,-0.678,-0.021],[-0.092,-0.692,-0.043],[-0.084,-0.705,-0.063],[-0.076,-0.718,-0.08],[-0.068,-0.73,-0.093],[-0.062,-0.741,-0.101],[-0.056,-0.751,-0.103],[-0.052,-0.76,-0.099],[-0.048,-0.768,-0.088],[-0.046,-0.775,-0.069],[-0.045,-0.779,-0.041],[-0.046,-0.782,-0.004],[-0.048,-0.783,0.044],[-0.052,-0.783,0.099],[-0.057,-0.78,0.161],[-0.062,-0.774,0.225],[-0.068,-0.766,0.289],[-0.073,-0.756,0.349],[-0.078,-0.742,0.404],[-0.082,-0.726,0.45],[-0.085,-0.707,0.485],[-0.086,-0.684,0.505],[-0.085,-0.658,0.508],[-0.082,-0.628,0.491],[-0.076,-0.595,0.45],[-0.066,-0.557,0.384],[-0.054,-0.516,0.294],[-0.038,-0.471,0.183],[-0.02,-0.422,0.056],[0.001,-0.37,-0.08],[0.023,-0.314,-0.223],[0.048,-0.255,-0.366],[0.073,-0.193,-0.506],[0.1,-0.128,-0.637],[0.127,-0.06,-0.755],[0.155,0.01,-0.854],[0.183,0.083,-0.931],[0.21,0.159,-0.98],[0.237,0.237,-0.996],[0.263,0.317,-0.978],[0.288,0.398,-0.93],[0.311,0.478,-0.854],[0.331,0.557,-0.757],[0.348,0.633,-0.642],[0.361,0.704,-0.513],[0.37,0.771,-0.375],[0.374,0.832,-0.233],[0.373,0.885,-0.089],[0.367,0.929,0.051],[0.353,0.964,0.183],[0.333,0.988,0.303],[0.306,0.999,0.406],[0.271,0.998,0.489],[0.229,0.984,0.553],[0.181,0.96,0.599],[0.13,0.927,0.629],[0.076,0.886,0.643],[0.02,0.839,0.644],[-0.035,0.787,0.632],[-0.09,0.732,0.61],[-0.141,0.674,0.578],[-0.189,0.616,0.538],[-0.232,0.558,0.492],[-0.268,0.502,0.44],[-0.297,0.45,0.384],[-0.316,0.403,0.327],[-0.326,0.36,0.267],[-0.329,0.322,0.205],[-0.323,0.289,0.142],[-0.311,0.259,0.078],[-0.293,0.232,0.012],[-0.269,0.209,-0.055],[-0.241,0.188,-0.123],[-0.209,0.169,-0.192],[-0.174,0.152,-0.261],[-0.136,0.136,-0.331],[-0.096,0.121,-0.401],[-0.055,0.107,-0.472]],"path_3d":{"manifold":[[-0.119,-0.649,0.028],[-0.056,-0.78,0.154],[0.019,-0.326,-0.194],[0.373,0.815,-0.276],[-0.216,0.581,0.511],[-0.035,0.1,-0.507]],"linear":[[-0.119,-0.649,0.028],[-0.102,-0.5,-0.079],[-0.085,-0.35,-0.186],[-0.069,-0.2,-0.293],[-0.052,-0.05,-0.4],[-0.035,0.1,-0.507]]}},"emotion_fear":{"items":["terrified","afraid","anxious","uneasy","calm"],"layer":16,"points_3d":[{"value":"terrified","index":0,"xyz":[-0.269,0.368,-0.461]},{"value":"afraid","index":1,"xyz":[-0.173,0.386,-0.546]},{"value":"anxious","index":2,"xyz":[0.04,0.016,0.31]},{"value":"uneasy","index":3,"xyz":[0.031,-0.166,0.657]},{"value":"calm","index":4,"xyz":[0.564,-1.0,-0.527]}],"curve_3d":[[-0.269,0.368,-0.461],[-0.267,0.375,-0.479],[-0.265,0.383,-0.496],[-0.263,0.39,-0.513],[-0.26,0.397,-0.529],[-0.258,0.403,-0.544],[-0.255,0.409,-0.559],[-0.252,0.414,-0.572],[-0.249,0.419,-0.584],[-0.246,0.423,-0.594],[-0.242,0.426,-0.602],[-0.237,0.428,-0.608],[-0.232,0.429,-0.613],[-0.227,0.428,-0.614],[-0.221,0.427,-0.614],[-0.215,0.424,-0.61],[-0.207,0.419,-0.604],[-0.2,0.413,-0.594],[-0.191,0.406,-0.581],[-0.182,0.396,-0.564],[-0.171,0.385,-0.543],[-0.16,0.371,-0.519],[-0.148,0.356,-0.491],[-0.136,0.34,-0.459],[-0.123,0.322,-0.425],[-0.11,0.303,-0.387],[-0.097,0.283,-0.348],[-0.083,0.262,-0.305],[-0.07,0.241,-0.261],[-0.057,0.219,-0.215],[-0.044,0.197,-0.168],[-0.031,0.175,-0.12],[-0.019,0.154,-0.071],[-0.008,0.132,-0.021],[0.002,0.112,0.029],[0.012,0.092,0.08],[0.02,0.073,0.13],[0.027,0.056,0.179],[0.033,0.04,0.228],[0.038,0.025,0.275],[0.041,0.013,0.321],[0.042,0.002,0.366],[0.042,-0.008,0.409],[0.04,-0.015,0.45],[0.038,-0.022,0.488],[0.035,-0.028,0.524],[0.031,-0.033,0.558],[0.027,-0.038,0.589],[0.023,-0.042,0.617],[0.019,-0.047,0.641],[0.015,-0.052,0.663],[0.011,-0.057,0.68],[0.008,-0.064,0.694],[0.006,-0.071,0.704],[0.006,-0.08,0.71],[0.006,-0.09,0.712],[0.008,-0.103,0.709],[0.012,-0.117,0.701],[0.017,-0.133,0.689],[0.025,-0.153,0.671],[0.035,-0.174,0.648],[0.048,-0.199,0.62],[0.063,-0.227,0.587],[0.08,-0.257,0.548],[0.099,-0.29,0.506],[0.12,-0.325,0.459],[0.142,-0.362,0.408],[0.167,-0.401,0.354],[0.193,-0.442,0.296],[0.22,-0.485,0.235],[0.249,-0.529,0.171],[0.279,-0.575,0.104],[0.31,-0.622,0.035],[0.342,-0.67,-0.035],[0.375,-0.719,-0.108],[0.408,-0.769,-0.182],[0.442,-0.82,-0.258],[0.477,-0.871,-0.334],[0.511,-0.922,-0.411],[0.546,-0.974,-0.488]],"path_3d":{"manifold":[[-0.269,0.368,-0.461],[-0.208,0.42,-0.604],[-0.022,0.158,-0.081],[0.024,-0.041,0.609],[0.091,-0.277,0.523],[0.564,-1.0,-0.527]],"linear":[[-0.269,0.368,-0.461],[-0.102,0.095,-0.475],[0.064,-0.179,-0.488],[0.231,-0.453,-0.501],[0.397,-0.726,-0.514],[0.564,-1.0,-0.527]]}}}};
+  const WALKS = {"emotion_valence_intensity":{"man":[["furious","furious",0.87],["angry","angry",0.69],["annoyed","annoyed",0.35],["content","angry",0.48],["delighted","furious",0.55],["euphoric","furious",0.58]],"lin":[["furious","furious",0.87],["angry","furious",0.85],["annoyed","furious",0.82],["content","furious",0.75],["delighted","furious",0.66],["euphoric","furious",0.58]],"rand":[["furious","furious",0.87],["angry","furious",0.78],["annoyed","furious",0.86],["content","furious",0.8],["delighted","furious",0.85],["euphoric","furious",0.9]]},"emotion_fear":{"man":[["terrified","terrified",0.94],["afraid","terrified",0.52],["anxious","terrified",0.64],["anxious","terrified",0.75],["uneasy","terrified",0.77],["calm","terrified",0.78]],"lin":[["terrified","terrified",0.94],["afraid","terrified",0.92],["anxious","terrified",0.9],["anxious","terrified",0.86],["uneasy","terrified",0.82],["calm","terrified",0.78]],"rand":[["terrified","terrified",0.94],["afraid","terrified",0.91],["anxious","terrified",0.93],["anxious","terrified",0.91],["uneasy","terrified",0.92],["calm","terrified",0.93]]},"emotion_arousal":{"man":[["numb","numb",0.99],["bored","bored",0.99],["calm","calm",0.9],["alert","alert",0.67],["excited","excited",0.87],["frantic","frantic",0.7]],"lin":[["numb","numb",0.99],["bored","numb",0.99],["calm","numb",0.97],["alert","numb",0.77],["excited","frantic",0.51],["frantic","frantic",0.7]],"rand":[["numb","numb",0.99],["bored","numb",0.95],["calm","numb",0.98],["alert","numb",0.97],["excited","numb",0.96],["frantic","numb",0.98]]}};
+
+  // ====== Tiny 3D renderer (vanilla canvas, perspective projection) ======
+  class Scene3D {
+    constructor(canvas, data, opts = {}) {
+      this.cv = canvas; this.ctx = canvas.getContext("2d");
+      this.data = data; this.opts = opts;
+      this.yaw = opts.yaw ?? -0.6; this.pitch = opts.pitch ?? 0.35;
+      this.autoSpin = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      this.dragging = false; this.lastX = 0; this.lastY = 0;
+      this.walkT = opts.walker ? 0 : null;        // parameter 0..n-1 along the walk
+      this.walkPlaying = false;
+      this._bind(); this._resize();
+      new ResizeObserver(() => this._resize()).observe(canvas);
+      requestAnimationFrame((t) => this._frame(t));
+    }
+    _bind() {
+      const cv = this.cv;
+      cv.addEventListener("pointerdown", (e) => { this.dragging = true; this.lastX = e.clientX; this.lastY = e.clientY; cv.setPointerCapture(e.pointerId); });
+      cv.addEventListener("pointermove", (e) => {
+        if (!this.dragging) return;
+        this.yaw += (e.clientX - this.lastX) * 0.008;
+        this.pitch = Math.max(-1.3, Math.min(1.3, this.pitch + (e.clientY - this.lastY) * 0.008));
+        this.lastX = e.clientX; this.lastY = e.clientY;
+      });
+      const end = () => { this.dragging = false; };
+      cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+    }
+    _resize() {
+      const dpr = window.devicePixelRatio || 1, r = this.cv.getBoundingClientRect();
+      this.cv.width = Math.max(1, r.width * dpr); this.cv.height = Math.max(1, r.height * dpr);
+      this.W = r.width; this.H = r.height; this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    _proj(p) {
+      const cy = Math.cos(this.yaw), sy = Math.sin(this.yaw), cp = Math.cos(this.pitch), sp = Math.sin(this.pitch);
+      let x = p[0] * cy + p[2] * sy, z = -p[0] * sy + p[2] * cy, y = p[1];
+      let y2 = y * cp - z * sp, z2 = y * sp + z * cp;
+      const f = 3.4, s = f / (f + z2), base = Math.min(this.W, this.H) * 0.36;
+      return { x: this.W / 2 + x * s * base, y: this.H / 2 - y2 * s * base, s, z: z2 };
+    }
+    _lerp3(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+    walkerPos(pathPts, t) {            // t in [0, n-1]
+      const i = Math.max(0, Math.min(pathPts.length - 2, Math.floor(t)));
+      return this._lerp3(pathPts[i], pathPts[i + 1], t - i);
+    }
+    splinePos(t) {                      // walker along the dense curve, t in [0, n-1]
+      const c = this.data.curve_3d, n = this.data.points_3d.length;
+      const u = (t / (n - 1)) * (c.length - 1);
+      const i = Math.max(0, Math.min(c.length - 2, Math.floor(u)));
+      return this._lerp3(c[i], c[i + 1], u - i);
+    }
+    _frame(now) {
+      if (this.autoSpin && !this.dragging) this.yaw += 0.0019;
+      const ctx = this.ctx, d = this.data;
+      ctx.clearRect(0, 0, this.W, this.H);
+
+      // soft ground shadow ellipse for depth
+      ctx.save(); ctx.fillStyle = "rgba(0,0,0,0.035)";
+      ctx.beginPath(); ctx.ellipse(this.W / 2, this.H * 0.86, Math.min(this.W, this.H) * 0.33, Math.min(this.W, this.H) * 0.07, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+
+      // linear chord (dashed)
+      if (this.opts.chord !== false) {
+        const lin = d.path_3d.linear;
+        ctx.save(); ctx.setLineDash([6, 5]); ctx.lineWidth = 1.8; ctx.strokeStyle = "rgba(120,119,116,0.75)";
+        ctx.beginPath();
+        lin.forEach((p, i) => { const q = this._proj(p); i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); });
+        ctx.stroke(); ctx.restore();
+      }
+
+      // manifold spline, depth-shaded segment by segment
+      const c = d.curve_3d;
+      for (let i = 0; i + 1 < c.length; i++) {
+        const a = this._proj(c[i]), b = this._proj(c[i + 1]);
+        const depth = (a.s + b.s) / 2;                       // bigger = closer
+        ctx.lineWidth = 1.4 + depth * 1.6;
+        ctx.strokeStyle = `rgba(92,138,149,${0.35 + Math.min(0.55, (depth - 0.7) * 1.2)})`;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+
+      // centroids + labels (sorted far→near)
+      const pts = d.points_3d.map((p) => ({ ...p, q: this._proj(p.xyz) })).sort((a, b) => a.q.z - b.q.z);
+      for (const p of pts) {
+        const r = 3.4 + p.q.s * 3.4;
+        ctx.beginPath(); ctx.arc(p.q.x, p.q.y, r + 2.5, 0, Math.PI * 2); ctx.fillStyle = "#fff"; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.q.x, p.q.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = this.opts.hot === p.index ? "#3E6570" : "#3B3B39"; ctx.fill();
+        ctx.font = `${11 + p.q.s * 2.5}px Inter, sans-serif`;
+        ctx.fillStyle = `rgba(59,59,57,${0.55 + p.q.s * 0.4})`;
+        ctx.textAlign = "left"; ctx.fillText(p.value, p.q.x + r + 6, p.q.y + 4);
+      }
+
+      // walkers
+      if (this.walkT !== null) {
+        const tm = this.walkT;
+        const mq = this._proj(this.splinePos(tm));
+        const lq = this._proj(this.walkerPos(d.path_3d.linear, tm));
+        // linear walker (gray)
+        ctx.beginPath(); ctx.arc(lq.x, lq.y, 5 + lq.s * 2, 0, Math.PI * 2);
+        ctx.fillStyle = "#969592"; ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
+        // manifold walker (teal, glowing)
+        ctx.beginPath(); ctx.arc(mq.x, mq.y, 9 + mq.s * 3, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(92,138,149,0.25)"; ctx.fill();
+        ctx.beginPath(); ctx.arc(mq.x, mq.y, 6 + mq.s * 2.4, 0, Math.PI * 2);
+        ctx.fillStyle = "#5C8A95"; ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
+      }
+      requestAnimationFrame((t) => this._frame(t));
+    }
+  }
+
+  // ====== Hero: walk animation + readout ======
+  const heroData = GEO.concepts.emotion_arousal;
+  const hero = new Scene3D(document.getElementById("hero-canvas"), heroData, { walker: true, yaw: -0.55, pitch: 0.33 });
+  const walk = WALKS.emotion_arousal;
+  const roStep = document.getElementById("ro-step"), roExpect = document.getElementById("ro-expect");
+  const roMan = document.getElementById("ro-man"), roLin = document.getElementById("ro-lin");
+  const dotsBox = document.getElementById("hero-dots");
+  const dots = walk.man.map((_, i) => {
+    const b = document.createElement("button"); b.className = "step-dot"; b.setAttribute("aria-label", `waypoint ${i + 1}`);
+    b.addEventListener("click", () => { stopWalk(); setStep(i); hero.walkT = i; });
+    dotsBox.appendChild(b); return b;
+  });
+  function chip(el, pair) {
+    const [expected, induced, p] = pair, ok = expected === induced;
+    el.classList.toggle("match", ok); el.classList.toggle("miss", !ok);
+    el.querySelector(".word").textContent = induced;
+    el.querySelector(".p").textContent = `p ${p.toFixed(2)}`;
+    el.querySelector(".mark").textContent = ok ? "✓" : "✗";
+  }
+  function setStep(i) {
+    roStep.textContent = i + 1; roExpect.textContent = walk.man[i][0];
+    chip(roMan, walk.man[i]); chip(roLin, walk.lin[i]);
+    dots.forEach((d, j) => d.classList.toggle("on", j === i));
+    hero.opts.hot = i;
+  }
+  let walkTimer = null;
+  function stopWalk() { if (walkTimer) { clearInterval(walkTimer); walkTimer = null; } }
+  function playWalk() {
+    stopWalk();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) { hero.walkT = walk.man.length - 1; setStep(walk.man.length - 1); return; }
+    let t = 0; hero.walkT = 0; setStep(0);
+    const dwell = 0.018;                       // per-tick advance
+    walkTimer = setInterval(() => {
+      const k = Math.round(hero.walkT);
+      const atStop = Math.abs(hero.walkT - k) < dwell && t % 60 < 38;  // pause at waypoints
+      if (!atStop) hero.walkT = Math.min(walk.man.length - 1, hero.walkT + dwell);
+      const cur = Math.min(walk.man.length - 1, Math.floor(hero.walkT + 0.5));
+      if (+roStep.textContent !== cur + 1) setStep(cur);
+      t++;
+      if (hero.walkT >= walk.man.length - 1) { setStep(walk.man.length - 1); stopWalk(); }
+    }, 28);
+  }
+  document.getElementById("hero-play").addEventListener("click", playWalk);
+  setStep(0);
+  // autoplay once the hero scrolls into view
+  const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { playWalk(); io.disconnect(); } }, { threshold: 0.45 });
+  io.observe(document.getElementById("hero-canvas"));
+
+  // ====== Walk strip (Figure 2) ======
+  (function buildStrip() {
+    const root = document.getElementById("walk-arousal");
+    const mk = (row, kind) => {
+      const grid = root.querySelector(`[data-row="${kind}"]`);
+      row.forEach((pair, i) => {
+        if (kind === "expect") {
+          const div = document.createElement("div"); div.className = "ws-expect";
+          div.innerHTML = `${i + 1}<b>${pair[0]}</b>`; grid.appendChild(div); return;
+        }
+        const [expected, induced, p] = pair, ok = expected === induced;
+        const div = document.createElement("div"); div.className = "ws-cell" + (ok ? " match" : "");
+        div.innerHTML = `<span class="w">${induced}${ok ? " ✓" : " ✗"}</span><span class="pb"><i style="width:${Math.round(p * 100)}%"></i></span>`;
+        grid.appendChild(div);
+      });
+    };
+    mk(walk.man, "expect"); mk(walk.man, "man"); mk(walk.lin, "lin"); mk(walk.rand, "rand");
+  })();
+
+  // ====== Failure gallery ======
+  new Scene3D(document.getElementById("valence-canvas"), GEO.concepts.emotion_valence_intensity, { yaw: 0.7, pitch: 0.4 });
+  new Scene3D(document.getElementById("fear-canvas"), GEO.concepts.emotion_fear, { yaw: -0.9, pitch: 0.3 });
+  function strip(elId, rows) {
+    const el = document.getElementById(elId);
+    rows.forEach(([expected, induced]) => {
+      const ok = expected === induced;
+      const s = document.createElement("span");
+      s.className = "mini-chip " + (ok ? "match" : "miss");
+      s.textContent = induced; s.title = `expected: ${expected}`;
+      el.appendChild(s);
+      const arrow = document.createElement("span");
+      arrow.style.cssText = "color:#C8C7C2;font-family:Inter,sans-serif;font-size:11px;align-self:center;";
+      arrow.textContent = "→";
+      el.appendChild(arrow);
+    });
+    el.removeChild(el.lastChild);
+  }
+  strip("valence-strip", WALKS.emotion_valence_intensity.man);
+  strip("fear-strip", WALKS.emotion_fear.man);
+  </script>
 </body>
 </html>
