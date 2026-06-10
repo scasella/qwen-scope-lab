@@ -53,7 +53,7 @@ A steer "validates" only if it beats a prompt-only baseline **and** seven contro
 
 ## Highlight: a free jailbreak detector
 
-A difference-of-means **residual probe** — one dot product on activations the model already computes — detects jailbreak / prompt-injection prompts as well as a paid AI judge, beats the SAE feature, and generalizes to attack families it never saw. Try the live single-message demo at **`/demo`**. Write-ups: [the residual probe (for researchers)](docs/writeups/jailbreak-detection-residual-probe.html) · [for a general audience](docs/writeups/jailbreak-detection-mainstream.html) · [white-box control on Qwen-2B](docs/writeups/white-box-control-qwen-2b.html).
+A difference-of-means **residual probe** — one dot product on activations the model already computes — detects jailbreak / prompt-injection prompts as well as a paid AI judge, beats the SAE feature, and generalizes to attack families it never saw. It survives **real in-the-wild jailbreaks** too (AUC 0.93 on 300 scraped DAN-style prompts; 0.91 on entirely held-out sources) — with two honest bounds: the detection *threshold* must be recalibrated per traffic distribution, and it detects jailbreak *framing*, not bare harmful *intent* — see [`docs/experiments/JAILBREAK_IN_THE_WILD.md`](docs/experiments/JAILBREAK_IN_THE_WILD.md). Try the live single-message demo at **`/demo`**. Write-ups: [the residual probe (for researchers)](docs/writeups/jailbreak-detection-residual-probe.html) · [for a general audience](docs/writeups/jailbreak-detection-mainstream.html) · [white-box control on Qwen-2B](docs/writeups/white-box-control-qwen-2b.html).
 
 ## Highlight: distill a behavior into the weights
 

@@ -46,6 +46,12 @@ reports/manifold-research-directions.md
 /*.workflow.run.*
 /.workflow-journal/
 
+# In-the-wild jailbreak corpora: rebuilt deterministically (seed 0) by
+# scripts/jailbreak_wild_build_corpus.py from public HF datasets; the scraped
+# prompt texts themselves are not republished here.
+data/jailbreak_wild_raw/
+data/experiments/jailbreak_wild/
+
 # Heavy run by-products inside published evidence dirs (retrainable / re-derivable)
 reports/*.zip
 reports/**/*.zip
