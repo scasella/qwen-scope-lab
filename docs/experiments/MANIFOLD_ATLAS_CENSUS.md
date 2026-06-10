@@ -122,6 +122,36 @@ separates the anchors (arousal +0.10 / fear −0.77), so it is the target variab
 transverse-stiffness predictor should forecast from geometry. Interactive: the "Can a softer bar
 recover them?" section of `docs/writeups/manifold-atlas-3d.html`.
 
+## The cyclic exception — where the manifold is non-dominated (demonstrated)
+
+Every result above is ordinal. The reason a linear chord matches the manifold on a line is that
+straight interpolation passes *through* the middle. On a **ring**, a straight chord cuts across the
+empty interior — so cyclic concepts are the one place the linear baseline must break, and routing on
+a cyclic concept had never been run. Runner: `scripts/_cyclic_manifold.py`; data:
+`reports/manifold_census/cyclic.json`. Concept: days-of-week with a position-readout prompt
+("Today is {item}. So today is"), clean ring at layer 14.
+
+**Routing Monday → Friday around the ring:**
+
+| arm | induced walk | agreement |
+|---|---|---|
+| manifold | Monday, Tuesday, Wednesday, Thursday, Friday | **1.00** |
+| linear chord | Monday, Monday, Friday, Friday, Friday | 0.40 |
+| shuffled-order | — | 0.80 |
+| random direction | — | 0.20 |
+
+manifold > linear AND > shuffled → **routing win**, and **manifold − linear = +0.60** (versus ≈ 0
+for every ordinal). The manifold walks the cyclic order; the linear chord leaves the data manifold
+and snaps to the nearest endpoint, skipping the middle of the week. This is the demonstrated answer
+to "do the geometries have utility": **yes, for cyclic structure a linear steer provably cannot
+follow.**
+
+Honest scope on the *reading* half: nearest-neighbour ring-adjacency is layer-dependent and too weak
+to carry the claim alone — at layer 12 a single linear direction folds the ring cleanly
+(1-D adjacency 1.0), while at the manifold's best layer 14 the 2-D ring fit is 1.0 and 1-D is 0.57.
+Routing is the decisive evidence because it requires actually traversing the order. Interactive:
+the "exception that earns its keep" section of `docs/writeups/manifold-atlas-3d.html`.
+
 ## Why this matters
 
 The census turned a 3-concept result (arousal routes; valence, fear don't) into a 13-concept
