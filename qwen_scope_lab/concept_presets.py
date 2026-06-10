@@ -118,6 +118,39 @@ _ATLAS_EXTRA: dict[str, Concept] = {
         "Right now they feel {item}. Honestly, they are", best_layer=12),
 }
 
+# Census-discovered clean manifolds: 12 of 20 new candidates passed order>=0.9 AND isometry r>=0.9
+# on real Qwen3.5-2B (docs/experiments/MANIFOLD_ATLAS_CENSUS.md + reports/manifold_census/). These are
+# geometry-vetted atlas concepts; routing/steering quality is reported separately, not assumed.
+_CG = ("It was {item}", "The level was {item}", "Rated {item}", "Quite {item}", "Remarkably {item}", "Marked {item}")
+_ATLAS_EXTRA.update({
+    "priority": Concept("priority", "Priority", "ordinal",
+        ("trivial", "low", "medium", "high", "critical"), _CG, "The priority is {item}", best_layer=12),
+    "age_stage": Concept("age_stage", "Life stage", "ordinal",
+        ("infant", "child", "teenager", "adult", "elderly"),
+        ("They are a {item}", "A {item} person", "The {item} years", "As a {item}", "Being a {item}"), "They are a {item}", best_layer=16),
+    "difficulty": Concept("difficulty", "Difficulty", "ordinal",
+        ("trivial", "easy", "moderate", "hard", "impossible"), _CG, "The task is {item}", best_layer=12),
+    "certainty": Concept("certainty", "Certainty", "ordinal",
+        ("impossible", "doubtful", "possible", "probable", "certain"), _CG, "The outcome is {item}", best_layer=12),
+    "distance": Concept("distance", "Distance", "ordinal",
+        ("adjacent", "near", "moderate", "far", "remote"), _CG, "The place is {item}", best_layer=8),
+    "quantity": Concept("quantity", "Quantity", "ordinal",
+        ("none", "few", "some", "many", "most", "all"), _CG, "The amount is {item}", best_layer=20),
+    "wealth": Concept("wealth", "Wealth", "ordinal",
+        ("destitute", "poor", "modest", "comfortable", "affluent", "wealthy"), _CG, "They are {item}", best_layer=6),
+    "hardness": Concept("hardness", "Hardness", "ordinal",
+        ("mushy", "soft", "firm", "hard", "rigid"), _CG, "The material is {item}", best_layer=6),
+    "quality": Concept("quality", "Quality", "ordinal",
+        ("terrible", "poor", "average", "good", "excellent"), _CG, "The work is {item}", best_layer=16),
+    "weight": Concept("weight", "Weight", "ordinal",
+        ("weightless", "light", "medium", "heavy", "massive"), _CG, "It feels {item}", best_layer=16),
+    "formality": Concept("formality", "Formality", "ordinal",
+        ("casual", "informal", "neutral", "formal", "ceremonial"), _CG, "The tone is {item}", best_layer=6),
+    "time_of_day": Concept("time_of_day", "Time of day", "cyclic",
+        ("dawn", "morning", "noon", "afternoon", "evening", "night"),
+        ("It was {item}", "By {item}", "Every {item}", "Around {item}", "Late {item}"), "The time is {item}", best_layer=6),
+})
+
 ATLAS_CONCEPTS: list[Concept] = list(CONCEPTS.values()) + list(_ATLAS_EXTRA.values())
 
 

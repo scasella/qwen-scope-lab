@@ -1,0 +1,880 @@
+{
+ "model_id": "mlx-community/Qwen3.5-2B-bf16",
+ "layers_swept": [
+  6,
+  8,
+  12,
+  16,
+  20
+ ],
+ "readout": "full_string",
+ "n_candidates": 20,
+ "n_clean": 12,
+ "n_partial": 8,
+ "thresholds": {
+  "clean": "order>=0.9 AND iso>=0.9",
+  "partial": "order>=0.75 OR iso>=0.85"
+ },
+ "results": [
+  {
+   "concept": "weight",
+   "label": "Weight",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 16,
+   "order_metric_name": "abs_spearman",
+   "order": 1.0,
+   "iso_r": 0.9133,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9695
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9663
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9681
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 1.0,
+     "iso_r": 0.9133
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9319
+    }
+   ]
+  },
+  {
+   "concept": "wealth",
+   "label": "Wealth",
+   "kind": "ordinal",
+   "n_items": 6,
+   "best_layer": 6,
+   "order_metric_name": "abs_spearman",
+   "order": 1.0,
+   "iso_r": 0.9348,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 1.0,
+     "iso_r": 0.9348
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8286,
+     "iso_r": 0.934
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.6,
+     "iso_r": 0.9318
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.5429,
+     "iso_r": 0.9338
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.6,
+     "iso_r": 0.9337
+    }
+   ]
+  },
+  {
+   "concept": "difficulty",
+   "label": "Difficulty",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 12,
+   "order_metric_name": "abs_spearman",
+   "order": 1.0,
+   "iso_r": 0.9654,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9607
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9619
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 1.0,
+     "iso_r": 0.9654
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9806
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.4,
+     "iso_r": 0.9746
+    }
+   ]
+  },
+  {
+   "concept": "priority",
+   "label": "Priority",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 12,
+   "order_metric_name": "abs_spearman",
+   "order": 1.0,
+   "iso_r": 0.9978,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9975
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9975
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 1.0,
+     "iso_r": 0.9978
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9952
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9955
+    }
+   ]
+  },
+  {
+   "concept": "quality",
+   "label": "Quality",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 16,
+   "order_metric_name": "abs_spearman",
+   "order": 1.0,
+   "iso_r": 0.9193,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9063
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9052
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9057
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 1.0,
+     "iso_r": 0.9193
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.909
+    }
+   ]
+  },
+  {
+   "concept": "age_stage",
+   "label": "Life stage",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 16,
+   "order_metric_name": "abs_spearman",
+   "order": 1.0,
+   "iso_r": 0.9823,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9835
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9825
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9777
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 1.0,
+     "iso_r": 0.9823
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9771
+    }
+   ]
+  },
+  {
+   "concept": "time_of_day",
+   "label": "Time of day",
+   "kind": "cyclic",
+   "n_items": 6,
+   "best_layer": 6,
+   "order_metric_name": "ring_adjacency",
+   "order": 1.0,
+   "iso_r": 0.9652,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "ring_adjacency",
+     "order": 1.0,
+     "iso_r": 0.9652
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.6667,
+     "iso_r": 0.9661
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.3333,
+     "iso_r": 0.9651
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.1667,
+     "iso_r": 0.9536
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.5,
+     "iso_r": 0.949
+    }
+   ]
+  },
+  {
+   "concept": "quantity",
+   "label": "Quantity",
+   "kind": "ordinal",
+   "n_items": 6,
+   "best_layer": 20,
+   "order_metric_name": "abs_spearman",
+   "order": 0.9429,
+   "iso_r": 0.9475,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.6,
+     "iso_r": 0.9384
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7714,
+     "iso_r": 0.9372
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.6571,
+     "iso_r": 0.938
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8857,
+     "iso_r": 0.9533
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9429,
+     "iso_r": 0.9475
+    }
+   ]
+  },
+  {
+   "concept": "hardness",
+   "label": "Hardness",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 6,
+   "order_metric_name": "abs_spearman",
+   "order": 0.9,
+   "iso_r": 0.9316,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9316
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9308
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9307
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9605
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9574
+    }
+   ]
+  },
+  {
+   "concept": "distance",
+   "label": "Distance",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 8,
+   "order_metric_name": "abs_spearman",
+   "order": 0.9,
+   "iso_r": 0.9651,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9654
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9651
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9648
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9718
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.6,
+     "iso_r": 0.9788
+    }
+   ]
+  },
+  {
+   "concept": "certainty",
+   "label": "Certainty",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 12,
+   "order_metric_name": "abs_spearman",
+   "order": 0.9,
+   "iso_r": 0.9787,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9752
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9768
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9787
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9673
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9755
+    }
+   ]
+  },
+  {
+   "concept": "formality",
+   "label": "Formality",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 6,
+   "order_metric_name": "abs_spearman",
+   "order": 0.9,
+   "iso_r": 0.902,
+   "verdict": "clean",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.902
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9027
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.8995
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.8884
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.8976
+    }
+   ]
+  },
+  {
+   "concept": "wetness",
+   "label": "Wetness",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 6,
+   "order_metric_name": "abs_spearman",
+   "order": 0.9,
+   "iso_r": 0.8936,
+   "verdict": "partial",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.8936
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9084
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.9062
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.8241
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.8111
+    }
+   ]
+  },
+  {
+   "concept": "spiciness",
+   "label": "Spiciness",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 16,
+   "order_metric_name": "abs_spearman",
+   "order": 0.9,
+   "iso_r": 0.8576,
+   "verdict": "partial",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.8524
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.854
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.8616
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.8576
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.9,
+     "iso_r": 0.8606
+    }
+   ]
+  },
+  {
+   "concept": "planets",
+   "label": "Planets by distance",
+   "kind": "ordinal",
+   "n_items": 8,
+   "best_layer": 12,
+   "order_metric_name": "abs_spearman",
+   "order": 0.8095,
+   "iso_r": 0.9648,
+   "verdict": "partial",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7143,
+     "iso_r": 0.9624
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7381,
+     "iso_r": 0.9659
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8095,
+     "iso_r": 0.9648
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7857,
+     "iso_r": 0.9542
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.619,
+     "iso_r": 0.9653
+    }
+   ]
+  },
+  {
+   "concept": "pain",
+   "label": "Pain level",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 6,
+   "order_metric_name": "abs_spearman",
+   "order": 0.8,
+   "iso_r": 0.9768,
+   "verdict": "partial",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9768
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9761
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9757
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9706
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.967
+    }
+   ]
+  },
+  {
+   "concept": "politeness",
+   "label": "Politeness",
+   "kind": "ordinal",
+   "n_items": 5,
+   "best_layer": 16,
+   "order_metric_name": "abs_spearman",
+   "order": 0.8,
+   "iso_r": 0.9717,
+   "verdict": "partial",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9298
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9346
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9296
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.8,
+     "iso_r": 0.9717
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.7,
+     "iso_r": 0.9603
+    }
+   ]
+  },
+  {
+   "concept": "moon_phases",
+   "label": "Moon phases",
+   "kind": "cyclic",
+   "n_items": 5,
+   "best_layer": 20,
+   "order_metric_name": "ring_adjacency",
+   "order": 0.8,
+   "iso_r": 0.9908,
+   "verdict": "partial",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.6,
+     "iso_r": 0.9921
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.6,
+     "iso_r": 0.9916
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.6,
+     "iso_r": 0.9899
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.6,
+     "iso_r": 0.9918
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.8,
+     "iso_r": 0.9908
+    }
+   ]
+  },
+  {
+   "concept": "belt_rank",
+   "label": "Martial-arts belts",
+   "kind": "ordinal",
+   "n_items": 7,
+   "best_layer": 20,
+   "order_metric_name": "abs_spearman",
+   "order": 0.75,
+   "iso_r": 0.9908,
+   "verdict": "partial",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "abs_spearman",
+     "order": 0.6429,
+     "iso_r": 0.9938
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "abs_spearman",
+     "order": 0.4643,
+     "iso_r": 0.9923
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "abs_spearman",
+     "order": 0.2857,
+     "iso_r": 0.9912
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "abs_spearman",
+     "order": 0.2857,
+     "iso_r": 0.9955
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "abs_spearman",
+     "order": 0.75,
+     "iso_r": 0.9908
+    }
+   ]
+  },
+  {
+   "concept": "seasons",
+   "label": "Seasons",
+   "kind": "cyclic",
+   "n_items": 4,
+   "best_layer": 16,
+   "order_metric_name": "ring_adjacency",
+   "order": 0.5,
+   "iso_r": 0.9792,
+   "verdict": "partial",
+   "sweep": [
+    {
+     "layer": 6,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.0,
+     "iso_r": 0.9791
+    },
+    {
+     "layer": 8,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.0,
+     "iso_r": 0.9803
+    },
+    {
+     "layer": 12,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.25,
+     "iso_r": 0.9845
+    },
+    {
+     "layer": 16,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.5,
+     "iso_r": 0.9792
+    },
+    {
+     "layer": 20,
+     "order_metric_name": "ring_adjacency",
+     "order": 0.25,
+     "iso_r": 0.9799
+    }
+   ]
+  }
+ ]
+}

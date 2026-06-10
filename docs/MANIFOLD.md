@@ -137,6 +137,13 @@ Net: the papers' **geometric** claim (isometry) replicates strongly on Qwen; man
 *faithfulness* advantage is real but partial; pullback works as a capability and partly confirms
 the bidirectional result. We report the nulls as prominently as the wins.
 
+**Atlas census (2026-06-10):** the geometry is dense — a sweep of 20 *new* candidate concepts found
+**12 clean manifolds** (order recovery + isometry both ≥ 0.9), 8 partial, 0 diffuse, all promoted into
+`concept_presets.py::_ATLAS_EXTRA`. But re-running the routing test on the 11 clean ordinals, only
+**2 route** (certainty, age_stage), weakly — and `priority`, the cleanest fit (iso r 0.998), does not
+route at all. **Clean geometry ≠ clean control.** See `docs/experiments/MANIFOLD_ATLAS_CENSUS.md` and
+the interactive 3D atlas `docs/writeups/manifold-atlas-3d.html`.
+
 ---
 
 ## 6. API reference

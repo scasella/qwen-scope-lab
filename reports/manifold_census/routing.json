@@ -1,0 +1,1981 @@
+{
+ "model_id": "mlx-community/Qwen3.5-2B-bf16",
+ "readout": "full_string",
+ "n_waypoints": 6,
+ "n_routing_wins": 2,
+ "n_faithful": 4,
+ "n_tested": 11,
+ "results": [
+  {
+   "concept": "certainty",
+   "label": "Certainty",
+   "layer": 12,
+   "items": [
+    "impossible",
+    "doubtful",
+    "possible",
+    "probable",
+    "certain"
+   ],
+   "source": "impossible",
+   "target": "certain",
+   "isometry_r": 0.979,
+   "energy": {
+    "manifold": 0.0302,
+    "linear": 0.0479,
+    "gap_linear_minus_manifold": 0.0177,
+    "manifold_more_faithful": true
+   },
+   "routing": {
+    "manifold": 0.5,
+    "linear": 0.3333,
+    "shuffled": 0.3333,
+    "random": 0.1667,
+    "routing_win": true
+   },
+   "verdict": "centroid_routing",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "impossible",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": true,
+     "p_induced": 0.8906
+    },
+    {
+     "expected_idx": 1,
+     "expected": "doubtful",
+     "induced_idx": 2,
+     "induced": "possible",
+     "match": false,
+     "p_induced": 0.5689
+    },
+    {
+     "expected_idx": 2,
+     "expected": "possible",
+     "induced_idx": 2,
+     "induced": "possible",
+     "match": true,
+     "p_induced": 0.5962
+    },
+    {
+     "expected_idx": 2,
+     "expected": "possible",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.554
+    },
+    {
+     "expected_idx": 3,
+     "expected": "probable",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.4578
+    },
+    {
+     "expected_idx": 4,
+     "expected": "certain",
+     "induced_idx": 4,
+     "induced": "certain",
+     "match": true,
+     "p_induced": 0.6125
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "impossible",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": true,
+     "p_induced": 0.8906
+    },
+    {
+     "expected_idx": 1,
+     "expected": "doubtful",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.8665
+    },
+    {
+     "expected_idx": 2,
+     "expected": "possible",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.7907
+    },
+    {
+     "expected_idx": 2,
+     "expected": "possible",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.5939
+    },
+    {
+     "expected_idx": 3,
+     "expected": "probable",
+     "induced_idx": 4,
+     "induced": "certain",
+     "match": false,
+     "p_induced": 0.4429
+    },
+    {
+     "expected_idx": 4,
+     "expected": "certain",
+     "induced_idx": 4,
+     "induced": "certain",
+     "match": true,
+     "p_induced": 0.6125
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "impossible",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": true,
+     "p_induced": 0.8906
+    },
+    {
+     "expected_idx": 1,
+     "expected": "doubtful",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.7986
+    },
+    {
+     "expected_idx": 2,
+     "expected": "possible",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.9097
+    },
+    {
+     "expected_idx": 2,
+     "expected": "possible",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.9391
+    },
+    {
+     "expected_idx": 3,
+     "expected": "probable",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.7985
+    },
+    {
+     "expected_idx": 4,
+     "expected": "certain",
+     "induced_idx": 0,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.7946
+    }
+   ]
+  },
+  {
+   "concept": "age_stage",
+   "label": "Life stage",
+   "layer": 16,
+   "items": [
+    "infant",
+    "child",
+    "teenager",
+    "adult",
+    "elderly"
+   ],
+   "source": "infant",
+   "target": "elderly",
+   "isometry_r": 0.982,
+   "energy": {
+    "manifold": 0.0069,
+    "linear": 0.0083,
+    "gap_linear_minus_manifold": 0.0014,
+    "manifold_more_faithful": true
+   },
+   "routing": {
+    "manifold": 0.3333,
+    "linear": 0.1667,
+    "shuffled": 0.1667,
+    "random": 0.1667,
+    "routing_win": true
+   },
+   "verdict": "centroid_routing",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "infant",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.8953
+    },
+    {
+     "expected_idx": 1,
+     "expected": "child",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": true,
+     "p_induced": 0.7744
+    },
+    {
+     "expected_idx": 2,
+     "expected": "teenager",
+     "induced_idx": 2,
+     "induced": "teenager",
+     "match": true,
+     "p_induced": 0.4627
+    },
+    {
+     "expected_idx": 2,
+     "expected": "teenager",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.6868
+    },
+    {
+     "expected_idx": 3,
+     "expected": "adult",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.8925
+    },
+    {
+     "expected_idx": 4,
+     "expected": "elderly",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.5075
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "infant",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.8953
+    },
+    {
+     "expected_idx": 1,
+     "expected": "child",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": true,
+     "p_induced": 0.9022
+    },
+    {
+     "expected_idx": 2,
+     "expected": "teenager",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.8841
+    },
+    {
+     "expected_idx": 2,
+     "expected": "teenager",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.8112
+    },
+    {
+     "expected_idx": 3,
+     "expected": "adult",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.6761
+    },
+    {
+     "expected_idx": 4,
+     "expected": "elderly",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.5075
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "infant",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.8953
+    },
+    {
+     "expected_idx": 1,
+     "expected": "child",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": true,
+     "p_induced": 0.7685
+    },
+    {
+     "expected_idx": 2,
+     "expected": "teenager",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.8498
+    },
+    {
+     "expected_idx": 2,
+     "expected": "teenager",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.9333
+    },
+    {
+     "expected_idx": 3,
+     "expected": "adult",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.8094
+    },
+    {
+     "expected_idx": 4,
+     "expected": "elderly",
+     "induced_idx": 1,
+     "induced": "child",
+     "match": false,
+     "p_induced": 0.9407
+    }
+   ]
+  },
+  {
+   "concept": "wealth",
+   "label": "Wealth",
+   "layer": 6,
+   "items": [
+    "destitute",
+    "poor",
+    "modest",
+    "comfortable",
+    "affluent",
+    "wealthy"
+   ],
+   "source": "destitute",
+   "target": "wealthy",
+   "isometry_r": 0.935,
+   "energy": {
+    "manifold": 0.0202,
+    "linear": 0.0157,
+    "gap_linear_minus_manifold": -0.0045,
+    "manifold_more_faithful": false
+   },
+   "routing": {
+    "manifold": 0.6667,
+    "linear": 0.3333,
+    "shuffled": 0.5,
+    "random": 0.1667,
+    "routing_win": true
+   },
+   "verdict": "routes_not_faithful",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "destitute",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.9193
+    },
+    {
+     "expected_idx": 1,
+     "expected": "poor",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": true,
+     "p_induced": 0.9494
+    },
+    {
+     "expected_idx": 2,
+     "expected": "modest",
+     "induced_idx": 2,
+     "induced": "modest",
+     "match": true,
+     "p_induced": 0.424
+    },
+    {
+     "expected_idx": 3,
+     "expected": "comfortable",
+     "induced_idx": 3,
+     "induced": "comfortable",
+     "match": true,
+     "p_induced": 0.9247
+    },
+    {
+     "expected_idx": 4,
+     "expected": "affluent",
+     "induced_idx": 5,
+     "induced": "wealthy",
+     "match": false,
+     "p_induced": 0.5174
+    },
+    {
+     "expected_idx": 5,
+     "expected": "wealthy",
+     "induced_idx": 5,
+     "induced": "wealthy",
+     "match": true,
+     "p_induced": 0.5317
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "destitute",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.9193
+    },
+    {
+     "expected_idx": 1,
+     "expected": "poor",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": true,
+     "p_induced": 0.9446
+    },
+    {
+     "expected_idx": 2,
+     "expected": "modest",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.964
+    },
+    {
+     "expected_idx": 3,
+     "expected": "comfortable",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.8108
+    },
+    {
+     "expected_idx": 4,
+     "expected": "affluent",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.4789
+    },
+    {
+     "expected_idx": 5,
+     "expected": "wealthy",
+     "induced_idx": 5,
+     "induced": "wealthy",
+     "match": true,
+     "p_induced": 0.5317
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "destitute",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.9193
+    },
+    {
+     "expected_idx": 1,
+     "expected": "poor",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": true,
+     "p_induced": 0.8458
+    },
+    {
+     "expected_idx": 2,
+     "expected": "modest",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.9251
+    },
+    {
+     "expected_idx": 3,
+     "expected": "comfortable",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.9104
+    },
+    {
+     "expected_idx": 4,
+     "expected": "affluent",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.9418
+    },
+    {
+     "expected_idx": 5,
+     "expected": "wealthy",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.9405
+    }
+   ]
+  },
+  {
+   "concept": "difficulty",
+   "label": "Difficulty",
+   "layer": 12,
+   "items": [
+    "trivial",
+    "easy",
+    "moderate",
+    "hard",
+    "impossible"
+   ],
+   "source": "trivial",
+   "target": "impossible",
+   "isometry_r": 0.965,
+   "energy": {
+    "manifold": 0.0329,
+    "linear": 0.0194,
+    "gap_linear_minus_manifold": -0.0135,
+    "manifold_more_faithful": false
+   },
+   "routing": {
+    "manifold": 0.5,
+    "linear": 0.3333,
+    "shuffled": 1.0,
+    "random": 0.3333,
+    "routing_win": false
+   },
+   "verdict": "no_win",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "trivial",
+     "induced_idx": 0,
+     "induced": "trivial",
+     "match": true,
+     "p_induced": 0.4408
+    },
+    {
+     "expected_idx": 1,
+     "expected": "easy",
+     "induced_idx": 1,
+     "induced": "easy",
+     "match": true,
+     "p_induced": 0.5275
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 3,
+     "induced": "hard",
+     "match": false,
+     "p_induced": 0.3884
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 3,
+     "induced": "hard",
+     "match": false,
+     "p_induced": 0.6977
+    },
+    {
+     "expected_idx": 3,
+     "expected": "hard",
+     "induced_idx": 4,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.474
+    },
+    {
+     "expected_idx": 4,
+     "expected": "impossible",
+     "induced_idx": 4,
+     "induced": "impossible",
+     "match": true,
+     "p_induced": 0.9557
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "trivial",
+     "induced_idx": 0,
+     "induced": "trivial",
+     "match": true,
+     "p_induced": 0.4408
+    },
+    {
+     "expected_idx": 1,
+     "expected": "easy",
+     "induced_idx": 0,
+     "induced": "trivial",
+     "match": false,
+     "p_induced": 0.3369
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 4,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.6161
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 4,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.8723
+    },
+    {
+     "expected_idx": 3,
+     "expected": "hard",
+     "induced_idx": 4,
+     "induced": "impossible",
+     "match": false,
+     "p_induced": 0.9415
+    },
+    {
+     "expected_idx": 4,
+     "expected": "impossible",
+     "induced_idx": 4,
+     "induced": "impossible",
+     "match": true,
+     "p_induced": 0.9557
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "trivial",
+     "induced_idx": 0,
+     "induced": "trivial",
+     "match": true,
+     "p_induced": 0.4408
+    },
+    {
+     "expected_idx": 1,
+     "expected": "easy",
+     "induced_idx": 0,
+     "induced": "trivial",
+     "match": false,
+     "p_induced": 0.4488
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 0,
+     "induced": "trivial",
+     "match": false,
+     "p_induced": 0.5796
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 1,
+     "induced": "easy",
+     "match": false,
+     "p_induced": 0.3869
+    },
+    {
+     "expected_idx": 3,
+     "expected": "hard",
+     "induced_idx": 3,
+     "induced": "hard",
+     "match": true,
+     "p_induced": 0.4179
+    },
+    {
+     "expected_idx": 4,
+     "expected": "impossible",
+     "induced_idx": 0,
+     "induced": "trivial",
+     "match": false,
+     "p_induced": 0.3464
+    }
+   ]
+  },
+  {
+   "concept": "distance",
+   "label": "Distance",
+   "layer": 8,
+   "items": [
+    "adjacent",
+    "near",
+    "moderate",
+    "far",
+    "remote"
+   ],
+   "source": "adjacent",
+   "target": "remote",
+   "isometry_r": 0.965,
+   "energy": {
+    "manifold": 0.0322,
+    "linear": 0.0411,
+    "gap_linear_minus_manifold": 0.0089,
+    "manifold_more_faithful": true
+   },
+   "routing": {
+    "manifold": 0.5,
+    "linear": 0.1667,
+    "shuffled": 0.6667,
+    "random": 0.3333,
+    "routing_win": false
+   },
+   "verdict": "faithful_not_routing",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "adjacent",
+     "induced_idx": 0,
+     "induced": "adjacent",
+     "match": true,
+     "p_induced": 0.6332
+    },
+    {
+     "expected_idx": 1,
+     "expected": "near",
+     "induced_idx": 1,
+     "induced": "near",
+     "match": true,
+     "p_induced": 0.4474
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 1,
+     "induced": "near",
+     "match": false,
+     "p_induced": 0.4328
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 3,
+     "induced": "far",
+     "match": false,
+     "p_induced": 0.5113
+    },
+    {
+     "expected_idx": 3,
+     "expected": "far",
+     "induced_idx": 3,
+     "induced": "far",
+     "match": true,
+     "p_induced": 0.7943
+    },
+    {
+     "expected_idx": 4,
+     "expected": "remote",
+     "induced_idx": 1,
+     "induced": "near",
+     "match": false,
+     "p_induced": 0.6816
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "adjacent",
+     "induced_idx": 0,
+     "induced": "adjacent",
+     "match": true,
+     "p_induced": 0.6332
+    },
+    {
+     "expected_idx": 1,
+     "expected": "near",
+     "induced_idx": 0,
+     "induced": "adjacent",
+     "match": false,
+     "p_induced": 0.5376
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 1,
+     "induced": "near",
+     "match": false,
+     "p_induced": 0.4688
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 1,
+     "induced": "near",
+     "match": false,
+     "p_induced": 0.5806
+    },
+    {
+     "expected_idx": 3,
+     "expected": "far",
+     "induced_idx": 1,
+     "induced": "near",
+     "match": false,
+     "p_induced": 0.6523
+    },
+    {
+     "expected_idx": 4,
+     "expected": "remote",
+     "induced_idx": 1,
+     "induced": "near",
+     "match": false,
+     "p_induced": 0.6816
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "adjacent",
+     "induced_idx": 0,
+     "induced": "adjacent",
+     "match": true,
+     "p_induced": 0.6332
+    },
+    {
+     "expected_idx": 1,
+     "expected": "near",
+     "induced_idx": 1,
+     "induced": "near",
+     "match": true,
+     "p_induced": 0.5897
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 0,
+     "induced": "adjacent",
+     "match": false,
+     "p_induced": 0.5572
+    },
+    {
+     "expected_idx": 2,
+     "expected": "moderate",
+     "induced_idx": 0,
+     "induced": "adjacent",
+     "match": false,
+     "p_induced": 0.5023
+    },
+    {
+     "expected_idx": 3,
+     "expected": "far",
+     "induced_idx": 0,
+     "induced": "adjacent",
+     "match": false,
+     "p_induced": 0.5921
+    },
+    {
+     "expected_idx": 4,
+     "expected": "remote",
+     "induced_idx": 0,
+     "induced": "adjacent",
+     "match": false,
+     "p_induced": 0.5943
+    }
+   ]
+  },
+  {
+   "concept": "hardness",
+   "label": "Hardness",
+   "layer": 6,
+   "items": [
+    "mushy",
+    "soft",
+    "firm",
+    "hard",
+    "rigid"
+   ],
+   "source": "mushy",
+   "target": "rigid",
+   "isometry_r": 0.932,
+   "energy": {
+    "manifold": 0.0433,
+    "linear": 0.0299,
+    "gap_linear_minus_manifold": -0.0134,
+    "manifold_more_faithful": false
+   },
+   "routing": {
+    "manifold": 0.5,
+    "linear": 0.3333,
+    "shuffled": 0.5,
+    "random": 0.1667,
+    "routing_win": false
+   },
+   "verdict": "no_win",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "mushy",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": false,
+     "p_induced": 0.6751
+    },
+    {
+     "expected_idx": 1,
+     "expected": "soft",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": true,
+     "p_induced": 0.7218
+    },
+    {
+     "expected_idx": 2,
+     "expected": "firm",
+     "induced_idx": 2,
+     "induced": "firm",
+     "match": true,
+     "p_induced": 0.3832
+    },
+    {
+     "expected_idx": 2,
+     "expected": "firm",
+     "induced_idx": 3,
+     "induced": "hard",
+     "match": false,
+     "p_induced": 0.4966
+    },
+    {
+     "expected_idx": 3,
+     "expected": "hard",
+     "induced_idx": 3,
+     "induced": "hard",
+     "match": true,
+     "p_induced": 0.5633
+    },
+    {
+     "expected_idx": 4,
+     "expected": "rigid",
+     "induced_idx": 3,
+     "induced": "hard",
+     "match": false,
+     "p_induced": 0.6433
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "mushy",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": false,
+     "p_induced": 0.6751
+    },
+    {
+     "expected_idx": 1,
+     "expected": "soft",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": true,
+     "p_induced": 0.7373
+    },
+    {
+     "expected_idx": 2,
+     "expected": "firm",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": false,
+     "p_induced": 0.7367
+    },
+    {
+     "expected_idx": 2,
+     "expected": "firm",
+     "induced_idx": 3,
+     "induced": "hard",
+     "match": false,
+     "p_induced": 0.5528
+    },
+    {
+     "expected_idx": 3,
+     "expected": "hard",
+     "induced_idx": 3,
+     "induced": "hard",
+     "match": true,
+     "p_induced": 0.6643
+    },
+    {
+     "expected_idx": 4,
+     "expected": "rigid",
+     "induced_idx": 3,
+     "induced": "hard",
+     "match": false,
+     "p_induced": 0.6433
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "mushy",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": false,
+     "p_induced": 0.6751
+    },
+    {
+     "expected_idx": 1,
+     "expected": "soft",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": true,
+     "p_induced": 0.5149
+    },
+    {
+     "expected_idx": 2,
+     "expected": "firm",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": false,
+     "p_induced": 0.7672
+    },
+    {
+     "expected_idx": 2,
+     "expected": "firm",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": false,
+     "p_induced": 0.6988
+    },
+    {
+     "expected_idx": 3,
+     "expected": "hard",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": false,
+     "p_induced": 0.71
+    },
+    {
+     "expected_idx": 4,
+     "expected": "rigid",
+     "induced_idx": 1,
+     "induced": "soft",
+     "match": false,
+     "p_induced": 0.863
+    }
+   ]
+  },
+  {
+   "concept": "formality",
+   "label": "Formality",
+   "layer": 6,
+   "items": [
+    "casual",
+    "informal",
+    "neutral",
+    "formal",
+    "ceremonial"
+   ],
+   "source": "casual",
+   "target": "ceremonial",
+   "isometry_r": 0.902,
+   "energy": {
+    "manifold": 0.0709,
+    "linear": 0.0301,
+    "gap_linear_minus_manifold": -0.0408,
+    "manifold_more_faithful": false
+   },
+   "routing": {
+    "manifold": 0.5,
+    "linear": 0.3333,
+    "shuffled": 0.3333,
+    "random": 0.0,
+    "routing_win": true
+   },
+   "verdict": "routes_not_faithful",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "casual",
+     "induced_idx": 1,
+     "induced": "informal",
+     "match": false,
+     "p_induced": 0.4959
+    },
+    {
+     "expected_idx": 1,
+     "expected": "informal",
+     "induced_idx": 0,
+     "induced": "casual",
+     "match": false,
+     "p_induced": 0.6124
+    },
+    {
+     "expected_idx": 2,
+     "expected": "neutral",
+     "induced_idx": 2,
+     "induced": "neutral",
+     "match": true,
+     "p_induced": 0.8653
+    },
+    {
+     "expected_idx": 2,
+     "expected": "neutral",
+     "induced_idx": 2,
+     "induced": "neutral",
+     "match": true,
+     "p_induced": 0.8585
+    },
+    {
+     "expected_idx": 3,
+     "expected": "formal",
+     "induced_idx": 3,
+     "induced": "formal",
+     "match": true,
+     "p_induced": 0.6436
+    },
+    {
+     "expected_idx": 4,
+     "expected": "ceremonial",
+     "induced_idx": 3,
+     "induced": "formal",
+     "match": false,
+     "p_induced": 0.8625
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "casual",
+     "induced_idx": 1,
+     "induced": "informal",
+     "match": false,
+     "p_induced": 0.4959
+    },
+    {
+     "expected_idx": 1,
+     "expected": "informal",
+     "induced_idx": 1,
+     "induced": "informal",
+     "match": true,
+     "p_induced": 0.5226
+    },
+    {
+     "expected_idx": 2,
+     "expected": "neutral",
+     "induced_idx": 1,
+     "induced": "informal",
+     "match": false,
+     "p_induced": 0.48
+    },
+    {
+     "expected_idx": 2,
+     "expected": "neutral",
+     "induced_idx": 3,
+     "induced": "formal",
+     "match": false,
+     "p_induced": 0.6183
+    },
+    {
+     "expected_idx": 3,
+     "expected": "formal",
+     "induced_idx": 3,
+     "induced": "formal",
+     "match": true,
+     "p_induced": 0.8554
+    },
+    {
+     "expected_idx": 4,
+     "expected": "ceremonial",
+     "induced_idx": 3,
+     "induced": "formal",
+     "match": false,
+     "p_induced": 0.8625
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "casual",
+     "induced_idx": 1,
+     "induced": "informal",
+     "match": false,
+     "p_induced": 0.4959
+    },
+    {
+     "expected_idx": 1,
+     "expected": "informal",
+     "induced_idx": 0,
+     "induced": "casual",
+     "match": false,
+     "p_induced": 0.5553
+    },
+    {
+     "expected_idx": 2,
+     "expected": "neutral",
+     "induced_idx": 0,
+     "induced": "casual",
+     "match": false,
+     "p_induced": 0.5257
+    },
+    {
+     "expected_idx": 2,
+     "expected": "neutral",
+     "induced_idx": 0,
+     "induced": "casual",
+     "match": false,
+     "p_induced": 0.5309
+    },
+    {
+     "expected_idx": 3,
+     "expected": "formal",
+     "induced_idx": 0,
+     "induced": "casual",
+     "match": false,
+     "p_induced": 0.5556
+    },
+    {
+     "expected_idx": 4,
+     "expected": "ceremonial",
+     "induced_idx": 0,
+     "induced": "casual",
+     "match": false,
+     "p_induced": 0.4745
+    }
+   ]
+  },
+  {
+   "concept": "quantity",
+   "label": "Quantity",
+   "layer": 20,
+   "items": [
+    "none",
+    "few",
+    "some",
+    "many",
+    "most",
+    "all"
+   ],
+   "source": "none",
+   "target": "all",
+   "isometry_r": 0.947,
+   "energy": {
+    "manifold": 0.0393,
+    "linear": 0.0357,
+    "gap_linear_minus_manifold": -0.0036,
+    "manifold_more_faithful": false
+   },
+   "routing": {
+    "manifold": 0.3333,
+    "linear": 0.0,
+    "shuffled": 0.0,
+    "random": 0.1667,
+    "routing_win": true
+   },
+   "verdict": "routes_not_faithful",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "none",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.8003
+    },
+    {
+     "expected_idx": 1,
+     "expected": "few",
+     "induced_idx": 1,
+     "induced": "few",
+     "match": true,
+     "p_induced": 0.4613
+    },
+    {
+     "expected_idx": 2,
+     "expected": "some",
+     "induced_idx": 1,
+     "induced": "few",
+     "match": false,
+     "p_induced": 0.8308
+    },
+    {
+     "expected_idx": 3,
+     "expected": "many",
+     "induced_idx": 3,
+     "induced": "many",
+     "match": true,
+     "p_induced": 0.9247
+    },
+    {
+     "expected_idx": 4,
+     "expected": "most",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.7944
+    },
+    {
+     "expected_idx": 5,
+     "expected": "all",
+     "induced_idx": 4,
+     "induced": "most",
+     "match": false,
+     "p_induced": 0.4375
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "none",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.8003
+    },
+    {
+     "expected_idx": 1,
+     "expected": "few",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.7654
+    },
+    {
+     "expected_idx": 2,
+     "expected": "some",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.7025
+    },
+    {
+     "expected_idx": 3,
+     "expected": "many",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.57
+    },
+    {
+     "expected_idx": 4,
+     "expected": "most",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.3582
+    },
+    {
+     "expected_idx": 5,
+     "expected": "all",
+     "induced_idx": 4,
+     "induced": "most",
+     "match": false,
+     "p_induced": 0.4375
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "none",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.8003
+    },
+    {
+     "expected_idx": 1,
+     "expected": "few",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.9054
+    },
+    {
+     "expected_idx": 2,
+     "expected": "some",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.519
+    },
+    {
+     "expected_idx": 3,
+     "expected": "many",
+     "induced_idx": 0,
+     "induced": "none",
+     "match": false,
+     "p_induced": 0.4254
+    },
+    {
+     "expected_idx": 4,
+     "expected": "most",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": false,
+     "p_induced": 0.5301
+    },
+    {
+     "expected_idx": 5,
+     "expected": "all",
+     "induced_idx": 5,
+     "induced": "all",
+     "match": true,
+     "p_induced": 0.7239
+    }
+   ]
+  },
+  {
+   "concept": "quality",
+   "label": "Quality",
+   "layer": 16,
+   "items": [
+    "terrible",
+    "poor",
+    "average",
+    "good",
+    "excellent"
+   ],
+   "source": "terrible",
+   "target": "excellent",
+   "isometry_r": 0.919,
+   "energy": {
+    "manifold": 0.0354,
+    "linear": 0.0169,
+    "gap_linear_minus_manifold": -0.0185,
+    "manifold_more_faithful": false
+   },
+   "routing": {
+    "manifold": 0.3333,
+    "linear": 0.1667,
+    "shuffled": 0.3333,
+    "random": 0.0,
+    "routing_win": false
+   },
+   "verdict": "no_win",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "terrible",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.3502
+    },
+    {
+     "expected_idx": 1,
+     "expected": "poor",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": true,
+     "p_induced": 0.5241
+    },
+    {
+     "expected_idx": 2,
+     "expected": "average",
+     "induced_idx": 2,
+     "induced": "average",
+     "match": true,
+     "p_induced": 0.469
+    },
+    {
+     "expected_idx": 2,
+     "expected": "average",
+     "induced_idx": 3,
+     "induced": "good",
+     "match": false,
+     "p_induced": 0.5443
+    },
+    {
+     "expected_idx": 3,
+     "expected": "good",
+     "induced_idx": 2,
+     "induced": "average",
+     "match": false,
+     "p_induced": 0.5896
+    },
+    {
+     "expected_idx": 4,
+     "expected": "excellent",
+     "induced_idx": 3,
+     "induced": "good",
+     "match": false,
+     "p_induced": 0.653
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "terrible",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.3502
+    },
+    {
+     "expected_idx": 1,
+     "expected": "poor",
+     "induced_idx": 3,
+     "induced": "good",
+     "match": false,
+     "p_induced": 0.4788
+    },
+    {
+     "expected_idx": 2,
+     "expected": "average",
+     "induced_idx": 3,
+     "induced": "good",
+     "match": false,
+     "p_induced": 0.6372
+    },
+    {
+     "expected_idx": 2,
+     "expected": "average",
+     "induced_idx": 3,
+     "induced": "good",
+     "match": false,
+     "p_induced": 0.7036
+    },
+    {
+     "expected_idx": 3,
+     "expected": "good",
+     "induced_idx": 3,
+     "induced": "good",
+     "match": true,
+     "p_induced": 0.6943
+    },
+    {
+     "expected_idx": 4,
+     "expected": "excellent",
+     "induced_idx": 3,
+     "induced": "good",
+     "match": false,
+     "p_induced": 0.653
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "terrible",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.3502
+    },
+    {
+     "expected_idx": 1,
+     "expected": "poor",
+     "induced_idx": 0,
+     "induced": "terrible",
+     "match": false,
+     "p_induced": 0.4479
+    },
+    {
+     "expected_idx": 2,
+     "expected": "average",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.3519
+    },
+    {
+     "expected_idx": 2,
+     "expected": "average",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.4798
+    },
+    {
+     "expected_idx": 3,
+     "expected": "good",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.5788
+    },
+    {
+     "expected_idx": 4,
+     "expected": "excellent",
+     "induced_idx": 1,
+     "induced": "poor",
+     "match": false,
+     "p_induced": 0.4381
+    }
+   ]
+  },
+  {
+   "concept": "weight",
+   "label": "Weight",
+   "layer": 16,
+   "items": [
+    "weightless",
+    "light",
+    "medium",
+    "heavy",
+    "massive"
+   ],
+   "source": "weightless",
+   "target": "massive",
+   "isometry_r": 0.913,
+   "energy": {
+    "manifold": 0.0431,
+    "linear": 0.0136,
+    "gap_linear_minus_manifold": -0.0295,
+    "manifold_more_faithful": false
+   },
+   "routing": {
+    "manifold": 0.1667,
+    "linear": 0.1667,
+    "shuffled": 0.1667,
+    "random": 0.1667,
+    "routing_win": false
+   },
+   "verdict": "no_win",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "weightless",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": true,
+     "p_induced": 0.8725
+    },
+    {
+     "expected_idx": 1,
+     "expected": "light",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.9344
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.5812
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.6236
+    },
+    {
+     "expected_idx": 3,
+     "expected": "heavy",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.7528
+    },
+    {
+     "expected_idx": 4,
+     "expected": "massive",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.4363
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "weightless",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": true,
+     "p_induced": 0.8725
+    },
+    {
+     "expected_idx": 1,
+     "expected": "light",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.8153
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.7279
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.6207
+    },
+    {
+     "expected_idx": 3,
+     "expected": "heavy",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.5219
+    },
+    {
+     "expected_idx": 4,
+     "expected": "massive",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.4363
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "weightless",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": true,
+     "p_induced": 0.8725
+    },
+    {
+     "expected_idx": 1,
+     "expected": "light",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.6707
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.8503
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.799
+    },
+    {
+     "expected_idx": 3,
+     "expected": "heavy",
+     "induced_idx": 1,
+     "induced": "light",
+     "match": false,
+     "p_induced": 0.5138
+    },
+    {
+     "expected_idx": 4,
+     "expected": "massive",
+     "induced_idx": 0,
+     "induced": "weightless",
+     "match": false,
+     "p_induced": 0.65
+    }
+   ]
+  },
+  {
+   "concept": "priority",
+   "label": "Priority",
+   "layer": 12,
+   "items": [
+    "trivial",
+    "low",
+    "medium",
+    "high",
+    "critical"
+   ],
+   "source": "trivial",
+   "target": "critical",
+   "isometry_r": 0.998,
+   "energy": {
+    "manifold": 0.01,
+    "linear": 0.0301,
+    "gap_linear_minus_manifold": 0.0201,
+    "manifold_more_faithful": true
+   },
+   "routing": {
+    "manifold": 0.0,
+    "linear": 0.1667,
+    "shuffled": 0.0,
+    "random": 0.0,
+    "routing_win": false
+   },
+   "verdict": "faithful_not_routing",
+   "manifold_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "trivial",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.3933
+    },
+    {
+     "expected_idx": 1,
+     "expected": "low",
+     "induced_idx": 4,
+     "induced": "critical",
+     "match": false,
+     "p_induced": 0.2954
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 3,
+     "induced": "high",
+     "match": false,
+     "p_induced": 0.6335
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 3,
+     "induced": "high",
+     "match": false,
+     "p_induced": 0.7326
+    },
+    {
+     "expected_idx": 3,
+     "expected": "high",
+     "induced_idx": 4,
+     "induced": "critical",
+     "match": false,
+     "p_induced": 0.5767
+    },
+    {
+     "expected_idx": 4,
+     "expected": "critical",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.4592
+    }
+   ],
+   "linear_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "trivial",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.3933
+    },
+    {
+     "expected_idx": 1,
+     "expected": "low",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": true,
+     "p_induced": 0.4867
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.5053
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.5071
+    },
+    {
+     "expected_idx": 3,
+     "expected": "high",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.4925
+    },
+    {
+     "expected_idx": 4,
+     "expected": "critical",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.4592
+    }
+   ],
+   "random_waypoints": [
+    {
+     "expected_idx": 0,
+     "expected": "trivial",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.3933
+    },
+    {
+     "expected_idx": 1,
+     "expected": "low",
+     "induced_idx": 3,
+     "induced": "high",
+     "match": false,
+     "p_induced": 0.33
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 0,
+     "induced": "trivial",
+     "match": false,
+     "p_induced": 0.4957
+    },
+    {
+     "expected_idx": 2,
+     "expected": "medium",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.4396
+    },
+    {
+     "expected_idx": 3,
+     "expected": "high",
+     "induced_idx": 1,
+     "induced": "low",
+     "match": false,
+     "p_induced": 0.4938
+    },
+    {
+     "expected_idx": 4,
+     "expected": "critical",
+     "induced_idx": 3,
+     "induced": "high",
+     "match": false,
+     "p_induced": 0.4836
+    }
+   ]
+  }
+ ]
+}
