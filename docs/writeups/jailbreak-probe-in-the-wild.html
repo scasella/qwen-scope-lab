@@ -82,6 +82,37 @@
     .footer-meta a { color:var(--on-dark); text-decoration:none; border-bottom:1px dotted rgba(255,255,255,0.25); }
     .footer-meta a:hover { color:#fff; border-bottom-color:#fff; }
 
+    /* ====== pipeline strip / quadrant board / mode cards ====== */
+    .pipe-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); margin:1.2lh 0 12px; }
+    .pipe-label .id { color:var(--fg); margin-right:12px; }
+    .pipe { display:flex; align-items:stretch; margin:0 0 1lh; flex-wrap:wrap; gap:10px 0; }
+    .pipe-step { flex:1 1 0; min-width:148px; background:#fff; border:1px solid var(--chart-grid); border-radius:10px; padding:11px 13px 12px; font-family:var(--font-sans); }
+    .pipe-step .pk { font-size:9.5px; letter-spacing:0.13em; text-transform:uppercase; color:var(--fg-faint); display:block; margin-bottom:4px; }
+    .pipe-step .pv { font-size:12.5px; color:var(--fg); line-height:1.45; display:block; }
+    .pipe-step .pv code { font-family:ui-monospace, Menlo, monospace; font-size:11px; background:rgba(0,0,0,0.05); padding:1px 4px; border-radius:4px; }
+    .pipe-step.hot { background:var(--teal-soft); border-color:rgba(92,138,149,0.4); }
+    .pipe-sep { align-self:center; color:var(--chart-axis); font-family:var(--font-sans); font-size:15px; padding:0 8px; }
+    .quad-wrap { margin:1.5lh 0; }
+    .quad-axes { display:grid; grid-template-columns:22px 1fr 1fr; gap:10px; align-items:stretch; }
+    .quad-collab { font-family:var(--font-sans); font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:var(--fg-faint); text-align:center; padding-bottom:2px; }
+    .quad-rowlab { font-family:var(--font-sans); font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:var(--fg-faint); writing-mode:vertical-rl; transform:rotate(180deg); text-align:center; }
+    .quad { background:#fff; border:1px solid var(--chart-grid); border-radius:12px; padding:14px 16px 15px; font-family:var(--font-sans); }
+    .quad.fire { background:var(--teal-soft); border-color:rgba(92,138,149,0.45); }
+    .quad.miss { background:var(--mauve-soft); border-color:rgba(139,111,140,0.45); }
+    .quad .qn { font-family:var(--font-serif); font-size:15px; color:var(--fg); margin-bottom:2px; }
+    .quad .qd { font-size:11.5px; color:var(--fg-faint); margin-bottom:9px; }
+    .quad .qv { font-family:var(--font-serif); font-size:22px; color:var(--fg); }
+    .quad .qs { font-size:11.5px; color:var(--fg-mute); margin-top:3px; line-height:1.45; }
+    .quad-note { font-family:var(--font-sans); font-size:11.5px; color:var(--fg-faint); margin-top:10px; line-height:1.5; }
+    .mode-grid { display:grid; grid-template-columns:1fr; gap:14px; margin:1.5lh 0; }
+    @media (min-width:640px) { .mode-grid { grid-template-columns:repeat(2,1fr); } }
+    .mode-card { background:#fff; border-radius:12px; padding:18px 20px 19px; border:1px solid var(--chart-grid); }
+    .mode-card .tag { font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); display:block; margin-bottom:9px; }
+    .mode-card .t { font-size:16px; font-weight:700; color:var(--fg); display:block; margin-bottom:7px; }
+    .mode-card .desc { font-family:var(--font-sans); font-size:13.5px; line-height:1.55; color:var(--fg-mute); display:block; }
+    .table-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:12px; }
+    .table-label .id { color:var(--fg); margin-right:12px; }
+
     /* ====== threshold explorer ====== */
     .scene-wrap { margin:1.5lh 0; }
     .scene-card { background:#fff; border:1px solid var(--chart-grid); border-radius:14px; overflow:hidden; }
@@ -183,6 +214,19 @@
               </p>
             </div>
 
+            <div class="pipe-label"><span class="id">The entire detector</span>no model calls, no API, no fine-tune — one dot product on the side</div>
+            <div class="pipe">
+              <div class="pipe-step"><span class="pk">input</span><span class="pv">user prompt (first 64 tokens)</span></div>
+              <div class="pipe-sep">→</div>
+              <div class="pipe-step"><span class="pk">free</span><span class="pv">layer-12 residuals the model computes anyway</span></div>
+              <div class="pipe-sep">→</div>
+              <div class="pipe-step"><span class="pk">pool</span><span class="pv">mean over tokens → one vector</span></div>
+              <div class="pipe-sep">→</div>
+              <div class="pipe-step hot"><span class="pk">the detector</span><span class="pv"><code>score = v·w + b</code> — direction fit on 16 author prompts</span></div>
+              <div class="pipe-sep">→</div>
+              <div class="pipe-step"><span class="pk">decide</span><span class="pv">fires if score ≥ threshold (the part that doesn't transfer)</span></div>
+            </div>
+
             <h2 id="result">The direction survives — four questions, one answer each</h2>
             <p>
               Sixteen author-written prompts fit a direction that ranks real jailbreaks above real traffic. The held-out-source split retrains on three communities and evaluates on nine unseen ones; the drop is 0.023. Whatever the direction encodes, it is not the surface vocabulary of its training prompts.
@@ -233,16 +277,45 @@
               <p>Ship the direction, never the threshold. Calibrate the operating point on the traffic the detector will actually see, and expect the cost of a low-FPR point to depend on how elaborate your benign traffic is. Where users write long persona-driven prompts for legitimate reasons, a one-dot-product detector wants a second signal — the obvious candidate is below.</p>
             </div>
 
-            <h2 id="scope">Framing, not intent — the bottom lane</h2>
+            <h2 id="scope">Framing, not intent — the whole scope finding in four cells</h2>
             <p>
-              The hard-negative lane and the bare-harmful lane are the same experiment seen from two sides. Jailbreak-shaped but legitimate asks rank almost perfectly below real jailbreaks (0.999): the manipulation wrapper is the signal, and the probe reads it. Strip the wrapper off a genuinely harmful request and its scores drop into the benign range — look at where the bottom lane sits in Figure 1. <strong>The feature being detected is the jailbreak construction itself</strong>, not the harmfulness of what is being asked. As an attempt detector that is exactly the right signal, and the part attackers cannot easily drop; as a harmful-content filter it is the wrong tool, now quantitatively. A complete screen wants this framing probe paired with an intent probe — this run built the training sets for the second.
+              Cross the corpus two ways — is the jailbreak wrapper present, and is the request inside actually harmful — and the probe's behavior at the shipped threshold sorts itself into four cells. Three are exactly what you want from an <em>attempt</em> detector. The fourth is the scope bound.
             </p>
 
-            <div class="stat-row">
-              <div class="stat"><span class="k">wrapper present</span><div class="v">0.999</div><div class="s">wild jailbreaks vs hard negatives</div></div>
-              <div class="stat"><span class="k">wrapper stripped</span><div class="v">0.609</div><div class="s">bare harmful vs hard negatives</div></div>
-              <div class="stat"><span class="k">recall on bare harm</span><div class="v">0%</div><div class="s">at the shipped threshold</div></div>
-              <div class="stat"><span class="k">random control</span><div class="v">0.45–0.49</div><div class="s">every split</div></div>
+            <div class="quad-wrap">
+              <div class="table-label"><span class="id">Figure 03</span>fire rate at the shipped threshold, by wrapper × intent</div>
+              <div class="quad-axes">
+                <div></div>
+                <div class="quad-collab">jailbreak wrapper present</div>
+                <div class="quad-collab">no wrapper</div>
+                <div class="quad-rowlab">harmful ask</div>
+                <div class="quad fire">
+                  <div class="qn">wild jailbreaks</div>
+                  <div class="qd">scraped DAN/persona prompts · n=300</div>
+                  <div class="qv">fires 98% ✓</div>
+                  <div class="qs">the catch — ranks above every negative set (AUC 0.999 vs hard negatives)</div>
+                </div>
+                <div class="quad miss">
+                  <div class="qn">bare harmful intent</div>
+                  <div class="qd">same kind of ask, wrapper stripped · n=100</div>
+                  <div class="qv">fires 0% ✗</div>
+                  <div class="qs">the miss — nearly invisible (AUC 0.609). The probe never saw the harm, only the wrapper.</div>
+                </div>
+                <div class="quad-rowlab">benign ask</div>
+                <div class="quad fire">
+                  <div class="qn">hard negatives</div>
+                  <div class="qd">jailbreak-shaped but legitimate · n=130</div>
+                  <div class="qv">fires 0% ✓</div>
+                  <div class="qs">correctly ignored — surface form isn't enough to trip it</div>
+                </div>
+                <div class="quad fire">
+                  <div class="qn">ordinary traffic</div>
+                  <div class="qd">Dolly instructions · n=150</div>
+                  <div class="qv">fires 0% ✓</div>
+                  <div class="qs">clean — the elaborate community-benign lane is the threshold exception (83%, see Figure 1)</div>
+                </div>
+              </div>
+              <div class="quad-note">Random-direction control: AUC 0.45–0.49 on every comparison. The diagonal reads it plainly: what fires is the <b>wrapper</b>, not the harm — the right signal for an attempt detector (the wrapper is what does the jailbreaking, so attackers can't just drop it), the wrong tool for content filtering. A complete screen pairs this framing probe with an intent probe; this run built the training sets for the second.</div>
             </div>
 
             <h2 id="generalisation">Communities it never saw</h2>
@@ -250,6 +323,7 @@
               A fresh probe trained on 150 jailbreaks from three sources, evaluated on 150 from nine entirely different communities — different house styles, personas, formats. The drop is 0.023, and the in-distribution threshold even transfers here (4.7% FPR): the direction tracks the shared structure of the genre, not its sources.
             </p>
 
+            <div class="table-label"><span class="id">Figure 04</span>source generalisation — train on three communities, evaluate on nine unseen</div>
             <div class="gen-card">
               <div class="gen-cols">
                 <div>
@@ -285,9 +359,29 @@
             </div>
 
             <h2 id="next">What's next</h2>
-            <p>
-              In value order: an <strong>intent probe</strong> trained on the harmful-vs-benign splits this run already built (the framing × intent pair is a screen; either alone is a heuristic); a <strong>per-distribution calibration recipe</strong> documenting the operating-point menu for elaborate-benign traffic; a <strong>pooling-window sweep</strong> (64 tokens is the only window tested and the obvious suspect in both the community-prompt FPR and the intent miss); and an <strong>adaptive red-team against the probe itself</strong>.
-            </p>
+            <p>In value order:</p>
+            <div class="mode-grid">
+              <div class="mode-card">
+                <span class="tag">next · 01</span>
+                <span class="t">An intent probe</span>
+                <span class="desc">Train harmful-vs-benign on the JailbreakBench splits this run already built. The framing × intent pair is a screen; either alone is a heuristic.</span>
+              </div>
+              <div class="mode-card">
+                <span class="tag">next · 02</span>
+                <span class="t">A per-distribution calibration recipe</span>
+                <span class="desc">The lab ships threshold calibration at fixed FPR; what's missing is the documented operating-point menu for traffic where benign prompts are themselves elaborate.</span>
+              </div>
+              <div class="mode-card">
+                <span class="tag">next · 03</span>
+                <span class="t">A pooling-window sweep</span>
+                <span class="desc">64 tokens is the only window tested, and it is the obvious suspect in both the community-prompt false alarms and the intent miss.</span>
+              </div>
+              <div class="mode-card">
+                <span class="tag">next · 04</span>
+                <span class="t">An adaptive red-team — against the probe</span>
+                <span class="desc">The corpus is real but static (scraped 2023). Attack the detector itself: an adversary who knows the direction exists is the untested threat model.</span>
+              </div>
+            </div>
 
             <div class="break">· · ·</div>
 
