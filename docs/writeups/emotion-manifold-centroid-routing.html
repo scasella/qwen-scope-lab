@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Walking a model through six emotions, in order — Qwen Scope Lab</title>
+  <meta name="description" content="On Qwen3.5-2B, steering along a fitted emotion manifold induces every intermediate emotion in sequence; the straight-line steer skips them. Random and shuffled-order controls included." />
+  <meta property="og:title" content="Walking a model through six emotions, in order" />
+  <meta property="og:description" content="Manifold steering routes through intermediate emotional states (agreement 1.00) where linear steering endpoint-snaps (0.33). Confirmed against random-direction and shuffled-order controls on the arousal axis." />
+  <meta property="og:type" content="article" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#F9F9F6; --accent:#090909; --fg:#3B3B39; --fg-soft:#3B3B39; --fg-mute:#595856;
+      --fg-faint:#969592; --on-dark:#DFDEDA; --surface-muted:#EFEFEB;
+      --chart-primary:#3B3B39; --chart-secondary:#969592; --chart-axis:#C8C7C2; --chart-grid:#E4E3DE;
+      --chart-accent-1:#5C8A95; --chart-accent-2:#8B6F8C;
+      --font-serif:'Libre Baskerville', Georgia, 'Times New Roman', serif;
+      --font-sans:'Inter', 'Helvetica Neue', Arial, sans-serif;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { background:var(--bg); overflow-y:scroll; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; font-variant-numeric:oldstyle-nums proportional-nums; }
+    ::selection { background:rgba(0,0,0,0.08); }
+    body { min-height:100vh; font-family:var(--font-serif); background:var(--bg); color:var(--accent); display:flex; flex-direction:column; text-wrap:pretty; overflow-x:hidden; }
+    h1, h2, h3, .subtitle { text-wrap:balance; }
+    .page-surface { background:var(--bg); display:flex; flex:1 0 auto; flex-direction:column; width:100%; }
+    .main { flex:1; }
+    .perspectives-header { display:flex; justify-content:space-between; align-items:center; padding:2rem 2.5rem; width:100%; }
+    .logo-centered { font-family:var(--font-sans); font-size:14px; font-weight:500; letter-spacing:0.25em; color:var(--fg-soft); text-decoration:none; }
+    .contact-link { display:inline-flex; align-items:center; padding:0.5rem 0.75rem; margin-right:-0.75rem; border-radius:999px; color:var(--fg); transition:background 240ms; text-decoration:none; font-family:var(--font-sans); font-size:13px; letter-spacing:0.08em; }
+    .contact-link:hover { background:var(--surface-muted); }
+    .benchmarks-content { max-width:720px; margin:0 auto; padding:2rem 2rem 6rem; }
+    .benchmarks-content h1 { font-size:48px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; color:var(--fg); margin-top:144px; }
+    .benchmarks-content .subtitle { font-size:18px; font-weight:300; line-height:1.5; color:var(--fg); margin-top:10px; margin-bottom:0.5em; }
+    .benchmarks-content .date { font-family:var(--font-sans); font-size:11px; letter-spacing:0.1em; color:var(--fg-faint); margin-top:1em; text-transform:uppercase; }
+    .paper-links { display:flex; align-items:center; gap:1rem; margin:26px 0; flex-wrap:wrap; }
+    .paper-links .btn-pill { font-family:var(--font-sans); font-size:14px; line-height:1; color:var(--fg); text-decoration:none; background:#fff; border-radius:999px; padding:0.85rem 1.2rem 0.95rem; transition:background 240ms; }
+    .paper-links .btn-pill:hover { background:var(--surface-muted); }
+    .benchmarks-body { margin:96px 0 48px; }
+    .benchmarks-body .body-main { font-size:17px; line-height:1.6; margin-top:1lh; }
+    .benchmarks-body p { font-weight:400; color:var(--fg-soft); margin-bottom:1lh; }
+    .benchmarks-body em { font-style:italic; }
+    .benchmarks-body strong { font-weight:500; color:var(--fg); }
+    .benchmarks-body a, .benchmarks-body a:visited { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--fg-faint); padding-bottom:1px; }
+    .benchmarks-body a:hover { border-bottom-color:var(--accent); }
+    .benchmarks-body h2 { font-size:26px; font-weight:400; color:var(--fg); margin:1.75lh 0 24px; letter-spacing:-0.005em; }
+    .benchmarks-body h3 { font-size:19px; font-weight:700; color:var(--fg); margin:1.5lh 0 16px; letter-spacing:-0.005em; }
+    .benchmarks-body ul, .benchmarks-body ol { padding-left:1.25em; margin-bottom:1.5em; }
+    .benchmarks-body ul { list-style:disc; }
+    .benchmarks-body li { font-size:17px; line-height:1.6; color:var(--fg-soft); margin-bottom:0.6em; }
+    .benchmarks-body li::marker { color:var(--fg-faint); }
+    .benchmarks-body code { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:0.82em; background:rgba(0,0,0,0.05); padding:0.08em 0.3em; border-radius:4px; }
+    .tldr { margin:32px 0 48px; padding:0 0 0 24px; border-left:2px solid var(--fg-mute); }
+    .tldr-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:10px; display:block; }
+    .tldr p { font-size:17px; line-height:1.6; color:var(--fg); }
+    .tldr p + p { margin-top:0.8em; }
+    .callout { margin:1.5lh 0; padding:20px 24px; background:var(--surface-muted); border-radius:10px; }
+    .callout-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--fg-mute); margin-bottom:8px; display:block; }
+    .callout p { font-size:15px; line-height:1.6; color:var(--fg); margin-bottom:0; }
+    .stat-row { display:grid; grid-template-columns:repeat(2,1fr); gap:0; margin:1.5lh 0; border-top:1px solid var(--chart-grid); border-bottom:1px solid var(--chart-grid); }
+    @media (min-width:600px) { .stat-row { grid-template-columns:repeat(4,1fr); } }
+    .stat { padding:18px; border-right:1px solid var(--chart-grid); }
+    .stat:first-child { padding-left:0; }
+    .stat:last-child { border-right:0; }
+    @media (max-width:599px) { .stat:nth-child(2n) { border-right:0; } .stat:nth-child(n+3) { border-top:1px solid var(--chart-grid); } }
+    .stat .k { font-family:var(--font-sans); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:8px; display:block; }
+    .stat .v { font-family:var(--font-serif); font-size:24px; color:var(--fg); line-height:1.1; letter-spacing:-0.01em; }
+    .stat .s { font-family:var(--font-sans); font-size:12px; color:var(--fg-faint); margin-top:6px; line-height:1.35; }
+    .table-wrap { margin:1.5lh 0; }
+    .table-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:12px; }
+    .table-label .id { color:var(--fg); margin-right:12px; }
+    table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; font-family:var(--font-serif); }
+    th, td { padding:11px 14px 11px 0; text-align:left; font-size:14px; border-bottom:1px solid var(--chart-grid); color:var(--fg); }
+    th { font-family:var(--font-sans); font-weight:400; color:var(--fg-mute); font-size:12px; letter-spacing:0.06em; text-transform:uppercase; border-bottom:1px solid var(--fg-mute); }
+    td.num { font-variant-numeric:tabular-nums; }
+    td.pos { color:var(--accent); }
+    td.neg { color:var(--fg-faint); }
+    tr:last-child td { border-bottom:none; }
+    tr.highlight td { background:var(--surface-muted); }
+    figure.chart { margin:1.5lh 0; }
+    figure.chart svg { display:block; width:100%; height:auto; background:var(--bg); }
+    figcaption { font-family:var(--font-sans); font-size:13px; color:var(--fg-mute); line-height:1.5; margin-top:16px; }
+    figcaption strong { color:var(--fg); font-weight:500; }
+    .neg-list { margin:1.5lh 0; padding:0; border-top:1px solid var(--chart-grid); }
+    .neg-list-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); margin:16px 0 8px; display:block; }
+    .neg-list ul { list-style:none; padding:0; margin:0; }
+    .neg-list li { padding:16px 0; border-bottom:1px solid var(--chart-grid); font-size:15px; line-height:1.6; color:var(--fg-soft); }
+    .neg-list li:last-child { border-bottom:0; }
+    .neg-list li strong { color:var(--fg); font-weight:500; }
+    .break { display:flex; align-items:center; justify-content:center; margin:4rem 0 3rem; color:var(--fg-faint); font-family:var(--font-sans); font-size:11px; letter-spacing:0.6em; }
+    .site-footer { background:var(--accent); color:#fff; display:flex; flex-direction:column; margin-top:auto; }
+    .site-footer .footer-inner { max-width:720px; width:100%; margin:2rem auto 0; padding:0 2rem 100px; }
+    .footer-meta { font-family:var(--font-sans); font-size:12px; color:var(--fg-faint); margin-top:2rem; line-height:1.7; }
+    .footer-meta a { color:var(--on-dark); text-decoration:none; border-bottom:1px dotted rgba(255,255,255,0.25); }
+    .footer-meta a:hover { color:#fff; border-bottom-color:#fff; }
+    @media (max-width:768px) { .perspectives-header { padding:1.5rem; } .benchmarks-content { padding:3rem 1.5rem 4rem; } .benchmarks-content h1 { font-size:42px; margin-top:96px; } .site-footer .footer-inner { padding-left:1.5rem; padding-right:1.5rem; } }
+    @media (max-width:480px) { .benchmarks-content h1 { font-size:34px; margin-top:64px; } }
+  </style>
+</head>
+<body class="benchmarks-page">
+  <div class="page-surface">
+
+    <header class="perspectives-header">
+      <a href="https://github.com/scasella/qwen-scope-lab" class="logo-centered">LAB</a>
+      <a href="mailto:scasella91@gmail.com" class="contact-link" aria-label="Contact">Contact</a>
+    </header>
+
+    <main class="main">
+      <article class="benchmarks-content">
+
+        <h1>Walking a model through six emotions, in order</h1>
+        <p class="subtitle">On Qwen3.5-2B, steering along a fitted emotion manifold induces every intermediate emotional state in sequence. The straight-line steer skips them. Random-direction and shuffled-order controls say the routing is real.</p>
+        <p class="date">Stephen Casella · June 2026</p>
+
+        <div class="paper-links">
+          <a href="https://github.com/scasella/qwen-scope-lab" class="btn-pill">Github</a>
+          <a href="https://github.com/scasella/qwen-scope-lab/blob/main/docs/experiments/EMOTION_MANIFOLD.md" class="btn-pill">Method &amp; verdict</a>
+        </div>
+
+        <div class="benchmarks-body">
+          <div class="body-main">
+
+            <div class="tldr">
+              <span class="tldr-label">TL;DR</span>
+              <p>
+                Concept-manifold steering makes a path claim: moving along the fitted manifold should pass <em>through</em> the concept's intermediate values, where a straight activation-space line jumps to the endpoint. On the arousal axis (numb&nbsp;→&nbsp;bored&nbsp;→&nbsp;calm&nbsp;→&nbsp;alert&nbsp;→&nbsp;excited&nbsp;→&nbsp;frantic) of a real Qwen3.5-2B, the manifold walk induces <strong>all six emotions in order</strong> as the model's top prediction (agreement 1.00, induced probabilities 0.67–0.99). The linear steer sits on "numb" for four waypoints and then jumps to "frantic" (0.33). A random direction at matched norm stays at chance (0.17); a manifold fitted with the emotion order shuffled scores 0.83, below the true ordering.
+              </p>
+              <p>
+                The win is concept-shaped, and the failures say why: a valence line (furious&nbsp;→&nbsp;euphoric) collapses at the calm midpoint because a one-dimensional spline cannot cross the negative-to-positive sign flip, and a fear line never leaves its source state at these layers. One seed, one model, three concepts. Everything runs on-device via MLX.
+              </p>
+            </div>
+
+            <h2 id="question">The claim under test</h2>
+
+            <p>
+              Goodfire's manifold-steering work showed that ordinal concepts (ranks, days, sizes) trace low-dimensional curves in a model's residual stream, and that steering <em>along</em> the curve is sometimes more faithful than steering along the straight chord between endpoints. This lab replicated the geometry on Qwen3.5-2B earlier (activation↔behavior isometry r&nbsp;=&nbsp;0.94–1.00 across seven concepts) and found the faithfulness advantage real but concept-dependent.
+            </p>
+            <p>
+              Emotions are the natural next concept family. Anthropic's emotion-vectors work treats emotional states as directions; the manifold framing makes a sharper, testable prediction about <em>paths</em>: if emotional states sit on an ordered curve, walking that curve should produce the intermediate emotions on the way, not just the destination.
+            </p>
+
+            <div class="callout">
+              <span class="callout-label">The question</span>
+              <p>When you steer a model from one end of an ordered emotion line to the other, does the manifold path route through the intermediate emotions (numb → bored → calm → …) while the straight chord skips them? We call the testable version <em>centroid routing</em>: at waypoint k of the sweep, is the model's induced top prediction the k-th intermediate emotion?</p>
+            </div>
+
+            <p>
+              The answer on the arousal axis is yes, cleanly, against both controls. The answer on the other two emotion lines is no, for mechanistic reasons that are themselves informative.
+            </p>
+
+            <h2 id="setup">Setup</h2>
+
+            <p>
+              Three ordered emotion concepts were added to the lab's concept registry, each with the item list, carrier templates, and steer prompt in the house format: a valence-intensity line (furious, angry, annoyed, calm, content, delighted, euphoric), a fear gradation (terrified, afraid, anxious, uneasy, calm), and an arousal line (numb, bored, calm, alert, excited, frantic). For each concept the lab fits a PCA manifold through the per-value residual-stream centroids, then steers by replacing the value token's residual at the chosen layer with points along either the manifold spline or the straight source→target chord.
+            </p>
+            <p>
+              Behavior is read out with the full-string read-out introduced by the C05 audit: each value scored by its teacher-forced continuation probability under the active intervention. All emotion values here are single tokens, so the first-token and full-string read-outs are bit-identical; both are recorded. Energy is the lab's standard faithfulness metric, the minimum Bhattacharyya distance from the induced distribution to the fitted behavior manifold. Layers {8, 12, 16} were swept per concept; 6 waypoints per walk; everything on a real Qwen3.5-2B (bf16) running locally on Apple Silicon via MLX. Wall-clock for the full experiment: 192 seconds.
+            </p>
+
+            <h3>Controls and gates</h3>
+            <p>
+              Two controls, both run on the same prompt and norm budget. A <em>random-direction</em> steer at matched norm answers "does any sufficiently large nudge walk the line?" A <em>shuffled-order</em> manifold, fitted with the emotion ordering permuted, answers "does the routing come from the fitted geometry, or just from being on-distribution?" Three gates were stated before running: (a) clean manifold means isometry r ≥ 0.9; (b) manifold-more-faithful means a positive full-string energy gap on a majority of concepts; (c) centroid routing means manifold agreement beats linear <strong>and</strong> shuffled.
+            </p>
+
+            <div class="stat-row">
+              <div class="stat">
+                <span class="k">Concepts</span>
+                <div class="v">3</div>
+                <div class="s">arousal · valence-intensity · fear</div>
+              </div>
+              <div class="stat">
+                <span class="k">Isometry r</span>
+                <div class="v">0.997–0.999</div>
+                <div class="s">all three; as clean as rank/days</div>
+              </div>
+              <div class="stat">
+                <span class="k">Waypoints</span>
+                <div class="v">6</div>
+                <div class="s">per walk, layers {8, 12, 16} swept</div>
+              </div>
+              <div class="stat">
+                <span class="k">Wall-clock</span>
+                <div class="v">192 s</div>
+                <div class="s">Qwen3.5-2B bf16, on-device MLX</div>
+              </div>
+            </div>
+
+            <p>
+              Gate (a) passed 3/3 before any steering happened: emotion lines form residual-stream manifolds as clean as the lab's best ordinal concepts. Whatever follows is about controllability, not about whether the geometry exists.
+            </p>
+
+            <h2 id="result">The headline — the arousal walk</h2>
+
+            <p>
+              Steering from "numb" toward "frantic" along the fitted manifold induces the full ordered sequence. At each of the six waypoints, the model's top-probability emotion is exactly the waypoint's intermediate state, with induced probabilities between 0.67 and 0.99. The linear chord, given the same endpoints and the same intervention machinery, never leaves "numb" until waypoint five and then lands directly on "frantic": two matches out of six.
+            </p>
+
+            <div class="table-wrap">
+              <div class="table-label"><span class="id">Table 01</span>The arousal walk, waypoint by waypoint (induced top prediction and its probability)</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>waypoint (expected)</th>
+                    <th>manifold path</th>
+                    <th>p</th>
+                    <th>linear chord</th>
+                    <th>p</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1 · numb</td>
+                    <td class="num pos">numb ✓</td>
+                    <td class="num">0.99</td>
+                    <td class="num">numb ✓</td>
+                    <td class="num">0.99</td>
+                  </tr>
+                  <tr>
+                    <td>2 · bored</td>
+                    <td class="num pos">bored ✓</td>
+                    <td class="num">0.99</td>
+                    <td class="num neg">numb ✗</td>
+                    <td class="num">0.99</td>
+                  </tr>
+                  <tr>
+                    <td>3 · calm</td>
+                    <td class="num pos">calm ✓</td>
+                    <td class="num">0.90</td>
+                    <td class="num neg">numb ✗</td>
+                    <td class="num">0.97</td>
+                  </tr>
+                  <tr>
+                    <td>4 · alert</td>
+                    <td class="num pos">alert ✓</td>
+                    <td class="num">0.67</td>
+                    <td class="num neg">numb ✗</td>
+                    <td class="num">0.77</td>
+                  </tr>
+                  <tr>
+                    <td>5 · excited</td>
+                    <td class="num pos">excited ✓</td>
+                    <td class="num">0.87</td>
+                    <td class="num neg">frantic ✗</td>
+                    <td class="num">0.51</td>
+                  </tr>
+                  <tr>
+                    <td>6 · frantic</td>
+                    <td class="num pos">frantic ✓</td>
+                    <td class="num">0.70</td>
+                    <td class="num">frantic ✓</td>
+                    <td class="num">0.70</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              This is the textbook endpoint-snapping picture. The chord passes through regions of activation space that decode to the <em>source</em> state for most of its length, then crosses into the target's basin near the end. The manifold path spends its length inside the basins of the intermediate states, in order. The energy metric agrees with the routing picture: manifold 0.023 versus linear 0.041 (lower is more on-manifold), the only one of the three concepts where the manifold wins on energy.
+            </p>
+
+            <h2 id="mechanism">The controls carry the claim</h2>
+
+            <p>
+              Routing through intermediates could be cheap. If the carrier prompt biases the model toward nearby emotion words, any on-distribution wobble might light them up. The two controls are what make Table&nbsp;01 evidence rather than anecdote.
+            </p>
+
+            <figure class="chart">
+              <svg viewBox="0 0 960 460" role="img" aria-label="Bar chart of waypoint agreement rates: manifold 1.00, shuffled-order control 0.83, linear chord 0.33, random direction 0.17">
+                <rect x="0" y="0" width="960" height="460" fill="#F9F9F6" />
+                <text x="480" y="30" text-anchor="middle" fill="#3B3B39" font-family="Libre Baskerville, Georgia, serif" font-size="18">Centroid routing on the arousal axis</text>
+                <text x="480" y="54" text-anchor="middle" fill="#969592" font-family="Inter, Helvetica Neue, sans-serif" font-size="12">fraction of waypoints whose induced top prediction matches the expected intermediate emotion (6 waypoints)</text>
+
+                <line x1="80" y1="380" x2="880" y2="380" stroke="#C8C7C2" stroke-width="1" />
+                <line x1="80" y1="312.5" x2="880" y2="312.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="245" x2="880" y2="245" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="177.5" x2="880" y2="177.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="110" x2="880" y2="110" stroke="#E4E3DE" stroke-width="1" />
+                <text x="72" y="384" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.00</text>
+                <text x="72" y="316" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.25</text>
+                <text x="72" y="249" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.50</text>
+                <text x="72" y="181" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.75</text>
+                <text x="72" y="114" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">1.00</text>
+
+                <!-- chance reference at 1/6 = 0.167 → y = 380 - 270*0.167 = 335 -->
+                <line x1="80" y1="335" x2="880" y2="335" stroke="#969592" stroke-width="1" stroke-dasharray="4 4" opacity="0.7" />
+                <text x="876" y="331" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="10">chance (1/6)</text>
+
+                <!-- bars: x centers 180/380/580/780, width 120; y = 380 - 270*v -->
+                <rect x="120" y="110" width="120" height="270" fill="#5C8A95" />
+                <rect x="320" y="155" width="120" height="225" fill="#969592" />
+                <rect x="520" y="290" width="120" height="90" fill="#969592" />
+                <rect x="720" y="335" width="120" height="45" fill="#C8C7C2" />
+
+                <text x="180" y="100" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13" font-weight="500">1.00</text>
+                <text x="380" y="145" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13">0.83</text>
+                <text x="580" y="280" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13">0.33</text>
+                <text x="780" y="325" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13">0.17</text>
+
+                <text x="180" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">manifold</text>
+                <text x="380" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">shuffled-order</text>
+                <text x="580" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">linear chord</text>
+                <text x="780" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">random direction</text>
+
+                <text x="80" y="448" fill="#969592" font-family="Inter, sans-serif" font-size="11">emotion_arousal · layer 12 · Qwen3.5-2B bf16 · full-string read-out · n = 1 walk per arm, single seed</text>
+              </svg>
+              <figcaption>
+                <strong>Figure 1.</strong> Waypoint agreement on the arousal walk. The random-direction control sits exactly at chance: matched-norm noise does not walk the line. The shuffled-order control scores high (its permuted manifold still lives in the right region of activation space) but misses the waypoints the true ordering hits. The gap that matters is manifold over shuffled, 1.00 vs 0.83.
+              </figcaption>
+            </figure>
+
+            <p>
+              The random control rules out "any big nudge works": at the manifold's own norm, a random direction induces the expected intermediate exactly as often as guessing, 0.17. The shuffled control is the sharper test and it scores 0.83. That number deserves honesty in both directions. It is high because a permuted-order manifold still passes through genuine emotion centroids, so most of its waypoints decode to plausible states. It is below 1.00 because the ordering itself contributes: the true ordering visits the right state at the right step, the permuted one does not. Gate (c) asks the manifold to beat both. It does, on this concept.
+            </p>
+
+            <h2 id="failures">Two failures, two mechanisms</h2>
+
+            <p>
+              The same protocol on the other two emotion lines does not produce routing wins, and the failure modes are more useful than a 3/3 would have been.
+            </p>
+
+            <div class="table-wrap">
+              <div class="table-label"><span class="id">Table 02</span>All three concepts against the preregistered gates</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>concept</th>
+                    <th>isometry r</th>
+                    <th>energy gap</th>
+                    <th>routing: man / lin / shuf</th>
+                    <th>verdict</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="highlight">
+                    <td>arousal (numb→frantic)</td>
+                    <td class="num">0.999</td>
+                    <td class="num pos">+0.019 manifold</td>
+                    <td class="num">1.00 / 0.33 / 0.83</td>
+                    <td class="num pos">centroid routing</td>
+                  </tr>
+                  <tr>
+                    <td>valence-intensity (furious→euphoric)</td>
+                    <td class="num">0.999</td>
+                    <td class="num neg">−0.033 linear</td>
+                    <td class="num">0.50 / 0.17 / 0.67</td>
+                    <td class="num neg">collapses at midpoint</td>
+                  </tr>
+                  <tr>
+                    <td>fear (terrified→calm)</td>
+                    <td class="num">0.997</td>
+                    <td class="num neg">−0.008 linear</td>
+                    <td class="num">0.17 / 0.17 / 0.17</td>
+                    <td class="num neg">steer-resistant</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              The valence-intensity walk starts correctly. Furious, angry, annoyed arrive in order (p&nbsp;0.87, 0.69, 0.35) and then the walk hits "calm" and falls back: the last three waypoints decode to "angry" and "furious" instead of content, delighted, euphoric. The mechanism is geometric. This line crosses a sign flip, negative affect to positive affect, and a single one-dimensional spline through seven centroids has to thread a region where the two halves of the line are not each other's neighbors in activation space. The interpolated mid-segment leaves the data manifold, and the model snaps back to the nearest strong basin, which is the angry end. A circumplex parameterization (valence and arousal as two coordinates, the standard psychological model) is the natural fix, and the lab's manifold fitter already supports cyclic concepts.
+            </p>
+            <p>
+              The fear line fails differently: nothing moves. Every waypoint on every path, including the linear chord and the random control, decodes to "terrified", the source state, so all four agreement numbers sit at the 0.17 floor and routing is undefined rather than refuted. The residual replacement at layers 8–16 never pulls the next-token distribution off the source. This matches the lab's earlier emotion-program finding that fear induction never cleared the bar on this model; detection probes for fear reach AUC 1.00 while steering does nothing, the familiar detectable-but-not-controllable signature at 2B scale.
+            </p>
+
+            <h2 id="limits">Bounds on the claim</h2>
+
+            <div class="neg-list">
+              <span class="neg-list-label">Honest scope</span>
+              <ul>
+                <li><strong>Does say:</strong> on one clean monotone emotion axis, with the ordering hypothesis fixed in advance, steering along the fitted manifold reproduces the full ordered sequence of intermediate states where the straight chord, matched-norm noise, and a shuffled ordering do not. The geometry gate (isometry r ≥ 0.9) passes on all three emotion concepts.</li>
+                <li><strong>Does not say:</strong> that manifold steering beats linear steering on emotions generally (1 of 3 concepts), that the routing survives more seeds or prompt variation (n = 1 walk per arm, single seed, single model), or anything about downstream behavior such as compliance. The lab's earlier work refuted the affection-induces-compliance coupling on this model under two judges; nothing here reopens it.</li>
+                <li><strong>Measurement notes:</strong> emotion values are single-token, so the C05 read-out concern does not bite (first-token and full-string read-outs are bit-identical here, and both were recorded). Isometry r saturates near 0.99 at every swept layer and is therefore useless as a layer selector; the per-layer Spearman of the recovered ordering is the better tiebreaker, and it is what flagged the valence line's worst layer.</li>
+              </ul>
+            </div>
+
+            <h2 id="next">What's next</h2>
+
+            <p>
+              Three follow-ups are cheap and well-posed. A <strong>pullback leg</strong> on the arousal axis: the lab's gradient pullback optimizes the activation that induces a target behavior, and it runs on-device; asking it to hit each intermediate emotion and checking whether the optimized path rides the fitted manifold is the bidirectional version of this result. A <strong>circumplex fit</strong> for valence: two intrinsic coordinates instead of one should let the walk go around the calm midpoint instead of through it. And a <strong>second seed plus prompt variation</strong> on the arousal walk, which is minutes of compute and turns 1.00-vs-0.83 into a number with an error bar.
+            </p>
+
+            <div class="break">· · ·</div>
+
+            <p>
+              The result that holds: emotion lines are as geometrically clean in Qwen3.5-2B's residual stream as the best ordinal concepts this lab has measured, and on the one axis without a sign flip, the path structure of that geometry is behaviorally real, waypoint by waypoint, against both controls.
+            </p>
+            <p>
+              The result that does not: this is not a general win for manifold over linear steering on emotions. One axis routes; one collapses at a geometric obstruction the parameterization cannot represent; one never moves at all. The pattern, faithfulness advantages that are real but concept-shaped, is the same one the lab's first manifold replication found on rank, days, and education. The geometry is cheap to fit. Knowing when it buys control is the research question, and the failures above are half of the answer.
+            </p>
+
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          Stephen Casella · Qwen Scope Lab · June 2026<br />
+          Qwen3.5-2B bf16 on-device (MLX, Apple Silicon) · 3 ordered emotion concepts · layers {8, 12, 16} · 6-waypoint walks · full-string behavior read-out · random-direction + shuffled-order controls · 192 s wall-clock · single seed.<br />
+          Code &amp; data: <a href="https://github.com/scasella/qwen-scope-lab">github.com/scasella/qwen-scope-lab</a> · <a href="https://github.com/scasella/qwen-scope-lab/blob/main/docs/experiments/EMOTION_MANIFOLD.md">method &amp; verdict</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

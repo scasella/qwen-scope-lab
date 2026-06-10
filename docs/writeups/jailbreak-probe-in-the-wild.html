@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A one-dot-product jailbreak detector meets the real internet — Qwen Scope Lab</title>
+  <meta name="description" content="A free residual probe, fit on 16 author-written prompts, holds AUC 0.91-0.999 against 300 real scraped jailbreaks and entirely held-out sources. The shipped threshold does not transfer, and the probe detects jailbreak framing, not harmful intent." />
+  <meta property="og:title" content="A one-dot-product jailbreak detector meets the real internet" />
+  <meta property="og:description" content="The deployable direction survives in-the-wild DAN prompts (AUC 0.925) and unseen jailbreak communities (0.906). Two honest bounds: per-distribution threshold recalibration is mandatory, and bare harmful intent is invisible to it (0.609)." />
+  <meta property="og:type" content="article" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#F9F9F6; --accent:#090909; --fg:#3B3B39; --fg-soft:#3B3B39; --fg-mute:#595856;
+      --fg-faint:#969592; --on-dark:#DFDEDA; --surface-muted:#EFEFEB;
+      --chart-primary:#3B3B39; --chart-secondary:#969592; --chart-axis:#C8C7C2; --chart-grid:#E4E3DE;
+      --chart-accent-1:#5C8A95; --chart-accent-2:#8B6F8C;
+      --font-serif:'Libre Baskerville', Georgia, 'Times New Roman', serif;
+      --font-sans:'Inter', 'Helvetica Neue', Arial, sans-serif;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { background:var(--bg); overflow-y:scroll; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; font-variant-numeric:oldstyle-nums proportional-nums; }
+    ::selection { background:rgba(0,0,0,0.08); }
+    body { min-height:100vh; font-family:var(--font-serif); background:var(--bg); color:var(--accent); display:flex; flex-direction:column; text-wrap:pretty; overflow-x:hidden; }
+    h1, h2, h3, .subtitle { text-wrap:balance; }
+    .page-surface { background:var(--bg); display:flex; flex:1 0 auto; flex-direction:column; width:100%; }
+    .main { flex:1; }
+    .perspectives-header { display:flex; justify-content:space-between; align-items:center; padding:2rem 2.5rem; width:100%; }
+    .logo-centered { font-family:var(--font-sans); font-size:14px; font-weight:500; letter-spacing:0.25em; color:var(--fg-soft); text-decoration:none; }
+    .contact-link { display:inline-flex; align-items:center; padding:0.5rem 0.75rem; margin-right:-0.75rem; border-radius:999px; color:var(--fg); transition:background 240ms; text-decoration:none; font-family:var(--font-sans); font-size:13px; letter-spacing:0.08em; }
+    .contact-link:hover { background:var(--surface-muted); }
+    .benchmarks-content { max-width:720px; margin:0 auto; padding:2rem 2rem 6rem; }
+    .benchmarks-content h1 { font-size:48px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; color:var(--fg); margin-top:144px; }
+    .benchmarks-content .subtitle { font-size:18px; font-weight:300; line-height:1.5; color:var(--fg); margin-top:10px; margin-bottom:0.5em; }
+    .benchmarks-content .date { font-family:var(--font-sans); font-size:11px; letter-spacing:0.1em; color:var(--fg-faint); margin-top:1em; text-transform:uppercase; }
+    .paper-links { display:flex; align-items:center; gap:1rem; margin:26px 0; flex-wrap:wrap; }
+    .paper-links .btn-pill { font-family:var(--font-sans); font-size:14px; line-height:1; color:var(--fg); text-decoration:none; background:#fff; border-radius:999px; padding:0.85rem 1.2rem 0.95rem; transition:background 240ms; }
+    .paper-links .btn-pill:hover { background:var(--surface-muted); }
+    .benchmarks-body { margin:96px 0 48px; }
+    .benchmarks-body .body-main { font-size:17px; line-height:1.6; margin-top:1lh; }
+    .benchmarks-body p { font-weight:400; color:var(--fg-soft); margin-bottom:1lh; }
+    .benchmarks-body em { font-style:italic; }
+    .benchmarks-body strong { font-weight:500; color:var(--fg); }
+    .benchmarks-body a, .benchmarks-body a:visited { color:var(--accent); text-decoration:none; border-bottom:1px dotted var(--fg-faint); padding-bottom:1px; }
+    .benchmarks-body a:hover { border-bottom-color:var(--accent); }
+    .benchmarks-body h2 { font-size:26px; font-weight:400; color:var(--fg); margin:1.75lh 0 24px; letter-spacing:-0.005em; }
+    .benchmarks-body h3 { font-size:19px; font-weight:700; color:var(--fg); margin:1.5lh 0 16px; letter-spacing:-0.005em; }
+    .benchmarks-body ul, .benchmarks-body ol { padding-left:1.25em; margin-bottom:1.5em; }
+    .benchmarks-body ul { list-style:disc; }
+    .benchmarks-body li { font-size:17px; line-height:1.6; color:var(--fg-soft); margin-bottom:0.6em; }
+    .benchmarks-body li::marker { color:var(--fg-faint); }
+    .benchmarks-body code { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:0.82em; background:rgba(0,0,0,0.05); padding:0.08em 0.3em; border-radius:4px; }
+    .tldr { margin:32px 0 48px; padding:0 0 0 24px; border-left:2px solid var(--fg-mute); }
+    .tldr-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:10px; display:block; }
+    .tldr p { font-size:17px; line-height:1.6; color:var(--fg); }
+    .tldr p + p { margin-top:0.8em; }
+    .callout { margin:1.5lh 0; padding:20px 24px; background:var(--surface-muted); border-radius:10px; }
+    .callout-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--fg-mute); margin-bottom:8px; display:block; }
+    .callout p { font-size:15px; line-height:1.6; color:var(--fg); margin-bottom:0; }
+    .stat-row { display:grid; grid-template-columns:repeat(2,1fr); gap:0; margin:1.5lh 0; border-top:1px solid var(--chart-grid); border-bottom:1px solid var(--chart-grid); }
+    @media (min-width:600px) { .stat-row { grid-template-columns:repeat(4,1fr); } }
+    .stat { padding:18px; border-right:1px solid var(--chart-grid); }
+    .stat:first-child { padding-left:0; }
+    .stat:last-child { border-right:0; }
+    @media (max-width:599px) { .stat:nth-child(2n) { border-right:0; } .stat:nth-child(n+3) { border-top:1px solid var(--chart-grid); } }
+    .stat .k { font-family:var(--font-sans); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:8px; display:block; }
+    .stat .v { font-family:var(--font-serif); font-size:24px; color:var(--fg); line-height:1.1; letter-spacing:-0.01em; }
+    .stat .s { font-family:var(--font-sans); font-size:12px; color:var(--fg-faint); margin-top:6px; line-height:1.35; }
+    .table-wrap { margin:1.5lh 0; }
+    .table-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); margin-bottom:12px; }
+    .table-label .id { color:var(--fg); margin-right:12px; }
+    table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; font-family:var(--font-serif); }
+    th, td { padding:11px 14px 11px 0; text-align:left; font-size:14px; border-bottom:1px solid var(--chart-grid); color:var(--fg); }
+    th { font-family:var(--font-sans); font-weight:400; color:var(--fg-mute); font-size:12px; letter-spacing:0.06em; text-transform:uppercase; border-bottom:1px solid var(--fg-mute); }
+    td.num { font-variant-numeric:tabular-nums; }
+    td.pos { color:var(--accent); }
+    td.neg { color:var(--fg-faint); }
+    tr:last-child td { border-bottom:none; }
+    tr.highlight td { background:var(--surface-muted); }
+    figure.chart { margin:1.5lh 0; }
+    figure.chart svg { display:block; width:100%; height:auto; background:var(--bg); }
+    figcaption { font-family:var(--font-sans); font-size:13px; color:var(--fg-mute); line-height:1.5; margin-top:16px; }
+    figcaption strong { color:var(--fg); font-weight:500; }
+    .neg-list { margin:1.5lh 0; padding:0; border-top:1px solid var(--chart-grid); }
+    .neg-list-label { font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-faint); margin:16px 0 8px; display:block; }
+    .neg-list ul { list-style:none; padding:0; margin:0; }
+    .neg-list li { padding:16px 0; border-bottom:1px solid var(--chart-grid); font-size:15px; line-height:1.6; color:var(--fg-soft); }
+    .neg-list li:last-child { border-bottom:0; }
+    .neg-list li strong { color:var(--fg); font-weight:500; }
+    .break { display:flex; align-items:center; justify-content:center; margin:4rem 0 3rem; color:var(--fg-faint); font-family:var(--font-sans); font-size:11px; letter-spacing:0.6em; }
+    .site-footer { background:var(--accent); color:#fff; display:flex; flex-direction:column; margin-top:auto; }
+    .site-footer .footer-inner { max-width:720px; width:100%; margin:2rem auto 0; padding:0 2rem 100px; }
+    .footer-meta { font-family:var(--font-sans); font-size:12px; color:var(--fg-faint); margin-top:2rem; line-height:1.7; }
+    .footer-meta a { color:var(--on-dark); text-decoration:none; border-bottom:1px dotted rgba(255,255,255,0.25); }
+    .footer-meta a:hover { color:#fff; border-bottom-color:#fff; }
+    @media (max-width:768px) { .perspectives-header { padding:1.5rem; } .benchmarks-content { padding:3rem 1.5rem 4rem; } .benchmarks-content h1 { font-size:42px; margin-top:96px; } .site-footer .footer-inner { padding-left:1.5rem; padding-right:1.5rem; } }
+    @media (max-width:480px) { .benchmarks-content h1 { font-size:34px; margin-top:64px; } }
+  </style>
+</head>
+<body class="benchmarks-page">
+  <div class="page-surface">
+
+    <header class="perspectives-header">
+      <a href="https://github.com/scasella/qwen-scope-lab" class="logo-centered">LAB</a>
+      <a href="mailto:scasella91@gmail.com" class="contact-link" aria-label="Contact">Contact</a>
+    </header>
+
+    <main class="main">
+      <article class="benchmarks-content">
+
+        <h1>A one-dot-product jailbreak detector meets the real internet</h1>
+        <p class="subtitle">A free residual probe, fit on sixteen author-written prompts, holds AUC 0.91&ndash;0.999 against 300 real scraped jailbreaks and against jailbreak communities it never saw. The same evaluation hands back two bounds nobody should ship without: the threshold does not transfer, and the probe reads jailbreak framing, not harmful intent.</p>
+        <p class="date">Stephen Casella &middot; June 2026</p>
+
+        <div class="paper-links">
+          <a href="https://github.com/scasella/qwen-scope-lab" class="btn-pill">Github</a>
+          <a href="https://github.com/scasella/qwen-scope-lab/blob/main/docs/experiments/JAILBREAK_IN_THE_WILD.md" class="btn-pill">Method &amp; verdict</a>
+        </div>
+
+        <div class="benchmarks-body">
+          <div class="body-main">
+
+            <div class="tldr">
+              <span class="tldr-label">TL;DR</span>
+              <p>
+                The lab's jailbreak detector is one dot product on activations the model already computes: a difference-of-means direction at layer 12 of Qwen3.5-2B, fit on 8 jailbreaks and 8 ordinary requests, all author-written. This evaluation pointed that unmodified direction at the real thing, 300 DAN-style jailbreaks scraped from Discord, Reddit, and prompt-sharing sites. <strong>Discrimination survives: AUC 0.925 against ordinary traffic, 0.999 against hard negatives, 0.906 on jailbreak communities held out of training entirely</strong> (a 0.023 drop). A random direction scores 0.45&ndash;0.49 on every split.
+              </p>
+              <p>
+                The same run quantifies what does not survive. The author-calibrated threshold false-positives on 41.7% of benign traffic, and the failure decomposes cleanly: 0% on ordinary instructions, 83% on elaborate community prompts. And with the jailbreak wrapper stripped away, bare harmful requests are nearly invisible to it (AUC 0.609). The probe detects <em>jailbreak framing</em>, not <em>harmful intent</em>. Both bounds are deployment-relevant and neither shows up on a clean split.
+              </p>
+            </div>
+
+            <h2 id="question">From a clean 1.00 to a fair test</h2>
+
+            <p>
+              On its original clean split this probe returned AUC 1.00, matched a paid GPT-4o-mini judge, beat the SAE feature, and generalized across attack families with zero drop. The number earned the lab's first <em>deployable</em> verdict, with a stated bound: the eval was author-written. A follow-up stress test with adversarial author-written sets sharpened the picture (the direction held, the threshold cracked at 25% FPR on jailbreak-shaped benign prompts) and named its own missing piece, a real in-the-wild corpus.
+            </p>
+
+            <div class="callout">
+              <span class="callout-label">The question</span>
+              <p>Does a 16-prompt author-fit linear probe survive contact with real jailbreaks &mdash; prompts written by actual jailbreak communities, including sources and styles it has never seen &mdash; and what exactly breaks when it meets real traffic?</p>
+            </div>
+
+            <p>
+              The design keeps the deployed artifact honest: the direction and its shipped threshold (0.2904) are evaluated exactly as the live demo serves them, no retraining, pooling over the first 64 tokens of each prompt, which is the real deployment contract. Retraining appears only in the final split, where the question is source generalization. The whole evaluation is 30 seconds of on-device MLX inference; no paid APIs.
+            </p>
+
+            <h2 id="setup">The corpus</h2>
+
+            <p>
+              Four splits, all public, all rebuilt deterministically from seed 0 by a committed script. The positives are the genuine article: the TrustAIRLab in-the-wild collection scrapes jailbreak prompts from the communities that write them, twelve sources across eleven platforms.
+            </p>
+
+            <div class="table-wrap">
+              <div class="table-label"><span class="id">Table 01</span>Evaluation splits</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>split</th>
+                    <th>n</th>
+                    <th>contents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>wild jailbreaks</td>
+                    <td class="num">300</td>
+                    <td>real DAN/persona jailbreaks scraped from Discord, Reddit, FlowGPT, jailbreak sites (TrustAIRLab, 12 sources)</td>
+                  </tr>
+                  <tr>
+                    <td>ordinary benign</td>
+                    <td class="num">300</td>
+                    <td>150 Dolly instructions + 150 elaborate "regular" prompts from the same communities</td>
+                  </tr>
+                  <tr>
+                    <td>hard negatives</td>
+                    <td class="num">130</td>
+                    <td>100 JailbreakBench benign behaviors (spicy but legitimate) + 30 author-written security/fiction/roleplay asks</td>
+                  </tr>
+                  <tr>
+                    <td>bare harmful intent</td>
+                    <td class="num">100</td>
+                    <td>JailbreakBench harmful behaviors &mdash; the request without any jailbreak wrapper</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2 id="result">The headline &mdash; the direction survives the wild</h2>
+
+            <p>
+              Sixteen author-written prompts fit a direction that ranks real jailbreaks above real traffic at AUC 0.925, and above jailbreak-shaped-but-legitimate asks at 0.999. The held-out-source split retrains on three communities and evaluates on nine unseen ones; the drop is 0.023. Whatever this direction encodes, it is not the surface vocabulary of its 16 training prompts.
+            </p>
+
+            <div class="stat-row">
+              <div class="stat">
+                <span class="k">vs ordinary benign</span>
+                <div class="v">0.925</div>
+                <div class="s">300 wild jailbreaks vs 300 benign</div>
+              </div>
+              <div class="stat">
+                <span class="k">vs hard negatives</span>
+                <div class="v">0.999</div>
+                <div class="s">jailbreak-shaped benign asks</div>
+              </div>
+              <div class="stat">
+                <span class="k">held-out sources</span>
+                <div class="v">0.906</div>
+                <div class="s">9 unseen communities (in-dist 0.929)</div>
+              </div>
+              <div class="stat">
+                <span class="k">random control</span>
+                <div class="v">0.45&ndash;0.49</div>
+                <div class="s">every split, matched pipeline</div>
+              </div>
+            </div>
+
+            <figure class="chart">
+              <svg viewBox="0 0 960 460" role="img" aria-label="Bar chart of probe AUC by split: 0.999 vs hard negatives, 0.925 vs ordinary benign, 0.906 on held-out sources, 0.609 on bare harmful intent, with random control near 0.47">
+                <rect x="0" y="0" width="960" height="460" fill="#F9F9F6" />
+                <text x="480" y="30" text-anchor="middle" fill="#3B3B39" font-family="Libre Baskerville, Georgia, serif" font-size="18">One direction, four questions</text>
+                <text x="480" y="54" text-anchor="middle" fill="#969592" font-family="Inter, Helvetica Neue, sans-serif" font-size="12">AUC of the layer-12 residual probe per split &middot; real Qwen3.5-2B &middot; in-the-wild corpus</text>
+
+                <line x1="80" y1="380" x2="880" y2="380" stroke="#C8C7C2" stroke-width="1" />
+                <line x1="80" y1="312.5" x2="880" y2="312.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="245" x2="880" y2="245" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="177.5" x2="880" y2="177.5" stroke="#E4E3DE" stroke-width="1" />
+                <line x1="80" y1="110" x2="880" y2="110" stroke="#E4E3DE" stroke-width="1" />
+                <text x="72" y="384" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.00</text>
+                <text x="72" y="316" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.25</text>
+                <text x="72" y="249" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.50</text>
+                <text x="72" y="181" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">0.75</text>
+                <text x="72" y="114" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="11">1.00</text>
+
+                <!-- random-control reference at ~0.47 -->
+                <line x1="80" y1="253" x2="880" y2="253" stroke="#969592" stroke-width="1" stroke-dasharray="4 4" opacity="0.7" />
+                <text x="876" y="249" text-anchor="end" fill="#969592" font-family="Inter, sans-serif" font-size="10">random direction (0.45&ndash;0.49)</text>
+
+                <!-- bars: y = 380 - 270*AUC -->
+                <rect x="120" y="110" width="120" height="270" fill="#5C8A95" />
+                <rect x="320" y="130" width="120" height="250" fill="#5C8A95" />
+                <rect x="520" y="135" width="120" height="245" fill="#5C8A95" />
+                <rect x="720" y="216" width="120" height="164" fill="#C8C7C2" />
+
+                <text x="180" y="100" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13" font-weight="500">0.999</text>
+                <text x="380" y="120" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13" font-weight="500">0.925</text>
+                <text x="580" y="125" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13" font-weight="500">0.906</text>
+                <text x="780" y="206" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="13">0.609</text>
+
+                <text x="180" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">wild jb vs hard neg</text>
+                <text x="380" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">wild jb vs ordinary</text>
+                <text x="580" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">held-out sources</text>
+                <text x="780" y="404" text-anchor="middle" fill="#3B3B39" font-family="Inter, sans-serif" font-size="12">bare harmful intent</text>
+
+                <text x="80" y="448" fill="#969592" font-family="Inter, sans-serif" font-size="11">diff-of-means probe, layer 12, first-64-token pooling, fit on 16 author prompts &middot; threshold not used in AUC &middot; seed 0</text>
+              </svg>
+              <figcaption>
+                <strong>Figure 1.</strong> The three discrimination splits hold between 0.906 and 0.999. The fourth bar is not a failure of the same kind &mdash; it is the scope finding. Strip the jailbreak wrapper off a harmful request and the probe barely sees it: the direction encodes manipulation framing, not the harmfulness of the underlying ask.
+              </figcaption>
+            </figure>
+
+            <h2 id="threshold">What breaks: the threshold, in a specific way</h2>
+
+            <p>
+              At the shipped author-calibrated threshold the probe recalls 98% of wild jailbreaks while false-alarming on 41.7% of the benign split. That headline number is misleading until decomposed, and the decomposition is the most deployment-relevant fact in the run.
+            </p>
+
+            <div class="table-wrap">
+              <div class="table-label"><span class="id">Table 02</span>FPR at the shipped threshold (0.2904), by negative source</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>benign source</th>
+                    <th>n</th>
+                    <th>FPR at shipped threshold</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Dolly ordinary instructions</td>
+                    <td class="num">150</td>
+                    <td class="num pos">0.0%</td>
+                  </tr>
+                  <tr class="highlight">
+                    <td>elaborate "regular" prompts from jailbreak communities</td>
+                    <td class="num">150</td>
+                    <td class="num neg">83.3%</td>
+                  </tr>
+                  <tr>
+                    <td>hard negatives (JBB benign + author)</td>
+                    <td class="num">130</td>
+                    <td class="num pos">0.0%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              The threshold failure is distribution shift in the <em>negatives</em>, not decay in the direction. Genuinely ordinary traffic never trips it. What trips it is the benign output of the same communities that write jailbreaks: long persona setups, elaborate instruction stacks, prompt-engineering scaffolding with nothing harmful inside. In score space those sit where the training data had only jailbreaks. Recalibrating on the wild distribution to a 5% FPR operating point is possible but expensive here: recall drops from 0.98 to 0.57, because the elaborate-benign and jailbreak score distributions genuinely overlap in that region.
+            </p>
+
+            <div class="callout">
+              <span class="callout-label">The deployment rule this implies</span>
+              <p>Ship the direction, never the threshold. Calibrate the operating point on the traffic the detector will actually see, and expect the cost of a low-FPR point to depend on how elaborate your benign traffic is. Where users write long persona-driven prompts for legitimate reasons, a one-dot-product detector wants a second signal to disambiguate, and the obvious candidate is below.
+              </p>
+            </div>
+
+            <h2 id="scope">The scope finding: framing, not intent</h2>
+
+            <p>
+              Splits B and C are the same experiment seen from two sides. Against hard negatives, jailbreak-shaped but legitimate asks, the probe is nearly perfect (0.999): the manipulation wrapper is present in the positives and absent in the negatives, and the probe reads it. Against bare harmful requests with no wrapper, the probe drops to 0.609 and recalls exactly zero of them at the shipped threshold. Same direction, same prompts territory, opposite results, one explanation: <strong>the feature being detected is the jailbreak construction itself</strong>, the persona override, the instruction-stacking, the "ignore your guidelines" scaffolding, and not the harmfulness of what is being asked.
+            </p>
+            <p>
+              For deployment this cuts both ways. As a jailbreak-attempt detector, the framing is precisely the signal you want, and it is the part attackers cannot easily drop, since the wrapper is what does the jailbreaking. As a harmful-content filter it is the wrong tool, and the 0.609 makes that quantitative. A complete white-box screen wants two probes, a framing probe (this one) and an intent probe trained on harmful-vs-benign requests; this run supplies the clean training sets for the second.
+            </p>
+
+            <h2 id="generalisation">Held-out communities</h2>
+
+            <p>
+              The last split asks whether the probe memorizes its sources. A fresh probe trained on 150 jailbreaks from three sources (ChatGPT-focused forums, FlowGPT, jailbreak_chat) is evaluated on 150 jailbreaks from nine entirely different communities, BreakGPT, ChatGPTJailbreak, prompt-engineering subreddits, and others. In-distribution AUC 0.929; held-out 0.906. At the in-distribution threshold the held-out FPR stays at 4.7%. A 0.023 drop across communities with different house styles, personas, and formats says the direction tracks the shared structure of the genre.
+            </p>
+
+            <h2 id="limits">Bounds on the claim</h2>
+
+            <div class="neg-list">
+              <span class="neg-list-label">Honest scope</span>
+              <ul>
+                <li><strong>Does say:</strong> the author-fit layer-12 difference-of-means direction discriminates real, in-the-wild jailbreak prompts from real benign traffic (0.925), from jailbreak-shaped benign asks (0.999), and from unseen jailbreak communities (0.906), with a random direction at chance on every split.</li>
+                <li><strong>Does not say:</strong> that any fixed threshold transfers (41.7% FPR shipped, driven entirely by elaborate benign prompts); that the probe detects harmful intent (0.609 with the wrapper stripped); or that it resists an adaptive attacker who knows the direction exists &mdash; the corpus is real but static, scraped in 2023, and no adaptive red-team was run against the probe itself.</li>
+                <li><strong>Measurement notes:</strong> single seed, single layer, single model; the probe pools the first 64 tokens, so long DAN constructions are judged by their opening window (the live demo's actual contract; a longer window could move the ordinary-benign and intent splits); prompts stored clipped to 1,200 characters; scraped prompt texts are not republished &mdash; the corpus rebuilds deterministically from public datasets via the committed script.</li>
+              </ul>
+            </div>
+
+            <h2 id="next">What's next</h2>
+
+            <p>
+              Four concrete steps, in value order. An <strong>intent probe</strong>: train harmful-vs-benign on the JailbreakBench splits this run already built, and report the 2&times;2 of framing &times; intent &mdash; that pair is a screen, where either alone is a heuristic. A <strong>per-distribution calibration recipe</strong>: the lab already ships threshold calibration at fixed FPR; what is missing is the documented operating-point menu for elaborate-benign traffic. A <strong>pooling-window sweep</strong>: 64 tokens is the only window tested, and it is the obvious suspect in both the ordinary-benign FPR and the intent miss. An <strong>adaptive red-team</strong>: attack the probe, not the model &mdash; the static-corpus result says nothing about an attacker optimizing against a known direction.
+            </p>
+
+            <div class="break">&middot; &middot; &middot;</div>
+
+            <p>
+              What holds after contact with the real internet: a linear probe fit on sixteen handwritten prompts ranks genuine jailbreaks above genuine traffic at 0.91 to 0.999 across four framings of the question, including communities it never saw, at the cost of one dot product on activations the model computes anyway. The clean-split 1.00 was not a mirage; it was an upper bound, and the wild numbers are the usable version of it.
+            </p>
+            <p>
+              What the run adds beyond confirmation is the shape of the failure surface: thresholds are local to a traffic distribution, with elaborate benign prompts as the specific hazard, and the probe's subject is the jailbreak wrapper rather than the harm inside it. Both facts were invisible at AUC 1.00. Both now have numbers, evidence on disk, and a deterministic script that rebuilds the corpus from scratch.
+            </p>
+
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          Stephen Casella &middot; Qwen Scope Lab &middot; June 2026<br />
+          Qwen3.5-2B bf16 on-device (MLX, Apple Silicon) &middot; layer-12 diff-of-means probe, first-64-token pooling &middot; 830 evaluation prompts across 4 splits (TrustAIRLab in-the-wild, JailbreakBench, Dolly) &middot; random-direction control every split &middot; 30 s inference, no paid APIs &middot; seed 0.<br />
+          Code &amp; data: <a href="https://github.com/scasella/qwen-scope-lab">github.com/scasella/qwen-scope-lab</a> &middot; <a href="https://github.com/scasella/qwen-scope-lab/blob/main/docs/experiments/JAILBREAK_IN_THE_WILD.md">method &amp; verdict</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>
