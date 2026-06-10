@@ -1,0 +1,40 @@
+{
+  "experiment": "C09 distribution (soft-label KL) distillation \u2014 falsification gate",
+  "gate_margin": 0.05,
+  "concepts": {
+    "rank": {
+      "gated_manifold_delta": 0.1283,
+      "prompt_only_delta": 0.1417,
+      "linear_delta": 0.0668,
+      "shuffled_label_delta": 0.1593,
+      "gated_minus_prompt": -0.0134,
+      "gated_minus_linear": 0.0615,
+      "gated_minus_shuffled": -0.031,
+      "beats_prompt_only_by_margin": false,
+      "beats_linear_by_margin": true,
+      "beats_shuffled_control_by_margin": false,
+      "order_corr_gated": 0.0476
+    },
+    "education": {
+      "gated_manifold_delta": 0.0994,
+      "prompt_only_delta": 0.18,
+      "linear_delta": 0.1135,
+      "shuffled_label_delta": 0.136,
+      "gated_minus_prompt": -0.0806,
+      "gated_minus_linear": -0.0141,
+      "gated_minus_shuffled": -0.0366,
+      "beats_prompt_only_by_margin": false,
+      "beats_linear_by_margin": false,
+      "beats_shuffled_control_by_margin": false,
+      "order_corr_gated": 0.8214
+    }
+  },
+  "checks": {},
+  "result": "REFUTED",
+  "refuted_reasons": [
+    "rank: gated_manifold did not beat prompt_only AND linear by +0.05 (\u0394gated=0.1283, \u0394prompt=0.1417, \u0394linear=0.0668)",
+    "rank: gated_manifold did not beat the shuffled-label control by +0.05 (\u0394gated=0.1283, \u0394shuffled=0.1593) \u2014 the gain is not geometry-driven",
+    "education: gated_manifold did not beat prompt_only AND linear by +0.05 (\u0394gated=0.0994, \u0394prompt=0.18, \u0394linear=0.1135)",
+    "education: gated_manifold did not beat the shuffled-label control by +0.05 (\u0394gated=0.0994, \u0394shuffled=0.136) \u2014 the gain is not geometry-driven"
+  ]
+}

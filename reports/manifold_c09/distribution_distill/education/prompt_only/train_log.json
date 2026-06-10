@@ -1,0 +1,9 @@
+{
+  "arm": "prompt_only",
+  "concept": "education",
+  "iters": 120,
+  "final_kl": 0.8914314995209376,
+  "first_kl": 0.046902552247047424,
+  "wall_s": 30.7,
+  "n_train": 70
+}

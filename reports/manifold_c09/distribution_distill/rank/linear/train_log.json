@@ -1,0 +1,9 @@
+{
+  "arm": "linear",
+  "concept": "rank",
+  "iters": 120,
+  "final_kl": 0.46479397676885126,
+  "first_kl": 0.7790566086769104,
+  "wall_s": 30.9,
+  "n_train": 85
+}

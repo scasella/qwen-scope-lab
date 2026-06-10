@@ -1,0 +1,9 @@
+{
+  "arm": "ungated_manifold",
+  "concept": "rank",
+  "iters": 120,
+  "final_kl": 0.45799624249339105,
+  "first_kl": 0.3637194037437439,
+  "wall_s": 31.1,
+  "n_train": 85
+}

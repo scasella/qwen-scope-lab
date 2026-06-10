@@ -214,3 +214,56 @@ matching the repo's documented nulls.
    `training_not_run` if only the compiler is wired.
 3. Held-out evaluation on semantically varied prompts **not** in `concept_presets.py` templates.
 4. Optional gated Modal probe `manifold_to_data_probe_2b` (summary metrics only).
+
+---
+
+## EXECUTED — distribution (soft-label KL) distillation (2B, MLX) → **REFUTED**
+
+The prereg text above is preserved verbatim; this section records what was run and the gate outcome.
+
+**What ran.** The live formulation per the salvage is **distribution / KL distillation**, not text-SFT
+(text-SFT is structurally refuted above: greedy-text invariance + endpoint coincidence). For `rank`
+(L20, first_token), `education` (L8, full_string) and the stress case `days_of_week` (L14, cyclic), we
+stored the teacher next-token distribution **under the manifold position-replace hook** per waypoint
+(top-k=256, renormalized; full vocab 248k), with the supervision prompt = carrier filled with the
+waypoint's value label (making `prompt→dist` a hook-free learnable map). One KL-LoRA per arm (rank 8 /
+scale 20 / 8 layers / lr 1e-4 / 120 iters — matched to the refuted text-SFT run), minimizing
+`KL(teacher‖student)` via a custom MLX loop. Held-out-carrier transfer was scored by Δexpected-position
+toward target vs the untrained base.
+
+**Arms run:** `gated_manifold`, `ungated_manifold`, `linear`, `prompt_only`, `shuffled_label` (negative
+control). **Two prereg arms simplified, documented:** the **pullback** arm was dropped (the service
+doesn't return its optimized residuals, and a faithful per-template pullback teacher exceeds the
+3-hour budget guard), and consequently the gate is **energy-only** (no `recovered_r ≥ max(linear,0.75)`
+filter — `recovered_r` is a pullback by-product). The decisive comparison (gated vs prompt-only vs
+linear vs shuffled) is fully covered, so these simplifications do not affect the verdict.
+
+**Result — REFUTED on both primary concepts.** Δexpected-position vs base:
+
+| arm | rank | education |
+|---|---|---|
+| `prompt_only` (no geometry) | **+0.142** | **+0.180** |
+| `shuffled_label` (control) | **+0.159** | +0.136 |
+| `ungated_manifold` | +0.155 | +0.051 |
+| `gated_manifold` (primary) | +0.128 | +0.099 |
+| `linear` | +0.067 | +0.114 |
+
+`gated_manifold` fails to beat `prompt_only` by +0.05 on **both** concepts (it is *below* it), tripping
+the gate. **Decisive:** the **shuffled-label control beats `gated_manifold` on both** — the transfer is
+a value-filled-carrier-prompt effect, **not** geometry. `days_of_week`: all arms slightly negative; no
+transfer; the energy-only gate over-keeps (30/36) as the prereg `days` worry predicted, but moot.
+
+Unlike text-SFT (which *degraded* the base), distribution distillation *did* raise target transfer over
+base — but that gain is shared by every arm including the no-geometry and shuffled controls, so the
+manifold provenance adds nothing. The distribution objective is the distribution-side twin of the
+text-side null: the per-waypoint shift the manifold induces (energy ≈0.06) is too small and too
+entangled with the carrier prompt for a hook-free student to isolate at 2B.
+
+**Evidence.** `reports/manifold_c09/distribution_distill/` — `report.md` (forensic),
+`distill_verdict.json` (machine-readable gate), per-concept `gate_eval.json` /
+`generation_summary.json`, per-arm `{train,valid,test}.jsonl` + trained `adapter/`. Scripts:
+`scripts/_c09_distill_generate.py`, `_c09_distill_train.py`, `_c09_distill_gate.py`.
+
+**Status: the manifold-to-data compiler is now refuted in both vehicles** (text-SFT and distribution-KL)
+at 2B. The geometry gate and provenance machinery are correct; the manifold-vs-baseline distinction is
+not learnable hook-free from this data at this scale.

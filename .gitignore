@@ -56,6 +56,11 @@ data/experiments/jailbreak_wild/
 reports/*.zip
 reports/**/*.zip
 reports/sae_audit/*.npy
+# Soft-label (top-k teacher-distribution) corpora: regenerated deterministically
+# by scripts/_c09_distill_generate.py; the verdicts/summaries are the evidence.
+reports/manifold_c09/distribution_distill/*/*/train.jsonl
+reports/manifold_c09/distribution_distill/*/*/valid.jsonl
+reports/manifold_c09/distribution_distill/*/*/test.jsonl
 
 # Stray HF cache from a misquoted HF_HOME (junk, kept out of git)
 /~/

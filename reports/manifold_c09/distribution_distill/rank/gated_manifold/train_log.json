@@ -1,0 +1,9 @@
+{
+  "arm": "gated_manifold",
+  "concept": "rank",
+  "iters": 120,
+  "final_kl": 1.0910023788611094,
+  "first_kl": 1.617331624031067,
+  "wall_s": 31.9,
+  "n_train": 85
+}

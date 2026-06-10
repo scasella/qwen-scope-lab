@@ -1,0 +1,52 @@
+{
+  "concept": "rank",
+  "layer": 20,
+  "readout": "first_token",
+  "held_out_template": "Addressed as {item}",
+  "target": "general",
+  "arms": {
+    "base": {
+      "n_eval": 7,
+      "target_mass": 0.4229,
+      "expected_position": 0.7512,
+      "target_rank": 1.571
+    },
+    "gated_manifold": {
+      "n_eval": 7,
+      "target_mass": 0.3712,
+      "expected_position": 0.8795,
+      "target_rank": 1.714
+    },
+    "ungated_manifold": {
+      "n_eval": 7,
+      "target_mass": 0.6013,
+      "expected_position": 0.9062,
+      "target_rank": 1.143
+    },
+    "linear": {
+      "n_eval": 7,
+      "target_mass": 0.4594,
+      "expected_position": 0.818,
+      "target_rank": 1.0
+    },
+    "prompt_only": {
+      "n_eval": 7,
+      "target_mass": 0.5154,
+      "expected_position": 0.8929,
+      "target_rank": 1.143
+    },
+    "shuffled_label": {
+      "n_eval": 7,
+      "target_mass": 0.5632,
+      "expected_position": 0.9105,
+      "target_rank": 1.143
+    }
+  },
+  "delta_expected_position_vs_base": {
+    "gated_manifold": 0.1283,
+    "ungated_manifold": 0.155,
+    "linear": 0.0668,
+    "prompt_only": 0.1417,
+    "shuffled_label": 0.1593
+  }
+}

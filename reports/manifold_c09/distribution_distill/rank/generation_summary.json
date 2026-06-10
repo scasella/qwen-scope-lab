@@ -1,0 +1,63 @@
+{
+  "concept": "rank",
+  "layer": 20,
+  "readout": "first_token",
+  "topk": 256,
+  "n_sources": 7,
+  "n_templates": 5,
+  "n_waypoints": 5,
+  "train_templates": [
+    0,
+    1,
+    2
+  ],
+  "valid_templates": [
+    3
+  ],
+  "test_templates": [
+    4
+  ],
+  "mean_energy_gap_linear_minus_manifold": 0.0148,
+  "n_sweeps_manifold_better": 31,
+  "n_sweeps_total": 35,
+  "equal_size_train_cap": 85,
+  "train_counts_raw": {
+    "gated_manifold": 85,
+    "ungated_manifold": 105,
+    "linear": 105,
+    "prompt_only": 105,
+    "shuffled_label": 85
+  },
+  "arms": {
+    "gated_manifold": {
+      "train": 85,
+      "valid": 35,
+      "test": 35,
+      "dir": "reports/manifold_c09/distribution_distill/rank/gated_manifold"
+    },
+    "ungated_manifold": {
+      "train": 85,
+      "valid": 35,
+      "test": 35,
+      "dir": "reports/manifold_c09/distribution_distill/rank/ungated_manifold"
+    },
+    "linear": {
+      "train": 85,
+      "valid": 35,
+      "test": 35,
+      "dir": "reports/manifold_c09/distribution_distill/rank/linear"
+    },
+    "prompt_only": {
+      "train": 85,
+      "valid": 35,
+      "test": 35,
+      "dir": "reports/manifold_c09/distribution_distill/rank/prompt_only"
+    },
+    "shuffled_label": {
+      "train": 85,
+      "valid": 35,
+      "test": 35,
+      "dir": "reports/manifold_c09/distribution_distill/rank/shuffled_label"
+    }
+  }
+}

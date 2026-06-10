@@ -93,7 +93,7 @@ The base install is deliberately slim (torch + the web layer); the heavy and clo
 - [Distilling polite truth-holding (write-up)](docs/writeups/polite-truth-holding-distillation.html) — the v0.6→v1.0 paper: a class-balanced 9B-teacher corpus gives a 4B both truth-holding under pressure and calibrated uncertainty; replicated 6/6 seeds, the fix is the mixture not the count, gpt-5.5-corroborated.
 - [`docs/MIXTURE_DIAL_DISTILL.md`](docs/MIXTURE_DIAL_DISTILL.md) — the deterministic mixture-authoring corpus compiler, including the falsification pilot's honest verdict on what the dial does and doesn't buy.
 - [`docs/experiments/BEHAVIOR_READOUT_C05.md`](docs/experiments/BEHAVIOR_READOUT_C05.md) — C05: the manifold-vs-linear faithfulness verdict flips on multi-token concepts under a full-string read-out (and on none of the single-token controls).
-- [`docs/experiments/MANIFOLD_TO_DATA_PROVENANCE.md`](docs/experiments/MANIFOLD_TO_DATA_PROVENANCE.md) — C09: why *text* distillation cannot carry manifold provenance (a structural negative, confirmed at two model sizes), and the preregistered distribution-distillation salvage.
+- [`docs/experiments/MANIFOLD_TO_DATA_PROVENANCE.md`](docs/experiments/MANIFOLD_TO_DATA_PROVENANCE.md) — C09: why *text* distillation cannot carry manifold provenance (a structural negative, confirmed at two model sizes) — and the preregistered distribution-distillation salvage, since executed and **also refuted** (the shuffled-label control beats the geometry-gated arm; the line is closed in both vehicles).
 - [`RUNBOOK.md`](RUNBOOK.md) — operational reference: the CLI scripts, recipe commands, and Modal/GPU runbook.
 
 ## Acknowledgements

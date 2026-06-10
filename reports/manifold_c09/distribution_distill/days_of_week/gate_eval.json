@@ -1,0 +1,44 @@
+{
+  "layer": 14,
+  "readout": "first_token",
+  "held_out_template": "Every {item}",
+  "arms": {
+    "base": {
+      "expected_position": 0.5282,
+      "order_corr": 0.8929,
+      "target_mass_sources": 0.1585
+    },
+    "gated_manifold": {
+      "expected_position": 0.5007,
+      "order_corr": 0.75,
+      "target_mass_sources": 0.1697
+    },
+    "ungated_manifold": {
+      "expected_position": 0.4764,
+      "order_corr": 0.75,
+      "target_mass_sources": 0.1491
+    },
+    "linear": {
+      "expected_position": 0.4786,
+      "order_corr": 0.9286,
+      "target_mass_sources": 0.1506
+    },
+    "prompt_only": {
+      "expected_position": 0.4589,
+      "order_corr": 0.7143,
+      "target_mass_sources": 0.1641
+    },
+    "shuffled_label": {
+      "expected_position": 0.4976,
+      "order_corr": 0.1071,
+      "target_mass_sources": 0.1664
+    }
+  },
+  "delta_expected_position_vs_base": {
+    "gated_manifold": -0.0275,
+    "ungated_manifold": -0.0518,
+    "linear": -0.0496,
+    "prompt_only": -0.0693,
+    "shuffled_label": -0.0306
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "arm": "ungated_manifold",
+  "concept": "education",
+  "iters": 120,
+  "final_kl": 0.3554496929049492,
+  "first_kl": 0.14399473369121552,
+  "wall_s": 30.3,
+  "n_train": 70
+}

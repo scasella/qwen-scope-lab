@@ -1,0 +1,9 @@
+{
+  "arm": "prompt_only",
+  "concept": "rank",
+  "iters": 120,
+  "final_kl": 1.120318033794562,
+  "first_kl": 0.039832036942243576,
+  "wall_s": 30.6,
+  "n_train": 85
+}

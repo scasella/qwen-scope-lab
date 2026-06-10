@@ -1,0 +1,9 @@
+{
+  "arm": "shuffled_label",
+  "concept": "education",
+  "iters": 120,
+  "final_kl": 0.7509519562125206,
+  "first_kl": 1.6778137683868408,
+  "wall_s": 30.2,
+  "n_train": 70
+}

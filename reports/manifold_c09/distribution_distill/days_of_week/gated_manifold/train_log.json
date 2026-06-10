@@ -1,0 +1,9 @@
+{
+  "arm": "gated_manifold",
+  "concept": "days_of_week",
+  "iters": 120,
+  "final_kl": 0.035354622763892014,
+  "first_kl": 0.39141911268234253,
+  "wall_s": 30.1,
+  "n_train": 90
+}

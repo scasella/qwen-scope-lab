@@ -1,0 +1,9 @@
+{
+  "arm": "shuffled_label",
+  "concept": "days_of_week",
+  "iters": 120,
+  "final_kl": 0.04617874259129166,
+  "first_kl": 0.37796488404273987,
+  "wall_s": 30.0,
+  "n_train": 90
+}

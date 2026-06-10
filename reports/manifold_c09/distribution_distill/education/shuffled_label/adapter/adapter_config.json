@@ -1,0 +1,16 @@
+{
+  "fine_tune_type": "lora",
+  "num_layers": 8,
+  "lora_parameters": {
+    "rank": 8,
+    "dropout": 0.0,
+    "scale": 20.0
+  },
+  "model": "mlx-community/Qwen3.5-2B-bf16",
+  "c09_objective": "soft_label_kl",
+  "iters": 120,
+  "lr": 0.0001,
+  "batch_size": 4,
+  "n_train_rows": 70,
+  "seed": 0
+}

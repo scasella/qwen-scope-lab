@@ -1,0 +1,9 @@
+{
+  "arm": "ungated_manifold",
+  "concept": "days_of_week",
+  "iters": 120,
+  "final_kl": 0.02978867773587505,
+  "first_kl": 0.2825600206851959,
+  "wall_s": 30.6,
+  "n_train": 90
+}

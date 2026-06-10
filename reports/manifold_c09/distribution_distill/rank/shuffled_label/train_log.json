@@ -1,0 +1,9 @@
+{
+  "arm": "shuffled_label",
+  "concept": "rank",
+  "iters": 120,
+  "final_kl": 0.5833353896935781,
+  "first_kl": 2.081758975982666,
+  "wall_s": 30.7,
+  "n_train": 85
+}

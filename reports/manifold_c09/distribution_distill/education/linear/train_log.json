@@ -1,0 +1,9 @@
+{
+  "arm": "linear",
+  "concept": "education",
+  "iters": 120,
+  "final_kl": 0.4935509351392587,
+  "first_kl": 0.4897662103176117,
+  "wall_s": 30.6,
+  "n_train": 70
+}

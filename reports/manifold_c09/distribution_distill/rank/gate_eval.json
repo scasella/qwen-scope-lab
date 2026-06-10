@@ -1,0 +1,44 @@
+{
+  "layer": 20,
+  "readout": "first_token",
+  "held_out_template": "Addressed as {item}",
+  "arms": {
+    "base": {
+      "expected_position": 0.7512,
+      "order_corr": 0.2857,
+      "target_mass_sources": 0.4229
+    },
+    "gated_manifold": {
+      "expected_position": 0.8795,
+      "order_corr": 0.0476,
+      "target_mass_sources": 0.3712
+    },
+    "ungated_manifold": {
+      "expected_position": 0.9062,
+      "order_corr": 0.2381,
+      "target_mass_sources": 0.6013
+    },
+    "linear": {
+      "expected_position": 0.818,
+      "order_corr": 0.1429,
+      "target_mass_sources": 0.4594
+    },
+    "prompt_only": {
+      "expected_position": 0.8929,
+      "order_corr": 0.0476,
+      "target_mass_sources": 0.5154
+    },
+    "shuffled_label": {
+      "expected_position": 0.9105,
+      "order_corr": 0.0,
+      "target_mass_sources": 0.5632
+    }
+  },
+  "delta_expected_position_vs_base": {
+    "gated_manifold": 0.1283,
+    "ungated_manifold": 0.155,
+    "linear": 0.0668,
+    "prompt_only": 0.1417,
+    "shuffled_label": 0.1593
+  }
+}

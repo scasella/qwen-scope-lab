@@ -1,0 +1,64 @@
+{
+  "concept": "days_of_week",
+  "layer": 14,
+  "readout": "first_token",
+  "topk": 256,
+  "n_sources": 6,
+  "n_templates": 6,
+  "n_waypoints": 5,
+  "train_templates": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "valid_templates": [
+    4
+  ],
+  "test_templates": [
+    5
+  ],
+  "mean_energy_gap_linear_minus_manifold": 0.0093,
+  "n_sweeps_manifold_better": 30,
+  "n_sweeps_total": 36,
+  "equal_size_train_cap": 90,
+  "train_counts_raw": {
+    "gated_manifold": 90,
+    "ungated_manifold": 120,
+    "linear": 120,
+    "prompt_only": 120,
+    "shuffled_label": 90
+  },
+  "arms": {
+    "gated_manifold": {
+      "train": 90,
+      "valid": 30,
+      "test": 30,
+      "dir": "reports/manifold_c09/distribution_distill/days_of_week/gated_manifold"
+    },
+    "ungated_manifold": {
+      "train": 90,
+      "valid": 30,
+      "test": 30,
+      "dir": "reports/manifold_c09/distribution_distill/days_of_week/ungated_manifold"
+    },
+    "linear": {
+      "train": 90,
+      "valid": 30,
+      "test": 30,
+      "dir": "reports/manifold_c09/distribution_distill/days_of_week/linear"
+    },
+    "prompt_only": {
+      "train": 90,
+      "valid": 30,
+      "test": 30,
+      "dir": "reports/manifold_c09/distribution_distill/days_of_week/prompt_only"
+    },
+    "shuffled_label": {
+      "train": 90,
+      "valid": 30,
+      "test": 30,
+      "dir": "reports/manifold_c09/distribution_distill/days_of_week/shuffled_label"
+    }
+  }
+}
