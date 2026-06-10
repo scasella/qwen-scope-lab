@@ -217,6 +217,34 @@ by the small-ring shuffled-tie trap they were flagged for; cell cycle steer-resi
 technical labels, the moon-phases failure mode). The two winners are promoted to
 `_ATLAS_EXTRA` (`chinese_zodiac_ring` L16, `card_rank_ring` L6).
 
+## The ace seam, crossed — does the card ring actually close? (2026-06-10)
+
+The card-ranks gate win (Ace→Seven) never crossed the King→Ace seam, so by itself it cannot
+distinguish a closed ring from an open Ace…King line wearing a periodic fit. Two follow-up
+measurements settle it (runner `scripts/_card_seam.py`, data `reports/manifold_census/card_seam.json`):
+
+**Closure geometry (layer 6, d_model centroids):** the King→Ace gap is 3.6 vs a mean adjacent
+gap of 2.7 — ratio 1.32, only the #3 largest of the 13 adjacent gaps, i.e. an ordinary ring
+edge. The sharper statement: **Ace's nearest neighbours are Jack (3.5), King (3.6), Queen (3.8)**
+— Ace embeds in the face-card ("Broadway") cluster, the ace-high signature, which is what
+stitches the seam. It is a cluster-closure, not a textbook circle: the seam gap equals the mean
+*non-adjacent* distance (ratio 1.01).
+
+**The seam walk (Jack→Three, params 10…15 evaluated mod 13):** the manifold induces
+**Jack, Queen, King, Ace, Two, Three — every waypoint in order across the wrap (1.00)** with
+p(Ace) = 0.96 at the seam crossing; the straight chord scores 0.50 (Jack, Jack, Jack, Ace,
+Three, Three — endpoint snapping with an accidental Ace at mid-chord, which passes near the
+face cluster). No 1-D line parametrization can produce Queen→King→Ace→Two.
+
+**A protocol note discovered here:** on this seam route the shuffled control saturates at 1.00 —
+its waypoints happened to land on integer params (spacing 2), i.e. on *exact real centroids*,
+where any well-tokenized concept reads itself out perfectly. In that regime the shuffled arm
+measures read-out reliability, not cyclic order; the informative comparisons for a seam claim
+are the linear chord and the closure geometry. (This also sharpens the small-n shuffled-tie
+interpretation: shuffled difficulty depends on where its waypoints fall relative to its own
+centroids.) The strict three-arm gate therefore applies to interior routes; seam routes get the
+chord + geometry evidence, both of which the card ring passes.
+
 ## Why this matters
 
 The census turned a 3-concept result (arousal routes; valence, fear don't) into a 13-concept
