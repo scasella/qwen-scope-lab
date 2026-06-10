@@ -15,6 +15,9 @@ sparse-autoencoder (SAE) features and its concept geometry. It has two halves:
   sizes, numbers…) along their geometry.
 - **Monitoring** — find interpretable feature-based *detectors* for a behavior (refusal, PII,
   sycophancy…) to use as cheap, auditable runtime guardrails.
+- **Distilling** — compile candidate rows into a train-ready SFT corpus with a documented mixture
+  (the mixture-dial compiler), so a behavior can be *learned into the weights* instead of steered at
+  runtime. It only compiles data — it does not train or evaluate.
 
 What sets it apart is **honest evaluation**: every steer is scored against seven controls and
 every detector against a random-feature control, so the bench tells you when something *didn't*
@@ -91,7 +94,7 @@ Treat BENCHMARKED as "no evidence it works yet," not "broken." This honesty is t
 
 Four regions:
 
-- **Left rail** — the six modes (the loop), and a **CONTEXT** panel at the bottom showing the model,
+- **Left rail** — the modes (the loop), and a **CONTEXT** panel at the bottom showing the model,
   SAE, current **layer**, dtype, device, load status, and GPU memory. Glance here to know *which
   layer you're on* and whether the model is loaded.
 - **Stage** (center) — the active mode.
@@ -432,14 +435,50 @@ compliance — that's the goal, not damage).
 
 ---
 
-# 7 · Library — your saved recipes
+# 7 · Distill — compile a training corpus with a documented mixture
+
+The non-runtime lane. Instead of steering a behavior live, **Distill** compiles candidate rows into a
+train-ready SFT corpus whose **mixture** (counts by class / pressure / domain) is authored on a visual
+dial and stamped into a manifest. It's the GUI for the mixture-dial compiler
+(`scripts/mixture_dial_distill.py`, guide `docs/MIXTURE_DIAL_DISTILL.md`). **It only compiles data —
+it does not load the model, train, or evaluate**, so it works on every backend (`--dev` and `--mlx`).
+
+**Try it**
+1. Open **Distill**. Under **1 · Candidate pool**, click an example chip — **Truth-holding A/B/C**
+   (the hand-built fixture, ships a mixture), **Generic** (custom labels + a `quality_label →
+   rejection_mode` alias), or the **v1.0 publication corpus (377 rows)**. You can also paste JSONL
+   directly or **⇪ Upload** a `.jsonl`. Rows need `prompt` + `output` (or chat `messages`) plus any
+   `class` / `pressure` / `domain` labels.
+2. Press **Summarize pool**. You'll see `N valid rows` and **bars** of the pool broken down by class,
+   pressure, and domain — the compiler's dimensions. (Malformed rows are counted as `skipped`.)
+3. Under **2 · The dial**, author slots. Click any summary bar to seed a slot from that label, or
+   **+ Add empty slot**. Each slot is a **name**, a **where-filter** (add `class` / `pressure` /
+   `domain` / `rejection_mode` filters), and a **ratio** or **count**. Set the **seed** and **total**.
+   The **requested vs achievable** strip updates live and flags any slot the pool **can't fill**
+   (`capped`).
+4. Press **Compile corpus**. Under **3 · Compiled corpus** each slot shows **achieved / requested**
+   with a bar; capped/underfilled slots are warned. Sample records render as **chat bubbles** with
+   their slot + labels, and you can **Download `sft.jsonl`** and **Download `manifest.json`**.
+
+**How to read it (the honest story, in the right inspector):** the **mixture is the mechanism** —
+at matched size a calibration-balanced corpus reached **0.625** B-class calibration vs **0.275** for a
+truth-only corpus; the pilot replicated that any calibration-bearing mixture beats truth-only by
+**+0.172**. But the **exact ratio is not differentiated** — the tuned dial edged naive
+class-proportional sampling by only **+0.021** (within noise). So use the dial to **control and
+document** corpus shape (deterministic, seeded, manifest-stamped, kill-criteria-friendly), not because
+a specific tuned ratio has been shown to win. Full caveats: `docs/MIXTURE_DIAL_DISTILL.md`
+("Validation status").
+
+---
+
+# 8 · Library — your saved recipes
 
 Every benchmarked experiment — feature steer *or* manifold steer — becomes a reproducible card.
 (Saved **monitors** have their own gallery inside the Monitor mode.) Recipes are written to disk
 under `recipes/` (monitors under `monitors/`) as JSON + Markdown, so your work persists between
 sessions and is easy to share or version.
 
-## 6a · Browse & filter
+## 8a · Browse & filter
 
 **Try it**
 1. Open **Library**. Use the status pills to filter: `all · validated · candidate · benchmarked ·
@@ -449,7 +488,7 @@ sessions and is easy to share or version.
 **manifold** card shows `∿ manifold` with `concept · source→target` and the path. The colored edge
 marks how far it climbed the validation ladder.
 
-## 6b · Open a recipe
+## 8b · Open a recipe
 
 **Try it**
 1. Click any card.
@@ -459,7 +498,7 @@ concept/source→target/path), a recorded before/after example, the verdict and 
 limitations. Manifold recipes also show the **paths compared** (the manifold/linear/pullback energy
 legs).
 
-## 6c · Reuse a recipe
+## 8c · Reuse a recipe
 
 - **Feature recipe** → **Load into Steer** (arms the feature at its strength + layer, jumps to
   Steer) or **Open in Measure**.
