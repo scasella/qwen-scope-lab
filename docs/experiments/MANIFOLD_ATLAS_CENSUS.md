@@ -86,6 +86,42 @@ not prompts tuned to elicit each value as a continuation (the way the emotion `s
 So these routing numbers are a **floor**; prompt-tuning is one variable a follow-up would sweep.
 The pattern — clean geometry ≫ routability — is the finding.
 
+## Recovery diagnostic — does a softer bar rescue the non-routers?
+
+Greedy-argmax is the harshest metric. We re-scored all 11 clean ordinals (plus arousal as a
+known-router anchor and fear as a known-dead anchor) across a layer sweep, picking the
+best-*control* layer (not best-fit), with a **graded** metric: the correlation between the induced
+distribution's center of mass and the waypoint position (`com_corr`). A monotone slide through the
+values scores high even when no single token flips. Runner: `scripts/_census_recovery.py`; data:
+`reports/manifold_census/recovery.json`.
+
+**The graded metric lights up — but so does the linear chord, and that kills the manifold story.**
+The fear anchor (steers nothing) posts a *linear* com_corr of **0.97**: a straight interpolation
+between two endpoints slides the distribution across the middle by construction. So a high graded
+score is not evidence of routing — only **manifold minus linear** is, and that difference is ≈ 0
+for all 11. Sorted by Δ(manifold − linear): only quality (+0.04) and difficulty (+0.03) edge
+positive (single seed, 6 waypoints — treat as noise); quantity's +1.10 is an artifact of its linear
+chord running *backwards*. Every other concept has linear ≥ manifold (priority −0.41, certainty
+−0.21, age_stage −0.15, distance −0.13…). The anchors calibrate it cleanly: **arousal +0.10, fear
+−0.77.**
+
+| honest bucket | n | concepts |
+|---|---|---|
+| manifold-specific (manifold com ≥ 0.7, Δ > 0.02, beats shuffled) | 2 | quality, difficulty — marginal |
+| graded-controllable (dial-able, but linear ≥ manifold) | 8 | priority, certainty, distance, age_stage, wealth, hardness, weight, formality |
+| weak (no monotone routing at any granularity) | 1 | quantity |
+
+**What this recovers, and what it doesn't:** the softer bar recovers something real — these
+behaviors *are* graded-controllable, you can dial certainty or formality smoothly end-to-end — but
+a **linear** steer delivers it as well or better for 10/11; the manifold isn't the lever. The
+manifold-specific advantage (routing *through* intermediates better than a straight line) stays
+singular to arousal. So the recovered usefulness of these geometries is (1) as linear control knobs
+where graded steering suffices, and (2) as read-out coordinates (the monitor use-case). The
+manifold-specific lane is narrow — but now it has a calibrated test: **manifold − linear com_corr**
+separates the anchors (arousal +0.10 / fear −0.77), so it is the target variable a
+transverse-stiffness predictor should forecast from geometry. Interactive: the "Can a softer bar
+recover them?" section of `docs/writeups/manifold-atlas-3d.html`.
+
 ## Why this matters
 
 The census turned a 3-concept result (arousal routes; valence, fear don't) into a 13-concept
