@@ -206,6 +206,7 @@ class ManifoldCompareReq(BaseModel):
     n_waypoints: int = 7
     max_new_tokens: int = 24
     temperature: float = 0.0
+    behavior_readout: str = "first_token"  # 'first_token' (default) | 'full_string' (multi-token-faithful; C05)
 
 
 class ManifoldSaeReq(BaseModel):
@@ -541,7 +542,8 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
 
     def op_manifold_compare(p: dict) -> dict:
         return service.manifold_compare(p["concept"], p["target"], p.get("layer"), p.get("source"), p.get("prompt"),
-                                        p.get("n_waypoints", 5), p.get("max_new_tokens"), p.get("temperature", 0.7))
+                                        p.get("n_waypoints", 5), p.get("max_new_tokens"), p.get("temperature", 0.7),
+                                        behavior_readout=p.get("behavior_readout", "first_token"))
 
     def op_manifold_sae_coverage(p: dict) -> dict:
         return service.manifold_sae_coverage(p["concept"], p.get("layer"), p.get("top_k", 6))

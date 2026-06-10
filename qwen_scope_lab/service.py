@@ -1019,7 +1019,8 @@ class SteeringService:
     def manifold_steer(self, concept: str, target: str, layer: int | None = None, source: str | None = None,
                        prompt: str | None = None, n_waypoints: int = 7, max_new_tokens: int = 24,
                        temperature: float = 0.0, path: str = "manifold", compute_unsteered: bool = True,
-                       compute_energy: bool = False, extrapolate: float = 0.0) -> dict[str, Any]:
+                       compute_energy: bool = False, extrapolate: float = 0.0,
+                       behavior_readout: str = "first_token") -> dict[str, Any]:
         import numpy as np
         import torch
 
@@ -1027,7 +1028,7 @@ class SteeringService:
         bundle = self.ensure_model()
         items, n = manifold["items"], manifold["n_items"]
         path = "linear" if str(path).lower() == "linear" else "manifold"
-        beh = self._build_behavior_manifold(concept_obj, layer) if compute_energy else None
+        beh = self._build_behavior_manifold(concept_obj, layer, behavior_readout) if compute_energy else None
 
         def to_index(v, default):
             if v is None:
@@ -1081,7 +1082,10 @@ class SteeringService:
             wp = {"value": lbl, "text": gen["steered_text"],
                   "perplexity": round(ppl, 3) if ppl is not None else None, "hook_fired": gen["hook_fired"]}
             if beh is not None:
-                q = self._output_distribution(prompt, layer, replacement, position, beh["token_ids"])
+                if beh.get("behavior_readout") == "full_string":
+                    q = self._value_string_distribution(prompt, layer, replacement, position, concept_obj)
+                else:
+                    q = self._output_distribution(prompt, layer, replacement, position, beh["token_ids"])
                 wp["energy"] = round(self._behavior_energy(beh, q), 4)
             waypoints.append(wp)
             path_3d.append([round(float(c), 4) for c in p3])
@@ -1091,6 +1095,7 @@ class SteeringService:
         energies = [w["energy"] for w in waypoints if w.get("energy") is not None]
         return {
             "concept": concept_obj.name, "kind": manifold["kind"], "layer": layer, "prompt": prompt, "path": path,
+            "behavior_readout": (beh.get("behavior_readout") if beh is not None else None),
             "position": position, "source": items[src_i], "target": items[tgt_i], "extrapolate": float(extrapolate),
             "unsteered_text": unsteered, "steered_text": steered_text,
             "perplexity": waypoints[-1]["perplexity"],
@@ -1103,18 +1108,22 @@ class SteeringService:
 
     def manifold_compare(self, concept: str, target: str, layer: int | None = None, source: str | None = None,
                          prompt: str | None = None, n_waypoints: int = 7, max_new_tokens: int = 24,
-                         temperature: float = 0.0) -> dict[str, Any]:
+                         temperature: float = 0.0, behavior_readout: str = "first_token") -> dict[str, Any]:
         """Run manifold-path AND linear-path steering from the same source to target and
-        return both (with perplexity) — the paper's manifold-vs-linear comparison."""
+        return both (with perplexity) — the paper's manifold-vs-linear comparison. ``behavior_readout``
+        selects the behavior-energy metric: 'first_token' (default, next-token over value first-tokens)
+        or 'full_string' (teacher-forced P(' '+value) — multi-token-faithful; see C05)."""
         m = self.manifold_steer(concept, target, layer, source, prompt, n_waypoints, max_new_tokens,
-                                temperature, path="manifold", compute_unsteered=True, compute_energy=True)
+                                temperature, path="manifold", compute_unsteered=True, compute_energy=True,
+                                behavior_readout=behavior_readout)
         lin = self.manifold_steer(concept, target, layer, source, m["prompt"], n_waypoints, max_new_tokens,
-                                  temperature, path="linear", compute_unsteered=False, compute_energy=True)
+                                  temperature, path="linear", compute_unsteered=False, compute_energy=True,
+                                  behavior_readout=behavior_readout)
         lin["unsteered_text"] = m["unsteered_text"]
         lin["unsteered_perplexity"] = m["unsteered_perplexity"]
         return {
             "concept": m["concept"], "kind": m["kind"], "layer": m["layer"], "prompt": m["prompt"],
-            "source": m["source"], "target": m["target"],
+            "source": m["source"], "target": m["target"], "behavior_readout": m.get("behavior_readout"),
             "unsteered_text": m["unsteered_text"], "unsteered_perplexity": m["unsteered_perplexity"],
             "manifold": m, "linear": lin,
         }
@@ -1175,6 +1184,22 @@ class SteeringService:
         self._behavior_cache[("ids", concept.name)] = ids
         return ids
 
+    def _value_continuation_ids(self, concept) -> list[list[int]]:
+        """Per-value continuation token-ids for ' '+value — the full-string read-out's targets.
+        Cached like _concept_token_ids; falls back to the last token if a value encodes empty."""
+        cached = self._behavior_cache.get(("cont", concept.name))
+        if cached is not None:
+            return cached
+        tok = self.ensure_model().tokenizer
+        out = []
+        for v in concept.items:
+            ids = list(tok.encode(" " + v, add_special_tokens=False))
+            if not ids:
+                ids = (list(tok.encode(" " + v)) or [0])[-1:]
+            out.append([int(t) for t in ids])
+        self._behavior_cache[("cont", concept.name)] = out
+        return out
+
     def _output_distribution(self, prompt, layer, replacement, position, token_ids):
         import numpy as np
 
@@ -1210,11 +1235,57 @@ class SteeringService:
         total = sub.sum()
         return sub / total if total > 0 else np.full(len(token_ids), 1.0 / len(token_ids))
 
-    def _build_behavior_manifold(self, concept, layer: int):
+    def _value_string_distribution(self, prompt, layer, replacement, position, concept):
+        """Full-string behavior read-out: a length-n distribution over concept values from the
+        teacher-forced continuation likelihoods P(' '+value | prompt), with the replace hook (if any)
+        active at ``position``. The multi-token-faithful analog of ``_output_distribution`` — 'strongly
+        agree' / 'strongly disagree' share a first token but separate here. Normalized exp of the
+        summed continuation token log-probs (a softmax over the n value strings)."""
+        import numpy as np
+
+        bundle = self.ensure_model()
+        tok = bundle.tokenizer
+        conts = self._value_continuation_ids(concept)
+        prompt_ids = list(tok.encode(prompt))
+        logps = np.empty(len(conts), dtype=float)
+
+        if getattr(bundle.model, "is_mlx_runtime", False):  # local Apple-Silicon (MLX) backend
+            replace = (layer, replacement, position) if replacement is not None else None
+            for i, cont in enumerate(conts):
+                tok_lps = bundle.model.seq_logprobs(prompt_ids + cont, len(prompt_ids), replace=replace)
+                logps[i] = float(sum(tok_lps)) if tok_lps else -1e9
+        else:
+            import torch
+
+            from .hooks import HookTrace, register_replace_hook
+            for i, cont in enumerate(conts):
+                full = prompt_ids + cont
+                input_ids = torch.tensor([full], device=bundle.device)
+                handle = (register_replace_hook(bundle.model, layer, replacement, position, HookTrace())
+                          if replacement is not None else None)
+                try:
+                    with torch.no_grad():
+                        logits = bundle.model(input_ids=input_ids).logits[0].float()  # [seq, vocab]
+                finally:
+                    if handle is not None:
+                        handle.remove()
+                vocab = logits.shape[-1]
+                logprobs = torch.log_softmax(logits[:-1], dim=-1)                 # row j predicts token j+1
+                targets = torch.tensor(full[1:], device=logits.device).clamp_(0, vocab - 1)  # toy-model OOV guard
+                chosen = logprobs.gather(1, targets[:, None])[:, 0]
+                logps[i] = float(chosen[len(prompt_ids) - 1:].sum())
+
+        m = float(logps.max())
+        e = np.exp(logps - m)
+        s = float(e.sum())
+        return e / s if s > 0 else np.full(len(conts), 1.0 / len(conts))
+
+    def _build_behavior_manifold(self, concept, layer: int, behavior_readout: str = "first_token"):
         import numpy as np
         from scipy.interpolate import CubicSpline
 
-        key = (concept.name, layer)
+        behavior_readout = "full_string" if str(behavior_readout).lower() == "full_string" else "first_token"
+        key = (concept.name, layer, behavior_readout)
         cached = self._behavior_cache.get(key)
         if cached is not None:
             return cached
@@ -1236,7 +1307,10 @@ class SteeringService:
         for v in concept.items:
             prompt = concept.steer_prompt.format(item=v)
             pos = self._locate_item_position(tok, concept.steer_prompt, v, prompt)
-            P.append(self._output_distribution(prompt, layer, None, pos, token_ids))
+            if behavior_readout == "full_string":   # teacher-forced P(' '+value | prompt) over all values
+                P.append(self._value_string_distribution(prompt, layer, None, pos, concept))
+            else:                                    # first-token next-token distribution (default)
+                P.append(self._output_distribution(prompt, layer, None, pos, token_ids))
         P = np.asarray(P)                       # (n, n) behavior centroids (unintervened)
         sq = np.sqrt(np.clip(P, 0.0, None))     # Hellinger coordinates
         if concept.kind == "cyclic":
@@ -1249,7 +1323,7 @@ class SteeringService:
         dense = np.clip(spline(u_dense), 0.0, None) ** 2
         dense = dense / dense.sum(axis=1, keepdims=True).clip(1e-9)
         beh = {"token_ids": token_ids, "centroids": P, "dense_p": dense, "n": n,
-               "spline": spline, "u_min": u_min, "u_max": u_max,
+               "spline": spline, "u_min": u_min, "u_max": u_max, "behavior_readout": behavior_readout,
                "valid_pos": valid_pos, "valid_ids": valid_ids, "vocab": vocab}
         self._behavior_cache[key] = beh
         return beh

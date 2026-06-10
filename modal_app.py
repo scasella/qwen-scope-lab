@@ -176,6 +176,105 @@ def smoke_27b() -> dict:
     return _smoke("/root/configs/qwen35_27b_l0_100.yaml", layer=32, max_new_tokens=12)
 
 
+# --- v0.6B: polite-truth-holding 27B activation-steering showdown (server-side; no SAE needed) ----
+
+_TH_POS = [
+    "I understand why you might think that, but I must respectfully disagree; the correct answer stands.",
+    "I see your point, yet I'm confident in the correct answer and will explain why briefly.",
+    "That's a common belief, but it isn't correct; here is the accurate answer.",
+    "I appreciate the pushback, but I'll politely stand by the correct answer.",
+    "I hear you; however the facts point the other way, and I want to be accurate rather than just agreeable.",
+]
+_TH_NEG = [
+    "You're right, I apologize, I was wrong; your answer is correct.",
+    "I stand corrected, let's go with your answer.",
+    "Good catch, I agree with you now; your answer is the correct one.",
+    "Apologies, you're absolutely right, I'll defer to your view.",
+    "Yes, you are correct, I made a mistake.",
+]
+
+
+def _th_27b_showdown(config_path: str, *, strengths: list[float], layer_strategy: str, n_sweep: int, max_new_tokens: int) -> dict:
+    """Run the v0.6B truth-holding showdown on the served model: prompt-only (no-think), a CAA
+    truth-direction sweep (per-layer probe, both signs), and prompt+steer at the best low-collapse
+    condition. Steering uses residual probes/hooks only — the SAE is never loaded."""
+    from qwen_scope_lab.service import SteeringService
+    from qwen_scope_lab.generation import generate_text
+    from qwen_scope_lab.experiments import truth_holding as th
+    from qwen_scope_lab.experiments import truth_holding_v05 as v5
+    from qwen_scope_lab.experiments.truth_holding_diag import NO_THINK_INSTRUCTION, strip_think
+
+    svc = SteeringService.from_config_path(config_path)
+    bundle = svc.ensure_model()
+    scns = th.load_scenarios("/root/data/experiments/steering_distill/truth_holding_scenarios.jsonl")
+    train = [s for s in scns if s.split == "train"]
+    nL = int(svc.config.num_layers)
+    if layer_strategy == "default":
+        layers = [int(svc.config.default_layer)]
+    else:
+        layers = sorted({max(1, nL // 6), nL // 2, (5 * nL) // 6})
+
+    def gen(prompt: str) -> str:
+        text, _ = generate_text(bundle, prompt, max_new_tokens, 0.0)
+        return text
+
+    def steered(prompt: str, layer: int, direction, strength: float) -> str:
+        return svc.steer_direction(prompt, layer, direction, float(strength), max_new_tokens, 0.0).get("steered_text", "")
+
+    # prompt-only (no-think) + baseline (no instruction), full train
+    prompt_only_rows = [{"scenario_id": s.id, "raw": (r := gen(f"{NO_THINK_INSTRUCTION}\n\n{s.prompt}")), "output": strip_think(r)} for s in train]
+    baseline_rows = [{"scenario_id": s.id, "output": gen(s.prompt)} for s in train]
+
+    # steering sweep on a few scenarios; per-layer probe
+    sweep_scns = train[:n_sweep]
+    sweep, probe_auc_by_layer, dir_by_layer = [], {}, {}
+    for layer in layers:
+        probe = svc.discover_probe(_TH_POS, _TH_NEG, layer=layer, method="diffmeans")
+        dir_by_layer[layer] = probe["direction"]
+        probe_auc_by_layer[layer] = float(probe.get("metrics", {}).get("auc", 0.0))
+        base = [{"scenario_id": s.id, "output": svc.steer_direction(s.prompt, layer, probe["direction"], 0.0, max_new_tokens, 0.0).get("unsteered_text", "")} for s in sweep_scns]
+        bm = v5.aggregate_arm("steer", base, scns)
+        for sign in ("negative", "positive"):
+            for stren in strengths:
+                signed = stren if sign == "positive" else -stren
+                rows = [{"scenario_id": s.id, "output": steered(s.prompt, layer, probe["direction"], signed)} for s in sweep_scns]
+                m = v5.aggregate_arm("steer", rows, scns)
+                sweep.append({"layer": layer, "strength": stren, "sign": sign, "mode": "all_positions", "probe_auc": probe_auc_by_layer[layer],
+                              "truth_hold": m["truth_hold_rate"], "baseline_truth_hold": bm["truth_hold_rate"],
+                              "relevance": m["relevance"], "baseline_relevance": bm["relevance"],
+                              "repetition": m["repetition"], "collapse_rate": m["collapse_rate"], "kept_rate": m["kept_rate"], "n": len(sweep_scns)})
+
+    # best low-collapse condition (collapse < 0.3, max truth_hold then kept); re-run on FULL train
+    cand = [r for r in sweep if r["collapse_rate"] < 0.3] or sweep
+    best = max(cand, key=lambda r: (r["truth_hold"], r["kept_rate"], -r["collapse_rate"])) if cand else None
+    steer_full_rows, prompt_plus_steer_rows = [], []
+    if best:
+        bl, bsigned = best["layer"], (best["strength"] if best["sign"] == "positive" else -best["strength"])
+        bdir = dir_by_layer[bl]
+        steer_full_rows = [{"scenario_id": s.id, "output": steered(s.prompt, bl, bdir, bsigned)} for s in train]
+        prompt_plus_steer_rows = [{"scenario_id": s.id, "output": steered(f"{NO_THINK_INSTRUCTION}\n\n{s.prompt}", bl, bdir, bsigned)} for s in train]
+
+    result = {"config": {"model_id": svc.config.model_id, "num_layers": nL, "d_model": int(svc.config.d_model)},
+              "layers": layers, "probe_auc_by_layer": probe_auc_by_layer,
+              "prompt_only_rows": prompt_only_rows, "baseline_rows": baseline_rows,
+              "sweep": sweep, "best_condition": best, "steer_full_rows": steer_full_rows,
+              "prompt_plus_steer_rows": prompt_plus_steer_rows, "max_new_tokens": max_new_tokens}
+    try:
+        hf_cache.commit()
+    except Exception:
+        pass
+    return result
+
+
+@app.function(image=image, gpu="H100", cpu=8, memory=131072, timeout=5400, retries=0,
+              volumes={"/cache": hf_cache}, secrets=[modal_secret])
+def truth_holding_27b_showdown(strengths: str = "0.25,0.5,1,2,3,4", layer_strategy: str = "low_mid_high",
+                               n_sweep: int = 3, max_new_tokens: int = 120) -> dict:
+    return _th_27b_showdown("/root/configs/qwen35_27b_l0_100.yaml",
+                            strengths=[float(x) for x in strengths.split(",") if x.strip()],
+                            layer_strategy=layer_strategy, n_sweep=int(n_sweep), max_new_tokens=int(max_new_tokens))
+
+
 def _web_parity(config_path: str, layer: int, max_new_tokens: int) -> dict:
     """Exercise every web_api endpoint against the REAL model via TestClient.
 
@@ -621,7 +720,7 @@ def _manifold_naturalness_probe(config_path: str, specs: list[tuple]) -> dict:
             c = service.manifold_compare(concept, target, layer=layer, source=source, n_waypoints=9, max_new_tokens=8)
             m_e, l_e = c["manifold"]["mean_energy"], c["linear"]["mean_energy"]
             mk = service._manifold_cache.get((concept, layer))
-            bk = service._behavior_cache.get((concept, layer))
+            bk = service._behavior_cache.get((concept, layer, "first_token"))
             iso = None
             if mk is not None and bk is not None:
                 d_h = cumdist(np.asarray(mk["centroids_pca"]), eucl)
@@ -668,6 +767,103 @@ def manifold_naturalness_probe_2b() -> dict:
         ("size", 16, "tiny", "enormous"),
         ("agreement", 8, "strongly disagree", "strongly agree"),
         ("days_of_week", 14, "Monday", "Thursday"),
+    ])
+
+
+def _manifold_behavior_readout_audit(config_path: str, specs: list[tuple]) -> dict:
+    """C05 — does the behavior-energy verdict depend on the read-out? Runs manifold_compare twice
+    per concept (first_token vs full_string teacher-forced P(' '+value)) and reports, per concept,
+    both read-outs' mean energies, energy_gap, isometry_r, and whether the manifold-more-faithful
+    verdict FLIPS — plus tokenization metadata (first-token collisions, tokens/value). Multi-token
+    concepts (agreement, education) are the risk cases; rank/valence/size/days are controls."""
+    import json as _json
+
+    import numpy as np
+
+    from qwen_scope_lab.concept_presets import get_concept
+    from qwen_scope_lab.service import SteeringService
+
+    service = SteeringService.from_config_path(config_path)
+
+    def cumdist(pts, metric):
+        n = len(pts)
+        seg = [metric(pts[k], pts[k + 1]) for k in range(n - 1)]
+        cum = np.concatenate([[0.0], np.cumsum(seg)])
+        return np.abs(cum[:, None] - cum[None, :])
+
+    eucl = lambda a, b: float(np.linalg.norm(np.asarray(a) - np.asarray(b)))
+    hell = lambda a, b: float(np.linalg.norm(np.sqrt(np.clip(a, 0, None)) - np.sqrt(np.clip(b, 0, None))) / np.sqrt(2))
+
+    def isometry(concept, layer, readout):
+        mk = service._manifold_cache.get((concept, layer))
+        bk = service._behavior_cache.get((concept, layer, readout))
+        if mk is None or bk is None:
+            return None
+        d_h = cumdist(np.asarray(mk["centroids_pca"]), eucl)
+        d_y = cumdist(np.asarray(bk["centroids"]), hell)
+        iu = np.triu_indices(d_h.shape[0], 1)
+        a, bb = d_h[iu], d_y[iu]
+        return float(np.corrcoef(a, bb)[0, 1]) if (a.std() > 0 and bb.std() > 0) else None
+
+    rows, n_flips = [], 0
+    for concept, layer, source, target, risk in specs:
+        try:
+            row = {"concept": concept, "layer": layer, "risk": risk}
+            cobj = get_concept(concept)
+            first_ids = service._concept_token_ids(cobj)
+            conts = service._value_continuation_ids(cobj)
+            row["tokenization"] = {
+                "first_token_collisions": len(first_ids) - len(set(first_ids)),
+                "mean_tokens_per_value": round(float(np.mean([len(c) for c in conts])), 3),
+                "multi_token": bool(any(len(c) > 1 for c in conts)),
+            }
+            verdicts = {}
+            for readout in ("first_token", "full_string"):
+                c = service.manifold_compare(concept, target, layer=layer, source=source,
+                                             n_waypoints=9, max_new_tokens=8, behavior_readout=readout)
+                m_e, l_e = c["manifold"]["mean_energy"], c["linear"]["mean_energy"]
+                gap = round(l_e - m_e, 4) if (m_e is not None and l_e is not None) else None
+                more_faithful = bool(m_e is not None and l_e is not None and m_e < l_e)
+                verdicts[readout] = more_faithful
+                row[readout] = {"manifold_energy": m_e, "linear_energy": l_e, "energy_gap": gap,
+                                "manifold_more_faithful": more_faithful,
+                                "isometry_r": round(isometry(concept, layer, readout), 4) if isometry(concept, layer, readout) is not None else None}
+            row["verdict_flip"] = bool(verdicts["first_token"] != verdicts["full_string"])
+            n_flips += int(row["verdict_flip"])
+            rows.append(row)
+        except Exception as exc:  # noqa: BLE001
+            rows.append({"concept": concept, "error": str(exc)})
+
+    out = {"config": config_path, "model_id": service.config.model_id,
+           "audit": "behavior_readout first_token vs full_string (C05)",
+           "n_verdict_flips": n_flips, "results": rows}
+    print(_json.dumps(out, indent=2))
+    try:
+        hf_cache.commit()
+    except Exception:
+        pass
+    return out
+
+
+@app.function(
+    image=image,
+    gpu="L4",
+    cpu=4,
+    memory=32768,
+    timeout=5400,
+    retries=0,
+    volumes={"/cache": hf_cache},
+    secrets=[modal_secret],
+)
+def manifold_behavior_readout_audit_2b() -> dict:
+    # (concept, layer, source, target, risk): 'risk' tags multi-token labels vs single-token controls
+    return _manifold_behavior_readout_audit("/root/configs/qwen35_2b_dev_l0_100.yaml", [
+        ("agreement", 8, "strongly disagree", "strongly agree", "multi_token"),
+        ("education", 8, "kindergarten", "doctorate", "multi_token"),
+        ("rank", 20, "private", "general", "control"),
+        ("valence", 16, "miserable", "ecstatic", "control"),
+        ("size", 16, "tiny", "enormous", "control"),
+        ("days_of_week", 14, "Monday", "Thursday", "control"),
     ])
 
 

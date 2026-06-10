@@ -102,13 +102,15 @@ class MlxModel:
 
     is_mlx_runtime = True
 
-    def __init__(self, repo: str, default_layer: int = 12) -> None:
+    def __init__(self, repo: str, default_layer: int = 12, adapter_path: str | None = None) -> None:
         import mlx.core as mx
         from mlx_lm import load
 
         self._mx = mx
         self.repo = repo
-        self.model, self.tokenizer = load(repo)
+        self.adapter_path = adapter_path
+        # adapter_path loads a trained LoRA adapter on top of the base (e.g. evaluating a distilled run)
+        self.model, self.tokenizer = load(repo, adapter_path=adapter_path) if adapter_path else load(repo)
         self.trunk = _find_trunk(self.model)  # decoder stack (embed_tokens, layers[]); path varies by arch
         self.num_layers = len(self.trunk.layers)
         args = getattr(self.model, "args", None)
@@ -288,6 +290,29 @@ class MlxModel:
                 handle.remove()
         return ppl
 
+    def seq_logprobs(self, full_ids, p_len: int, replace: tuple | None = None) -> list:
+        """Teacher-forced per-token log-probs of the continuation ``full_ids[p_len:]`` given the
+        prefix, with an optional manifold ``replace`` = (layer, vec, position) hook active for the
+        forward — the full-string behavior read-out's MLX twin (forward-only, no autograd). One
+        scoring pass; returns the continuation tokens' chosen log-probs as a Python list."""
+        mx = self._mx
+        full = [int(t) for t in full_ids]
+        if len(full) <= max(1, int(p_len)):
+            return []
+        handle = self.install_replace(*replace) if replace is not None else None
+        try:
+            logits = self.model(mx.array([full]))[0]                       # [seq, vocab]
+            pred = logits[:-1]                                             # row j predicts token j+1
+            logprobs = pred - mx.logsumexp(pred, axis=-1, keepdims=True)   # log_softmax
+            targets = mx.array(full[1:])
+            chosen = mx.take_along_axis(logprobs, targets[:, None], axis=-1)[:, 0]
+            cont = chosen[int(p_len) - 1:]
+            mx.eval(cont)
+            return [float(x) for x in cont.tolist()]
+        finally:
+            if handle is not None:
+                handle.remove()
+
     def logits_delta(self, prompt: str, layer: int, vec: Any, strength: float) -> float:
         """L2 norm of the change in next-token logits from a steer — the bench's logit-effect metric."""
         mx = self._mx
@@ -387,14 +412,15 @@ class MlxModel:
 
 
 def build_mlx_service(model_repo: str, *, default_layer: int = 12, d_sae: int = 0,
-                      sae_repo: str | None = None, top_k: int = 64) -> SteeringService:
+                      sae_repo: str | None = None, top_k: int = 64,
+                      adapter_path: str | None = None) -> SteeringService:
     """Assemble a SteeringService backed by a local MLX model — the on-device twin of
     ``build_dev_service`` / the Modal path. Reads ``d_model`` / ``num_layers`` from the
     loaded model, so it works for the cached 0.5B test model and the real Qwen-2B alike."""
     import torch  # only for the bundle's device/dtype sentinels (the torch path stays unused)
     from huggingface_hub.constants import HF_HUB_CACHE  # the resolved default cache (respects HF_HOME)
 
-    runtime = MlxModel(model_repo, default_layer=default_layer)
+    runtime = MlxModel(model_repo, default_layer=default_layer, adapter_path=adapter_path)
     config = SteeringConfig(
         model_id=model_repo,
         sae_id=sae_repo or "mlx://none",
