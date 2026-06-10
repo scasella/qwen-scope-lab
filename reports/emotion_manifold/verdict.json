@@ -1,0 +1,877 @@
+{
+  "model_id": "mlx-community/Qwen3.5-2B-bf16",
+  "experiment": "emotion-space manifold steering (Goodfire-style; emotion-vectors framing)",
+  "date": "2026-06-09",
+  "params": {
+    "layers_swept": [
+      8,
+      12,
+      16
+    ],
+    "n_waypoints": 6,
+    "max_new_tokens": 6,
+    "behavior_readout": "full_string",
+    "shuffle_seed": 13,
+    "random_seed": 29
+  },
+  "gates": {
+    "gate_a_clean_manifold": {
+      "threshold": "isometry_r_full_string >= 0.9",
+      "pass_concepts": [
+        "emotion_valence_intensity",
+        "emotion_fear",
+        "emotion_arousal"
+      ],
+      "n_pass": 3,
+      "n_total": 3,
+      "verdict": "PASS",
+      "majority": true
+    },
+    "gate_b_manifold_faithful": {
+      "threshold": "full_string energy gap > 0 on a majority of concepts",
+      "pass_concepts": [
+        "emotion_arousal"
+      ],
+      "n_pass": 1,
+      "n_total": 3,
+      "verdict": "FAIL"
+    },
+    "gate_c_centroid_routing": {
+      "threshold": "manifold argmax-agreement > linear AND > shuffled",
+      "pass_concepts": [
+        "emotion_arousal"
+      ],
+      "n_pass": 1,
+      "n_total": 3,
+      "verdict": "FAIL"
+    }
+  },
+  "results": [
+    {
+      "concept": "emotion_valence_intensity",
+      "label": "Anger->joy valence-intensity line",
+      "kind": "ordinal",
+      "items": [
+        "furious",
+        "angry",
+        "annoyed",
+        "calm",
+        "content",
+        "delighted",
+        "euphoric"
+      ],
+      "source": "furious",
+      "target": "euphoric",
+      "layer_sweep": [
+        {
+          "layer": 8,
+          "isometry_r_full_string": 0.9979,
+          "manifold_quality": {
+            "metric_name": "abs_spearman",
+            "metric": 0.8571
+          }
+        },
+        {
+          "layer": 12,
+          "isometry_r_full_string": 0.9971,
+          "manifold_quality": {
+            "metric_name": "abs_spearman",
+            "metric": 0.8571
+          }
+        },
+        {
+          "layer": 16,
+          "isometry_r_full_string": 0.9986,
+          "manifold_quality": {
+            "metric_name": "abs_spearman",
+            "metric": 0.7143
+          }
+        }
+      ],
+      "best_layer": 16,
+      "isometry_r_full_string": 0.9986,
+      "manifold_quality": {
+        "metric_name": "abs_spearman",
+        "metric": 0.7143
+      },
+      "energy": {
+        "manifold": 0.0424,
+        "linear": 0.0091,
+        "gap_linear_minus_manifold": -0.0333,
+        "manifold_more_faithful": false,
+        "behavior_readout": "full_string"
+      },
+      "energy_first_token": {
+        "manifold": 0.0424,
+        "linear": 0.0091,
+        "gap_linear_minus_manifold": -0.0333,
+        "manifold_more_faithful": false
+      },
+      "routing": {
+        "manifold_agreement": 0.5,
+        "linear_agreement": 0.1667,
+        "shuffled_agreement": 0.6667,
+        "random_agreement": 0.1667,
+        "centroid_routing": false,
+        "manifold_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "furious",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": true,
+            "p_induced": 0.872
+          },
+          {
+            "expected_idx": 1,
+            "expected": "angry",
+            "induced_idx": 1,
+            "induced": "angry",
+            "match": true,
+            "p_induced": 0.6909
+          },
+          {
+            "expected_idx": 2,
+            "expected": "annoyed",
+            "induced_idx": 2,
+            "induced": "annoyed",
+            "match": true,
+            "p_induced": 0.3454
+          },
+          {
+            "expected_idx": 4,
+            "expected": "content",
+            "induced_idx": 1,
+            "induced": "angry",
+            "match": false,
+            "p_induced": 0.4817
+          },
+          {
+            "expected_idx": 5,
+            "expected": "delighted",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.5541
+          },
+          {
+            "expected_idx": 6,
+            "expected": "euphoric",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.5772
+          }
+        ],
+        "linear_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "furious",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": true,
+            "p_induced": 0.872
+          },
+          {
+            "expected_idx": 1,
+            "expected": "angry",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.8549
+          },
+          {
+            "expected_idx": 2,
+            "expected": "annoyed",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.8169
+          },
+          {
+            "expected_idx": 4,
+            "expected": "content",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.7478
+          },
+          {
+            "expected_idx": 5,
+            "expected": "delighted",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.6573
+          },
+          {
+            "expected_idx": 6,
+            "expected": "euphoric",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.5772
+          }
+        ],
+        "shuffled_waypoints": [
+          {
+            "expected_idx": 1,
+            "expected": "furious",
+            "induced_idx": 1,
+            "induced": "furious",
+            "match": true,
+            "p_induced": 0.872
+          },
+          {
+            "expected_idx": 1,
+            "expected": "furious",
+            "induced_idx": 1,
+            "induced": "furious",
+            "match": true,
+            "p_induced": 0.7432
+          },
+          {
+            "expected_idx": 2,
+            "expected": "annoyed",
+            "induced_idx": 2,
+            "induced": "annoyed",
+            "match": true,
+            "p_induced": 0.3992
+          },
+          {
+            "expected_idx": 2,
+            "expected": "annoyed",
+            "induced_idx": 2,
+            "induced": "annoyed",
+            "match": true,
+            "p_induced": 0.4189
+          },
+          {
+            "expected_idx": 3,
+            "expected": "euphoric",
+            "induced_idx": 1,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.4681
+          },
+          {
+            "expected_idx": 3,
+            "expected": "euphoric",
+            "induced_idx": 1,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.5772
+          }
+        ],
+        "random_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "furious",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": true,
+            "p_induced": 0.872
+          },
+          {
+            "expected_idx": 1,
+            "expected": "angry",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.7784
+          },
+          {
+            "expected_idx": 2,
+            "expected": "annoyed",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.8643
+          },
+          {
+            "expected_idx": 4,
+            "expected": "content",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.7956
+          },
+          {
+            "expected_idx": 5,
+            "expected": "delighted",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.8487
+          },
+          {
+            "expected_idx": 6,
+            "expected": "euphoric",
+            "induced_idx": 0,
+            "induced": "furious",
+            "match": false,
+            "p_induced": 0.8951
+          }
+        ],
+        "manifold_disp_norm": 7.738,
+        "linear_disp_norm": 4.511,
+        "random_disp_norm": 7.738
+      },
+      "samples": {
+        "unsteered": "furious. She is furious at",
+        "manifold_final": ". She is furious at the",
+        "linear_final": ". She is furious at the"
+      }
+    },
+    {
+      "concept": "emotion_fear",
+      "label": "Fear gradation",
+      "kind": "ordinal",
+      "items": [
+        "terrified",
+        "afraid",
+        "anxious",
+        "uneasy",
+        "calm"
+      ],
+      "source": "terrified",
+      "target": "calm",
+      "layer_sweep": [
+        {
+          "layer": 8,
+          "isometry_r_full_string": 0.9952,
+          "manifold_quality": {
+            "metric_name": "abs_spearman",
+            "metric": 1.0
+          }
+        },
+        {
+          "layer": 12,
+          "isometry_r_full_string": 0.9934,
+          "manifold_quality": {
+            "metric_name": "abs_spearman",
+            "metric": 1.0
+          }
+        },
+        {
+          "layer": 16,
+          "isometry_r_full_string": 0.9973,
+          "manifold_quality": {
+            "metric_name": "abs_spearman",
+            "metric": 0.9
+          }
+        }
+      ],
+      "best_layer": 16,
+      "isometry_r_full_string": 0.9973,
+      "manifold_quality": {
+        "metric_name": "abs_spearman",
+        "metric": 0.9
+      },
+      "energy": {
+        "manifold": 0.0134,
+        "linear": 0.0052,
+        "gap_linear_minus_manifold": -0.0082,
+        "manifold_more_faithful": false,
+        "behavior_readout": "full_string"
+      },
+      "energy_first_token": {
+        "manifold": 0.0134,
+        "linear": 0.0052,
+        "gap_linear_minus_manifold": -0.0082,
+        "manifold_more_faithful": false
+      },
+      "routing": {
+        "manifold_agreement": 0.1667,
+        "linear_agreement": 0.1667,
+        "shuffled_agreement": 0.1667,
+        "random_agreement": 0.1667,
+        "centroid_routing": false,
+        "manifold_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "terrified",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": true,
+            "p_induced": 0.9359
+          },
+          {
+            "expected_idx": 1,
+            "expected": "afraid",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.516
+          },
+          {
+            "expected_idx": 2,
+            "expected": "anxious",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.6419
+          },
+          {
+            "expected_idx": 2,
+            "expected": "anxious",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.7481
+          },
+          {
+            "expected_idx": 3,
+            "expected": "uneasy",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.7653
+          },
+          {
+            "expected_idx": 4,
+            "expected": "calm",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.7801
+          }
+        ],
+        "linear_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "terrified",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": true,
+            "p_induced": 0.9359
+          },
+          {
+            "expected_idx": 1,
+            "expected": "afraid",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.9227
+          },
+          {
+            "expected_idx": 2,
+            "expected": "anxious",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.8975
+          },
+          {
+            "expected_idx": 2,
+            "expected": "anxious",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.8591
+          },
+          {
+            "expected_idx": 3,
+            "expected": "uneasy",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.8156
+          },
+          {
+            "expected_idx": 4,
+            "expected": "calm",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.7801
+          }
+        ],
+        "shuffled_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "terrified",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": true,
+            "p_induced": 0.9359
+          },
+          {
+            "expected_idx": 1,
+            "expected": "anxious",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.7474
+          },
+          {
+            "expected_idx": 2,
+            "expected": "uneasy",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.76
+          },
+          {
+            "expected_idx": 2,
+            "expected": "uneasy",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.6359
+          },
+          {
+            "expected_idx": 3,
+            "expected": "afraid",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.5024
+          },
+          {
+            "expected_idx": 4,
+            "expected": "calm",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.7801
+          }
+        ],
+        "random_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "terrified",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": true,
+            "p_induced": 0.9359
+          },
+          {
+            "expected_idx": 1,
+            "expected": "afraid",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.9066
+          },
+          {
+            "expected_idx": 2,
+            "expected": "anxious",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.9291
+          },
+          {
+            "expected_idx": 2,
+            "expected": "anxious",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.9074
+          },
+          {
+            "expected_idx": 3,
+            "expected": "uneasy",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.9181
+          },
+          {
+            "expected_idx": 4,
+            "expected": "calm",
+            "induced_idx": 0,
+            "induced": "terrified",
+            "match": false,
+            "p_induced": 0.9255
+          }
+        ],
+        "manifold_disp_norm": 7.217,
+        "linear_disp_norm": 5.454,
+        "random_disp_norm": 7.217
+      },
+      "samples": {
+        "unsteered": "terrified.\nThe 2",
+        "manifold_final": ". He is the only one",
+        "linear_final": ". He is terrified of the"
+      }
+    },
+    {
+      "concept": "emotion_arousal",
+      "label": "Low->high arousal line",
+      "kind": "ordinal",
+      "items": [
+        "numb",
+        "bored",
+        "calm",
+        "alert",
+        "excited",
+        "frantic"
+      ],
+      "source": "numb",
+      "target": "frantic",
+      "layer_sweep": [
+        {
+          "layer": 8,
+          "isometry_r_full_string": 0.9991,
+          "manifold_quality": {
+            "metric_name": "abs_spearman",
+            "metric": 0.9429
+          }
+        },
+        {
+          "layer": 12,
+          "isometry_r_full_string": 0.9993,
+          "manifold_quality": {
+            "metric_name": "abs_spearman",
+            "metric": 0.8286
+          }
+        },
+        {
+          "layer": 16,
+          "isometry_r_full_string": 0.9987,
+          "manifold_quality": {
+            "metric_name": "abs_spearman",
+            "metric": 0.8857
+          }
+        }
+      ],
+      "best_layer": 12,
+      "isometry_r_full_string": 0.9993,
+      "manifold_quality": {
+        "metric_name": "abs_spearman",
+        "metric": 0.8286
+      },
+      "energy": {
+        "manifold": 0.0226,
+        "linear": 0.0411,
+        "gap_linear_minus_manifold": 0.0185,
+        "manifold_more_faithful": true,
+        "behavior_readout": "full_string"
+      },
+      "energy_first_token": {
+        "manifold": 0.0226,
+        "linear": 0.0411,
+        "gap_linear_minus_manifold": 0.0185,
+        "manifold_more_faithful": true
+      },
+      "routing": {
+        "manifold_agreement": 1.0,
+        "linear_agreement": 0.3333,
+        "shuffled_agreement": 0.8333,
+        "random_agreement": 0.1667,
+        "centroid_routing": true,
+        "manifold_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "numb",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": true,
+            "p_induced": 0.9886
+          },
+          {
+            "expected_idx": 1,
+            "expected": "bored",
+            "induced_idx": 1,
+            "induced": "bored",
+            "match": true,
+            "p_induced": 0.9946
+          },
+          {
+            "expected_idx": 2,
+            "expected": "calm",
+            "induced_idx": 2,
+            "induced": "calm",
+            "match": true,
+            "p_induced": 0.9022
+          },
+          {
+            "expected_idx": 3,
+            "expected": "alert",
+            "induced_idx": 3,
+            "induced": "alert",
+            "match": true,
+            "p_induced": 0.673
+          },
+          {
+            "expected_idx": 4,
+            "expected": "excited",
+            "induced_idx": 4,
+            "induced": "excited",
+            "match": true,
+            "p_induced": 0.8746
+          },
+          {
+            "expected_idx": 5,
+            "expected": "frantic",
+            "induced_idx": 5,
+            "induced": "frantic",
+            "match": true,
+            "p_induced": 0.7028
+          }
+        ],
+        "linear_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "numb",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": true,
+            "p_induced": 0.9886
+          },
+          {
+            "expected_idx": 1,
+            "expected": "bored",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": false,
+            "p_induced": 0.9864
+          },
+          {
+            "expected_idx": 2,
+            "expected": "calm",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": false,
+            "p_induced": 0.9674
+          },
+          {
+            "expected_idx": 3,
+            "expected": "alert",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": false,
+            "p_induced": 0.7709
+          },
+          {
+            "expected_idx": 4,
+            "expected": "excited",
+            "induced_idx": 5,
+            "induced": "frantic",
+            "match": false,
+            "p_induced": 0.5137
+          },
+          {
+            "expected_idx": 5,
+            "expected": "frantic",
+            "induced_idx": 5,
+            "induced": "frantic",
+            "match": true,
+            "p_induced": 0.7028
+          }
+        ],
+        "shuffled_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "numb",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": true,
+            "p_induced": 0.9886
+          },
+          {
+            "expected_idx": 0,
+            "expected": "numb",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": true,
+            "p_induced": 0.7321
+          },
+          {
+            "expected_idx": 1,
+            "expected": "calm",
+            "induced_idx": 1,
+            "induced": "calm",
+            "match": true,
+            "p_induced": 0.8732
+          },
+          {
+            "expected_idx": 1,
+            "expected": "calm",
+            "induced_idx": 1,
+            "induced": "calm",
+            "match": true,
+            "p_induced": 0.9049
+          },
+          {
+            "expected_idx": 2,
+            "expected": "frantic",
+            "induced_idx": 1,
+            "induced": "calm",
+            "match": false,
+            "p_induced": 0.4602
+          },
+          {
+            "expected_idx": 2,
+            "expected": "frantic",
+            "induced_idx": 2,
+            "induced": "frantic",
+            "match": true,
+            "p_induced": 0.7028
+          }
+        ],
+        "random_waypoints": [
+          {
+            "expected_idx": 0,
+            "expected": "numb",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": true,
+            "p_induced": 0.9886
+          },
+          {
+            "expected_idx": 1,
+            "expected": "bored",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": false,
+            "p_induced": 0.9532
+          },
+          {
+            "expected_idx": 2,
+            "expected": "calm",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": false,
+            "p_induced": 0.979
+          },
+          {
+            "expected_idx": 3,
+            "expected": "alert",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": false,
+            "p_induced": 0.973
+          },
+          {
+            "expected_idx": 4,
+            "expected": "excited",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": false,
+            "p_induced": 0.9608
+          },
+          {
+            "expected_idx": 5,
+            "expected": "frantic",
+            "induced_idx": 0,
+            "induced": "numb",
+            "match": false,
+            "p_induced": 0.983
+          }
+        ],
+        "manifold_disp_norm": 3.935,
+        "linear_disp_norm": 2.375,
+        "random_disp_norm": 3.935
+      },
+      "samples": {
+        "unsteered": "numb.\nThe 2",
+        "manifold_final": "just not sure what to do",
+        "linear_final": "just not sure what to do"
+      }
+    }
+  ],
+  "wall_clock_sec": 192.2
+}

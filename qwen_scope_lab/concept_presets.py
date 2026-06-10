@@ -100,6 +100,22 @@ _ATLAS_EXTRA: dict[str, Concept] = {
     "rank": Concept("rank", "Military rank", "ordinal",
         ("private", "corporal", "sergeant", "lieutenant", "captain", "major", "colonel", "general"),
         ("Promoted to {item}", "The rank of {item}", "A {item} led them", "Serving as {item}", "Addressed as {item}"), "Promoted to {item}", best_layer=20),
+    # Emotion lines (Goodfire-style manifold steering through emotion spaces, à la Anthropic's
+    # emotion-vectors work). See docs/experiments/EMOTION_MANIFOLD.md: all three form clean residual
+    # manifolds (isometry r 0.997-0.999), but manifold-vs-linear routing only wins on the monotone
+    # arousal axis — valence lines can't cross the affect sign flip; fear is steer-resistant at 2B.
+    "emotion_valence_intensity": Concept("emotion_valence_intensity", "Emotion (anger->joy)", "ordinal",
+        ("furious", "angry", "annoyed", "calm", "content", "delighted", "euphoric"),
+        ("She felt {item}", "He seemed {item}", "I am {item}", "A {item} mood", "They looked {item}", "Feeling {item}"),
+        "Right now she feels {item}. Honestly, she is", best_layer=8),
+    "emotion_fear": Concept("emotion_fear", "Fear gradation", "ordinal",
+        ("terrified", "afraid", "anxious", "uneasy", "calm"),
+        ("She felt {item}", "He seemed {item}", "I am {item}", "A {item} mood", "They looked {item}", "Feeling {item}"),
+        "Right now he feels {item}. Honestly, he is", best_layer=8),
+    "emotion_arousal": Concept("emotion_arousal", "Arousal (low->high)", "ordinal",
+        ("numb", "bored", "calm", "alert", "excited", "frantic"),
+        ("She felt {item}", "He seemed {item}", "I am {item}", "A {item} mood", "They looked {item}", "Feeling {item}"),
+        "Right now they feel {item}. Honestly, they are", best_layer=12),
 }
 
 ATLAS_CONCEPTS: list[Concept] = list(CONCEPTS.values()) + list(_ATLAS_EXTRA.values())
