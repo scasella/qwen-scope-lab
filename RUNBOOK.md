@@ -125,6 +125,31 @@ Export Markdown:
 python scripts/export_recipe_markdown.py --recipe recipes/json_validity_2b_candidate/recipe.json
 ```
 
+## Steering-to-Data Distillation
+
+Compile a recipe (or explicit steer) into SFT + preference data, so the behavior can later be
+learned without runtime hooks. Full guide: `docs/experiments/STEERING_TO_DATA_DISTILLATION.md`.
+
+```bash
+# No model required — drives the whole pipeline (CI-safe):
+python scripts/steering_to_data_distill.py synthetic-smoke --out reports/steering_distill/smoke
+
+# From a saved recipe, against a running service (serve_web.py --mlx | --dev | modal):
+python scripts/steering_to_data_distill.py generate \
+  --url http://127.0.0.1:7870 \
+  --recipe recipes/concise_answers_l1_f2_v1/recipe.json \
+  --prompts data/experiments/steering_distill/prompts.jsonl \
+  --out reports/steering_distill/run_001
+
+# Compare baseline / runtime-steering / distilled / prompt-only (once a distilled URL exists):
+python scripts/steering_to_data_distill.py eval --synthetic --target concise --out reports/steering_distill/eval_demo
+```
+
+Outputs land in `reports/steering_distill/<run>/` (`sft.jsonl`, `preference.jsonl`,
+`pairs_{all,kept,rejected}.jsonl`, `dataset_card.md`, `report.md`, `metrics.json`). Run artifacts
+are git-ignored. This produces *training data*; it makes no claim a distilled model reproduces the
+behavior — `eval` is the harness to test that.
+
 ## Modal Cost Preflight
 
 > **On an Apple Silicon Mac, the 2B no longer needs Modal.** Run `serve_web.py --mlx` (above /

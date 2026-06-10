@@ -105,6 +105,12 @@ these distributions in **√p (Hellinger) space**; `_behavior_energy` is the min
 distance from an induced distribution to ℳ_y — i.e. *how on-manifold the behavior is*. This is the
 **right** faithfulness metric (raw perplexity is not — see §5).
 
+For **multi-token values** the first-token read-out is unreliable (collisions like
+"strongly agree"/"strongly disagree"; identity carried by later tokens). Pass
+`behavior_readout: "full_string"` to score values by teacher-forced P(" "+value | prompt)
+instead — see `docs/experiments/BEHAVIOR_READOUT_C05.md` for the audit: the manifold-vs-linear
+verdict flips on exactly the multi-token concepts and on none of the single-token controls.
+
 ### 4.6 Pullback — `manifold_pullback` / `_pullback_path`
 The inverse problem: instead of choosing where to go in activation space, specify the **target
 behavior** and optimize the activation intervention that induces it. We parameterize a point in
@@ -122,7 +128,7 @@ optimized path onto ℳ_h and correlates the recovered intrinsic coordinate with
 |---|---|
 | activation↔behavior **isometry** | **REPLICATES: r = 0.94–1.00** across 7 concepts (days 1.00, rank 0.98, size 0.97, agreement 0.97, education 0.96, valence 0.94; integers degenerate→NA). Matches the paper's 0.89–0.999. |
 | manifold interp is **more natural** (lower perplexity) | **DOES NOT replicate on raw perplexity: manifold beats linear 0/7.** Qwen snaps off-manifold chord points to fluent tokens, so raw fluency doesn't separate them. |
-| manifold is **more faithful** (right metric) | **behavior-manifold energy: manifold beats linear 3/7** (rank, education, days) — real but **concept-dependent**. |
+| manifold is **more faithful** (right metric) | **behavior-manifold energy: manifold beats linear 3/7** (rank, education, days) — real but **concept-dependent**. *C05 caveat:* this row used the first-token read-out; under the multi-token-faithful full-string read-out the verdict flips on the multi-token concepts (education loses its win, agreement gains one) — see `docs/experiments/BEHAVIOR_READOUT_C05.md`. |
 | concepts lie on clean manifolds | **15/17 form clean/partial manifolds** in the atlas census; only days forms a clean *ring*; months & compass are diffuse. |
 | **pullback** induces on-manifold behavior | **YES — energy ≤ linear 3/3** (days/rank/education), lowest of all three each time; LBFGS loss decreases every run (autograd verified). |
 | pullback **recovers ℳ_h** (bidirectional isometry) | **2/3** (rank/education r≈0.88 > linear) — **but days fails (r = −0.36)**: the ring behavior is so easily induced the optimization is underconstrained and finds an off-manifold path that still works. The bidirectional claim holds for graded concepts, breaks for the trivial clean-ring. |

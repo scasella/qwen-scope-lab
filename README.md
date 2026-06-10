@@ -55,6 +55,10 @@ A steer "validates" only if it beats a prompt-only baseline **and** seven contro
 
 A difference-of-means **residual probe** — one dot product on activations the model already computes — detects jailbreak / prompt-injection prompts as well as a paid AI judge, beats the SAE feature, and generalizes to attack families it never saw. Try the live single-message demo at **`/demo`**. Write-ups: [the residual probe (for researchers)](docs/writeups/jailbreak-detection-residual-probe.html) · [for a general audience](docs/writeups/jailbreak-detection-mainstream.html) · [white-box control on Qwen-2B](docs/writeups/white-box-control-qwen-2b.html).
 
+## Highlight: distill a behavior into the weights
+
+The research lane goes one step past runtime steering: **compile a behavior into training data and fine-tune it in** — no hooks at inference. Flagship result: a 4B learns *polite truth-holding under social pressure* from a class-balanced 9B-teacher corpus **without breaking calibration** — train on truth-holding demos alone and calibrated uncertainty collapses (0.275 acceptable); rebalance the same-size corpus with calibration classes and it's fixed in the data (0.625), with truth-holding preserved. Replicated 6/6 seeds, corroborated by an independent rubric judge. The finding, bluntly: **the mixture is the mechanism** — *what* you train on, not how much. Write-up: [Distilling polite truth-holding](docs/writeups/polite-truth-holding-distillation.html) · pipeline: [`docs/experiments/STEERING_TO_DATA_DISTILLATION.md`](docs/experiments/STEERING_TO_DATA_DISTILLATION.md) · corpus compiler (with its honest validation status): [`docs/MIXTURE_DIAL_DISTILL.md`](docs/MIXTURE_DIAL_DISTILL.md).
+
 ## Scale up (optional)
 
 The 2B is local-first on MLX. For the **27B** (won't fit a laptop) or a **shareable hosted demo**, use the Modal path:
@@ -84,6 +88,11 @@ The base install is deliberately slim (torch + the web layer); the heavy and clo
 - [`docs/MLX.md`](docs/MLX.md) — running the whole lab on Apple Silicon: architecture, fidelity caveats, what stays on Modal.
 - [`docs/MANIFOLD.md`](docs/MANIFOLD.md) — the concept-manifold science, including the honest negatives behind the design.
 - [`docs/AGENT_RESEARCH.md`](docs/AGENT_RESEARCH.md) — driving the lab programmatically: the job API, the experiment log, and the honesty contract.
+- [`docs/experiments/STEERING_TO_DATA_DISTILLATION.md`](docs/experiments/STEERING_TO_DATA_DISTILLATION.md) — compile a validated steer into SFT/preference data (the bridge from interpretability to a deployable fine-tune).
+- [Distilling polite truth-holding (write-up)](docs/writeups/polite-truth-holding-distillation.html) — the v0.6→v1.0 paper: a class-balanced 9B-teacher corpus gives a 4B both truth-holding under pressure and calibrated uncertainty; replicated 6/6 seeds, the fix is the mixture not the count, gpt-5.5-corroborated.
+- [`docs/MIXTURE_DIAL_DISTILL.md`](docs/MIXTURE_DIAL_DISTILL.md) — the deterministic mixture-authoring corpus compiler, including the falsification pilot's honest verdict on what the dial does and doesn't buy.
+- [`docs/experiments/BEHAVIOR_READOUT_C05.md`](docs/experiments/BEHAVIOR_READOUT_C05.md) — C05: the manifold-vs-linear faithfulness verdict flips on multi-token concepts under a full-string read-out (and on none of the single-token controls).
+- [`docs/experiments/MANIFOLD_TO_DATA_PROVENANCE.md`](docs/experiments/MANIFOLD_TO_DATA_PROVENANCE.md) — C09: why *text* distillation cannot carry manifold provenance (a structural negative, confirmed at two model sizes), and the preregistered distribution-distillation salvage.
 - [`RUNBOOK.md`](RUNBOOK.md) — operational reference: the CLI scripts, recipe commands, and Modal/GPU runbook.
 
 ## Acknowledgements
