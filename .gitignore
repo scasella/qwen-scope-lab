@@ -24,8 +24,10 @@ recipes/*/benchmark_results.json
 recipes/*/candidate_features.json
 recipes/*/examples.jsonl
 recipes/*/sweep_results.json
-experiments/
-monitors/
+# Top-level research-trail + runtime stores only (anchored so we don't ignore
+# the qwen_scope_lab/experiments package or data/experiments corpora).
+/experiments/
+/monitors/
 
 # Internal / local-only docs (kept on disk, not published)
 HANDOFF.md
@@ -33,6 +35,24 @@ AGENTS.md
 RESULTS.md
 UAT_REPORT.md
 docs/AGENT_HANDOFF.md
+/ballast-product-pitch.html
+reports/product-brainstorm.md
+reports/codex-product-inventions.md
+reports/lab-capability-products.md
+reports/manifold-research-directions.md
+
+# Workflow-orchestration artifacts (local run journals, not part of the lab)
+/*.workflow.js
+/*.workflow.run.*
+/.workflow-journal/
+
+# Heavy run by-products inside published evidence dirs (retrainable / re-derivable)
+reports/*.zip
+reports/**/*.zip
+reports/sae_audit/*.npy
+
+# Stray HF cache from a misquoted HF_HOME (junk, kept out of git)
+/~/
 
 # Local Claude Code settings + agent skills (internal tooling, not part of the public lab)
 .claude/

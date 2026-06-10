@@ -1,0 +1,8 @@
+# Run artifacts are local; keep the directory, ignore generated outputs.
+# Exception: th_v10_publication/ is the canonical v1.0 evidence pack cited by
+# docs/writeups/polite-truth-holding-distillation.html — it is published.
+*
+!.gitkeep
+!.gitignore
+!th_v10_publication/
+!th_v10_publication/**
