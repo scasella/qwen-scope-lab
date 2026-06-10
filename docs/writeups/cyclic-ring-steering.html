@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The ring a straight line can't follow — cyclic manifold steering</title>
+<title>The rings a straight line can't follow — cyclic manifold steering</title>
 <style>
 :root{
   --ink:#141413; --body:#3B3B39; --muted:#787774; --faint:#A8A49C;
@@ -27,14 +27,13 @@ h1 em{font-style:italic; color:var(--clay);}
 h2{font-family:var(--serif); font-weight:500; font-size:27px; color:var(--ink); margin:0 0 6px; letter-spacing:-0.005em;}
 h2 em{font-style:italic; color:var(--clay);}
 h3{font-family:var(--serif); font-weight:500; font-size:19px; color:var(--ink);}
-.lead{font-size:18.5px; line-height:1.6; color:var(--body); max-width:64ch;}
+.lead{font-size:18.5px; line-height:1.6; color:var(--body); max-width:66ch;}
 .meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px;}
 .chip{font-family:var(--mono); font-size:11px; letter-spacing:0.04em; color:var(--muted); background:var(--card); border:1.5px solid var(--line); border-radius:999px; padding:4px 11px;}
 .chip b{color:var(--ink); font-weight:600;}
 section{margin-top:74px;}
 .kicker{font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--clay); margin-bottom:10px;}
 .sub{color:var(--muted); font-size:15px; max-width:68ch; margin-top:6px;}
-p.body{max-width:68ch; margin-top:14px;}
 a{color:var(--clay); text-decoration:none; border-bottom:1px solid rgba(217,119,87,0.35);}
 a:hover{border-bottom-color:var(--clay);}
 .statgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:30px;}
@@ -44,8 +43,13 @@ a:hover{border-bottom-color:var(--clay);}
 .stat .l{font-family:var(--mono); font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:var(--muted); margin-top:9px;}
 .stat .d{font-size:13px; color:var(--muted); margin-top:6px; line-height:1.45;}
 .panel{background:var(--card); border:1.5px solid var(--line); border-radius:14px; overflow:hidden; margin-top:24px;}
-.panel-head{display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding:16px 22px 0;}
-.panel-head .t{font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);}
+.ringtabs{display:flex; flex-wrap:wrap; gap:8px; padding:16px 18px 0;}
+.ringtabs button{border:1.5px solid var(--line); background:var(--cream); border-radius:999px; font-family:var(--mono); font-size:11px; letter-spacing:0.04em; color:var(--muted); padding:7px 14px; cursor:pointer; transition:all .15s ease;}
+.ringtabs button:hover{border-color:var(--teal); color:var(--teal);}
+.ringtabs button.on{background:var(--ink); border-color:var(--ink); color:#fff;}
+.ringtabs button .bdg{font-size:9px; letter-spacing:0.06em; opacity:0.65; margin-left:5px;}
+.ringmeta{display:flex; flex-wrap:wrap; gap:14px; align-items:baseline; padding:12px 20px 0; font-family:var(--mono); font-size:11px; color:var(--muted);}
+.ringmeta b{color:var(--ink); font-weight:600;}
 .scene-wrap{position:relative;}
 canvas.scene{display:block; width:100%; height:430px; cursor:grab; touch-action:none;}
 canvas.scene:active{cursor:grabbing;}
@@ -79,7 +83,7 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:999px
 .term .prompt{font-family:var(--mono); font-size:12.5px; color:var(--muted); margin-top:9px; line-height:1.5;}
 .term .prompt .inj{color:var(--ink); background:rgba(20,20,19,0.06); border-radius:4px; padding:0 4px;}
 .term .out{display:flex; align-items:baseline; gap:9px; margin-top:8px;}
-.term .out .tok{font-family:var(--serif); font-size:25px; font-weight:500; color:var(--ink);}
+.term .out .tok{font-family:var(--serif); font-size:24px; font-weight:500; color:var(--ink);}
 .term .out .mark{font-family:var(--mono); font-size:14px;}
 .term .out .mark.ok{color:var(--teal);} .term .out .mark.bad{color:var(--mauve);}
 .term .pbar{height:5px; border-radius:999px; background:rgba(20,20,19,0.07); margin-top:9px; overflow:hidden;}
@@ -89,10 +93,11 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:999px
 .rails{margin-top:18px; display:grid; gap:10px;}
 .rail{display:grid; grid-template-columns:120px 1fr; align-items:center; gap:12px;}
 .rail .rl{font-family:var(--mono); font-size:10.5px; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); text-align:right;}
-.rail .cells{display:grid; grid-template-columns:repeat(5,1fr); gap:7px;}
-.cell{border:1.5px solid var(--line); border-radius:8px; padding:7px 4px 6px; text-align:center; background:var(--card); transition:all .25s ease; opacity:0.45;}
-.cell .exp{font-family:var(--mono); font-size:9px; letter-spacing:0.05em; text-transform:uppercase; color:var(--faint);}
-.cell .got{font-family:var(--serif); font-size:15.5px; font-weight:500; color:var(--faint); margin-top:1px;}
+.rail .cells{display:grid; gap:7px;}
+.cell{border:1.5px solid var(--line); border-radius:8px; padding:7px 4px 6px; text-align:center; background:var(--card); transition:all .25s ease; opacity:0.45; min-width:0;}
+.cell .exp{font-family:var(--mono); font-size:9px; letter-spacing:0.05em; text-transform:uppercase; color:var(--faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.cell .got{font-family:var(--serif); font-size:15px; font-weight:500; color:var(--faint); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.cells.n7 .cell .got{font-size:13.5px;}
 .cell.lit{opacity:1;}
 .cell.lit.ok{border-color:rgba(61,122,140,0.55); background:var(--teal-soft);}
 .cell.lit.ok .got{color:var(--teal);}
@@ -107,18 +112,26 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:999px
 .verdict{font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; border-radius:999px; padding:3px 10px; display:inline-block; margin-top:12px;}
 .verdict.tie{background:var(--amber-soft); color:var(--amber);}
 .verdict.win{background:var(--teal-soft); color:var(--teal);}
-.score{background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:24px 26px; margin-top:24px;}
-.sbar{display:grid; grid-template-columns:150px 1fr 64px; align-items:center; gap:14px; padding:9px 0;}
-.sbar + .sbar{border-top:1px solid var(--g100);}
-.sbar .sl{font-family:var(--mono); font-size:11.5px; color:var(--body);}
-.sbar .sl small{display:block; font-size:10px; color:var(--faint); letter-spacing:0.03em;}
-.sbar .track{height:13px; border-radius:999px; background:var(--g100); position:relative; overflow:visible;}
-.sbar .fillb{height:100%; border-radius:999px; width:0%; transition:width 1s cubic-bezier(.22,.9,.36,1);}
-.sbar .sv{font-family:var(--mono); font-size:13px; font-weight:600; color:var(--ink); text-align:right;}
-.gate{font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:16px; padding-top:14px; border-top:1px solid var(--g100); line-height:1.7;}
-.gate b{color:var(--teal);}
+.scorecards{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:24px;}
+.sc{background:var(--card); border:1.5px solid var(--line); border-radius:12px; padding:16px 19px 14px;}
+.sc.win{border-color:rgba(61,122,140,0.45);}
+.sc .schead{display:flex; justify-content:space-between; align-items:baseline; gap:10px;}
+.sc .scname{font-family:var(--serif); font-size:18px; font-weight:500; color:var(--ink);}
+.sc .scname small{font-family:var(--mono); font-size:10px; color:var(--faint); letter-spacing:0.05em; margin-left:7px;}
+.sc .badge{font-family:var(--mono); font-size:9.5px; letter-spacing:0.07em; text-transform:uppercase; border-radius:999px; padding:2.5px 9px; white-space:nowrap;}
+.sc .badge.win{background:var(--teal-soft); color:var(--teal);}
+.sc .badge.fail{background:var(--amber-soft); color:var(--amber);}
+.sc .badge.dead{background:var(--g100); color:var(--muted);}
+.sc .mb{display:grid; grid-template-columns:74px 1fr 40px; align-items:center; gap:9px; margin-top:7px;}
+.sc .mb .ml{font-family:var(--mono); font-size:10px; color:var(--muted);}
+.sc .mb .mt{display:block; height:9px; border-radius:999px; background:var(--g100); overflow:hidden;}
+.sc .mb .mf{display:block; height:100%; border-radius:999px;}
+.sc .mb .mv{font-family:var(--mono); font-size:11px; font-weight:600; color:var(--ink); text-align:right;}
+.sc .note{font-size:12.5px; color:var(--muted); line-height:1.5; margin-top:10px; padding-top:9px; border-top:1px solid var(--g100);}
 .dumb{background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:24px 26px 18px; margin-top:24px;}
-.drow{display:grid; grid-template-columns:118px 1fr 92px; align-items:center; gap:14px; padding:7.5px 0;}
+.dgroup{font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--clay); padding:14px 0 6px;}
+.dgroup:first-child{padding-top:0;}
+.drow{display:grid; grid-template-columns:118px 1fr 110px; align-items:center; gap:14px; padding:7.5px 0;}
 .drow + .drow{border-top:1px solid var(--g100);}
 .drow .dn{font-family:var(--mono); font-size:11.5px; color:var(--body);}
 .drow .dn small{display:block; font-size:9.5px; color:var(--faint); letter-spacing:0.04em; text-transform:uppercase;}
@@ -148,23 +161,20 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:999px
 .cav{background:var(--card); border:1.5px solid var(--line); border-radius:12px; padding:16px 19px;}
 .cav .ch{font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--amber); margin-bottom:7px;}
 .cav p{font-size:13.5px; color:var(--body); line-height:1.55;}
-.sweepgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px;}
-.sw-cell{border:1.5px solid var(--line); border-radius:9px; padding:10px 12px; background:var(--cream);}
-.sw-cell.best{border-color:rgba(61,122,140,0.55); background:var(--teal-soft);}
-.sw-cell .swl{font-family:var(--mono); font-size:10px; letter-spacing:0.07em; color:var(--muted);}
-.sw-cell .swv{font-family:var(--mono); font-size:12px; color:var(--ink); margin-top:5px; line-height:1.6;}
-.sw-cell .swv b{font-weight:600;}
+.pairlist{display:grid; gap:6px; margin-top:12px;}
+.pair{display:grid; grid-template-columns:86px 1fr 1fr; gap:10px; align-items:center; font-family:var(--mono); font-size:10.5px; color:var(--muted); border:1.5px solid var(--line); border-radius:8px; padding:6px 10px; background:var(--cream);}
+.pair b{color:var(--ink); font-weight:600;}
+.pair .good{color:var(--teal); font-weight:600;}
 footer{margin-top:84px; padding-top:22px; border-top:1.5px solid var(--line); font-family:var(--mono); font-size:11.5px; color:var(--muted); line-height:2;}
 footer code{background:var(--card); border:1px solid var(--line); border-radius:5px; padding:1px 6px; font-size:11px;}
 @media (max-width:880px){
   .wrap{padding:40px 18px 70px;}
   h1{font-size:32px;}
-  .statgrid,.readout,.duo,.caveats{grid-template-columns:1fr;}
-  .sweepgrid{grid-template-columns:repeat(2,1fr);}
+  .statgrid,.readout,.duo,.caveats,.scorecards{grid-template-columns:1fr;}
   canvas.scene{height:320px;}
   .rail{grid-template-columns:1fr; gap:5px;}
   .rail .rl{text-align:left;}
-  .drow{grid-template-columns:90px 1fr 64px; gap:8px;}
+  .drow{grid-template-columns:90px 1fr 78px; gap:8px;}
   .transport{flex-wrap:wrap;}
   .legend{display:none;}
 }
@@ -174,47 +184,48 @@ footer code{background:var(--card); border:1px solid var(--line); border-radius:
 <div class="wrap">
 
 <header>
-  <div class="eyebrow"><b>Qwen Scope Lab</b> · cyclic manifold steering · Qwen3.5-2B · layer 14 · MLX</div>
-  <h1>The ring a straight line <em>can't follow</em></h1>
-  <p class="lead">Every ordinal concept we tested let a plain linear steer match the manifold — a straight chord
-  interpolates through the middle of a line for free. The week is not a line. On the days-of-week
-  <b>ring</b>, the manifold walks Monday&nbsp;→&nbsp;Friday through every weekday in order; the straight
-  chord cuts across the ring's empty interior and skips the middle of the week entirely.</p>
+  <div class="eyebrow"><b>Qwen Scope Lab</b> · cyclic manifold steering · Qwen3.5-2B · MLX · run 2026-06-10</div>
+  <h1>The rings a straight line <em>can't follow</em></h1>
+  <p class="lead">Days-of-week — the worked example in Goodfire's concept-manifold papers — showed the
+  mechanism: on a <b>ring</b>, the manifold walks the cycle while a straight chord cuts across the empty
+  interior. These are <b>our own rings</b>, from our concept census: the <b>months of the year</b>, the
+  <b>zodiac</b>, the <b>color wheel</b>, and the <b>compass</b> all beat linear steering — walked live below,
+  with the real model outputs at every waypoint — plus two candidates that honestly fail.</p>
   <div class="meta">
     <span class="chip">model <b>Qwen3.5-2B</b></span>
-    <span class="chip">concept <b>days_ring</b> (7-point cyclic)</span>
+    <span class="chip">net-new rings <b>4 / 6 route</b></span>
     <span class="chip">read-out <b>full-string</b></span>
-    <span class="chip">prompt <b>“Today is ⟨day⟩. So today is”</b></span>
-    <span class="chip">run <b>2026-06-10</b></span>
+    <span class="chip">prompts <b>position read-out</b></span>
+    <span class="chip">baseline <b>days-of-week (Goodfire's example)</b></span>
   </div>
 </header>
 
 <div class="statgrid">
-  <div class="stat"><div class="n teal">1.00</div><div class="l">manifold routing</div>
-    <div class="d">Mon, Tue, Wed, Thu, Fri — every waypoint induces the right day, in order.</div></div>
-  <div class="stat"><div class="n mauve">0.40</div><div class="l">linear-chord routing</div>
-    <div class="d">Mon, Mon, Fri, Fri, Fri — snaps to the nearest endpoint, misses the mid-week.</div></div>
-  <div class="stat"><div class="n clay">+0.60</div><div class="l">manifold − linear</div>
-    <div class="d">vs ≈ 0 for every ordinal concept in the census. The first non-dominated lane.</div></div>
+  <div class="stat"><div class="n teal">4 / 6</div><div class="l">net-new rings beat linear</div>
+    <div class="d">Months, zodiac, color wheel, compass — each clears manifold &gt; linear AND &gt; shuffled.</div></div>
+  <div class="stat"><div class="n clay">1.00 <span style="font-size:22px;color:var(--muted)">vs</span> <span class="mauve" style="color:var(--mauve)">0.29</span></div><div class="l">the 12-point rings</div>
+    <div class="d">January→July and Aries→Libra: the manifold hits all seven values in order; the chord — a diameter — snaps Jan,Jan,Jan,Jan,Jul,Jul,Jul.</div></div>
+  <div class="stat"><div class="n mauve">2</div><div class="l">honest fails</div>
+    <div class="d">Time-of-day routes 1.00 but so does its shuffled control; moon phases are steer-resistant at 2B.</div></div>
 </div>
 
-<!-- ════════════════ HERO: walk the week ════════════════ -->
+<!-- ════════════════ HERO: walk the ring ════════════════ -->
 <section id="walk">
-  <div class="kicker">The experiment, live</div>
-  <h2>Walk the week</h2>
-  <p class="sub">This is the actual fitted geometry — the layer-14 residual-stream ring for the seven days
-  (first three PCA coordinates), with the real model outputs at each waypoint. Press play, or scrub.
-  The teal walker follows the manifold arc — the ring spline evaluated at each weekday in order, so its
-  waypoints are exactly the Mon…Fri centroids; the mauve walker takes the straight chord. At each of the
-  five waypoints, the walker's activation is injected at the concept token and the model finishes the
-  sentence.</p>
+  <div class="kicker">The experiments, live</div>
+  <h2>Walk the rings</h2>
+  <p class="sub">Each tab is a real fitted geometry — the residual-stream ring at the concept's best layer
+  (first three PCA coordinates), with the real model outputs at every waypoint. The teal walker rides the
+  manifold arc (the ring spline through the value centroids, in order); the mauve walker rides the straight
+  chord. Press play, scrub, drag to rotate.</p>
 
   <div class="panel">
+    <div class="ringtabs" id="ringTabs"></div>
+    <div class="ringmeta" id="ringMeta"></div>
     <div class="scene-wrap">
       <canvas class="scene" id="ringScene"></canvas>
       <div class="legend">
         <div class="li"><span class="sw ring"></span> fitted ring (spline)</div>
-        <div class="li"><span class="sw"></span> manifold arc Mon→Fri</div>
+        <div class="li"><span class="sw"></span> manifold arc (scored walk)</div>
         <div class="li"><span class="sw chord"></span> linear chord (cuts interior)</div>
       </div>
       <div class="scene-hint">drag to rotate</div>
@@ -235,18 +246,18 @@ footer code{background:var(--card); border:1px solid var(--line); border-radius:
 
       <div class="readout">
         <div class="term teal" id="termMan">
-          <div class="arm"><span>manifold arc</span><span class="vstat" id="manStat">waypoint 1 / 5</span></div>
-          <div class="prompt">h<sub>L14</sub> ← arc(t) · “Today is <span class="inj">⟨inject⟩</span>. So today is”</div>
-          <div class="out"><span class="tok" id="manTok">Monday</span><span class="mark ok" id="manMark">✓</span></div>
+          <div class="arm"><span>manifold arc</span><span class="vstat" id="manStat"></span></div>
+          <div class="prompt" id="manPrompt"></div>
+          <div class="out"><span class="tok" id="manTok"></span><span class="mark ok" id="manMark">✓</span></div>
           <div class="pbar"><i id="manP"></i></div>
-          <div class="plabel" id="manPL">p = 0.34</div>
+          <div class="plabel" id="manPL"></div>
         </div>
         <div class="term mauve" id="termLin">
-          <div class="arm"><span>linear chord</span><span class="vstat" id="linStat">waypoint 1 / 5</span></div>
-          <div class="prompt">h<sub>L14</sub> ← chord(t) · “Today is <span class="inj">⟨inject⟩</span>. So today is”</div>
-          <div class="out"><span class="tok" id="linTok">Monday</span><span class="mark ok" id="linMark">✓</span></div>
+          <div class="arm"><span>linear chord</span><span class="vstat" id="linStat"></span></div>
+          <div class="prompt" id="linPrompt"></div>
+          <div class="out"><span class="tok" id="linTok"></span><span class="mark ok" id="linMark">✓</span></div>
           <div class="pbar"><i id="linP"></i></div>
-          <div class="plabel" id="linPL">p = 0.34</div>
+          <div class="plabel" id="linPL"></div>
         </div>
       </div>
 
@@ -289,64 +300,57 @@ footer code{background:var(--card); border:1px solid var(--line); border-radius:
     </div>
 
     <div class="geo">
-      <h3>Cyclic concept: the chord leaves the manifold</h3>
-      <svg viewBox="0 0 420 230" role="img" aria-label="On a ring, the chord cuts across the empty interior">
-        <circle cx="210" cy="118" r="86" fill="none" stroke="#3D7A8C" stroke-width="3" opacity="0.5"/>
-        <path d="M 210 32 A 86 86 0 0 1 261.5 187.5" fill="none" stroke="#3D7A8C" stroke-width="4"/>
-        <line x1="210" y1="32" x2="261.5" y2="187.5" stroke="#A26769" stroke-width="2.5" stroke-dasharray="7 5"/>
-        <circle cx="235.7" cy="109.7" r="5" fill="#A26769"/>
+      <h3>Cyclic concept: the chord is a <i>diameter</i></h3>
+      <svg viewBox="0 0 420 230" role="img" aria-label="On the 12-month ring, the January-to-July chord is a diameter through the center">
+        <circle cx="210" cy="118" r="88" fill="none" stroke="#3D7A8C" stroke-width="3" opacity="0.45"/>
+        <path d="M 210 30 A 88 88 0 0 1 210 206" fill="none" stroke="#3D7A8C" stroke-width="4"/>
+        <line x1="210" y1="30" x2="210" y2="206" stroke="#A26769" stroke-width="2.5" stroke-dasharray="7 5"/>
+        <circle cx="210" cy="118" r="5" fill="#A26769"/>
         <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#787774">
-          <circle cx="210"   cy="32"    r="6" fill="#141413"/><text x="210" y="20"  text-anchor="middle">Mon</text>
-          <circle cx="277.2" cy="64.3"  r="5" fill="#3B3B39"/><text x="291" y="60">Tue</text>
-          <circle cx="293.8" cy="137.1" r="5" fill="#3B3B39"/><text x="307" y="141">Wed</text>
-          <circle cx="247.3" cy="195.4" r="5" fill="#3B3B39"/><text x="258" y="211" text-anchor="middle">Thu</text>
-          <circle cx="261.5" cy="187.5" r="0" fill="none"/>
-          <circle cx="172.7" cy="195.4" r="6" fill="#141413"/><text x="166" y="213" text-anchor="middle">Fri</text>
-          <circle cx="126.2" cy="137.1" r="5" fill="#C9C5BC"/><text x="112" y="141" text-anchor="end">Sat</text>
-          <circle cx="142.8" cy="64.3"  r="5" fill="#C9C5BC"/><text x="129" y="60" text-anchor="end">Sun</text>
-          <text x="118" y="100" text-anchor="end" fill="#A26769">mid-chord lands in the</text>
-          <text x="118" y="113" text-anchor="end" fill="#A26769">empty interior — nearest</text>
-          <text x="118" y="126" text-anchor="end" fill="#A26769">day is an endpoint</text>
+          <circle cx="210" cy="30"  r="6" fill="#141413"/><text x="210" y="18" text-anchor="middle">Jan</text>
+          <circle cx="254" cy="41.8" r="4.5" fill="#3B3B39"/><text x="266" y="38">Feb</text>
+          <circle cx="286.2" cy="74" r="4.5" fill="#3B3B39"/><text x="298" y="73">Mar</text>
+          <circle cx="298" cy="118" r="4.5" fill="#3B3B39"/><text x="310" y="122">Apr</text>
+          <circle cx="286.2" cy="162" r="4.5" fill="#3B3B39"/><text x="298" y="170">May</text>
+          <circle cx="254" cy="194.2" r="4.5" fill="#3B3B39"/><text x="265" y="207">Jun</text>
+          <circle cx="210" cy="206" r="6" fill="#141413"/><text x="210" y="224" text-anchor="middle">Jul</text>
+          <circle cx="166" cy="194.2" r="4.5" fill="#C9C5BC"/>
+          <circle cx="133.8" cy="162" r="4.5" fill="#C9C5BC"/>
+          <circle cx="122" cy="118" r="4.5" fill="#C9C5BC"/>
+          <circle cx="133.8" cy="74" r="4.5" fill="#C9C5BC"/>
+          <circle cx="166" cy="41.8" r="4.5" fill="#C9C5BC"/>
+          <text x="112" y="100" text-anchor="end" fill="#A26769">Jan→Jul is half the year:</text>
+          <text x="112" y="113" text-anchor="end" fill="#A26769">the chord runs straight</text>
+          <text x="112" y="126" text-anchor="end" fill="#A26769">through the center,</text>
+          <text x="112" y="139" text-anchor="end" fill="#A26769">where no month lives</text>
         </g>
       </svg>
-      <span class="verdict win">result: manifold 1.00 vs linear 0.40 → non-dominated</span>
-      <p class="cap">The week closes a loop. A straight chord between Monday and Friday crosses the ring's
-      interior, where no day lives — the model reads the nearest endpoint and the walk snaps
-      Mon,&nbsp;Mon,&nbsp;Fri,&nbsp;Fri,&nbsp;Fri. Only the arc traverses the order.</p>
+      <span class="verdict win">result: manifold 1.00 vs linear 0.29 → non-dominated</span>
+      <p class="cap">The year closes a loop, and January → July is half of it — the straight chord is a
+      <b>diameter</b>, the farthest any path can get from the data. The model reads the nearest endpoint
+      and the walk snaps Jan, Jan, Jan, Jan, Jul, Jul, Jul. Only the arc visits February through June.</p>
     </div>
   </div>
 </section>
 
-<!-- ════════════════ scoreboard ════════════════ -->
+<!-- ════════════════ all rings scoreboard ════════════════ -->
 <section id="score">
   <div class="kicker">Against the controls</div>
-  <h2>The routing gate, passed cleanly</h2>
-  <p class="sub">Per-waypoint argmax agreement, Monday → Friday, five waypoints. The gate requires the
-  manifold to beat the linear chord <i>and</i> the shuffled-order control.</p>
+  <h2>Six rings of our own, plus the credited baseline</h2>
+  <p class="sub">Per-waypoint argmax agreement around each ring; the gate requires the manifold to beat
+  the linear chord <i>and</i> the shuffled-order control. Four pass. Two fail, informatively. Days-of-week —
+  the ring Goodfire's papers already showed — is kept as the protocol baseline, not claimed as a discovery.</p>
 
-  <div class="score" id="scoreboard">
-    <div class="sbar"><div class="sl">manifold arc<small>walks the ring</small></div>
-      <div class="track"><div class="fillb" data-v="1.00" style="background:var(--teal)"></div></div><div class="sv">1.00</div></div>
-    <div class="sbar"><div class="sl">shuffled order<small>same spline, scrambled day order</small></div>
-      <div class="track"><div class="fillb" data-v="0.80" style="background:#C9C5BC"></div></div><div class="sv">0.80</div></div>
-    <div class="sbar"><div class="sl">linear chord<small>straight line, same endpoints</small></div>
-      <div class="track"><div class="fillb" data-v="0.40" style="background:var(--mauve)"></div></div><div class="sv">0.40</div></div>
-    <div class="sbar"><div class="sl">random direction<small>matched magnitude</small></div>
-      <div class="track"><div class="fillb" data-v="0.20" style="background:#DDD9CF"></div></div><div class="sv">0.20</div></div>
-    <div class="gate">gate: manifold &gt; linear <b>✓</b> (1.00 &gt; 0.40) · manifold &gt; shuffled <b>✓</b> (1.00 &gt; 0.80) → <b>routing win</b>.
-    Shuffled runs high here because scrambling seven days still leaves some cyclic adjacency intact — which is
-    exactly why the gate demands strictly beating it, and the manifold does.</div>
-  </div>
+  <div class="scorecards" id="scorecards"></div>
 </section>
 
-<!-- ════════════════ the 13-concept strip ════════════════ -->
+<!-- ════════════════ the full strip ════════════════ -->
 <section id="lane">
   <div class="kicker">The full picture</div>
-  <h2>Thirteen concepts, one non-dominated lane</h2>
-  <p class="sub">Every concept we routed, ordinal and cyclic. Each row runs 0 → 1 in argmax agreement:
-  the grey dot is the linear chord, the colored dot is the manifold, the thin red tick is the shuffled-order
-  control. The manifold earns its keep only where it clears <i>both</i> — and decisively only on the two
-  rows where the geometry is something a line can't be.</p>
+  <h2>Every concept we ever routed</h2>
+  <p class="sub">Each row runs 0 → 1 in argmax agreement: grey dot = linear chord, colored dot = manifold,
+  thin red tick = shuffled-order control. The cyclic group is where the manifold earns its keep —
+  on ordinals the chord interpolates for free and the lane closes (arousal the lone ordinal exception).</p>
 
   <div class="dumb" id="dumbbell"></div>
 
@@ -354,9 +358,10 @@ footer code{background:var(--card); border:1px solid var(--line); border-radius:
     <div class="ct">What this buys in practice</div>
     <p>Ordinal knobs — certainty, formality, quality — are real, but a <b>linear</b> steer delivers them
     as well or better; ship the cheap thing. The manifold is the right tool where the concept's structure
-    is <b>cyclic or near-cyclic</b>: calendars, clocks, compass headings, hue wheels, phase cycles —
-    anywhere “between A and B” means <i>around</i>, not <i>across</i>. That, plus read-out (using the
-    fitted geometry as a monitor coordinate), is the honest utility statement for concept manifolds at 2B.</p>
+    is <b>cyclic</b>: calendars, zodiacs, color wheels, headings, clocks — anywhere "between A and B"
+    means <i>around</i>, not <i>across</i>. Four such rings now demonstrate it, with two honest
+    counterexamples that the controls caught. That, plus read-out (the fitted geometry as a monitor
+    coordinate), is the utility statement for concept manifolds at 2B.</p>
   </div>
 </section>
 
@@ -366,36 +371,42 @@ footer code{background:var(--card); border:1px solid var(--line); border-radius:
   <h2>What this result does <em>not</em> claim</h2>
 
   <div class="caveats">
-    <div class="cav"><div class="ch">Reading ≠ routing</div>
-      <p>The claim rests on <b>routing</b> (traversing the order), not reading. Nearest-neighbour
-      ring-adjacency is layer-dependent: at layer 12 a single linear direction folds the ring perfectly
-      (1-D adjacency 1.0). A line can <i>represent</i> the week at some layers; it provably cannot
-      <i>walk</i> it.</p>
-      <div class="sweepgrid" id="sweepGrid"></div>
-    </div>
-    <div class="cav"><div class="ch">One ring, one seed</div>
-      <p>This is days-of-week on one model (Qwen3.5-2B, MLX, single seed), five waypoints, full-string
-      read-out. The mechanism — a chord cannot follow a loop — is geometric and should generalize to
-      time-of-day, months, compass, hues; that replication has not been run yet.</p></div>
-    <div class="cav"><div class="ch">Prompt choice matters</div>
-      <p>The routing read-out uses a position prompt (“Today is ⟨day⟩. So today is”) so the model reports
-      the injected day rather than its successor. The census ordinals used generic carrier prompts, so
-      their routing numbers are a floor — but the recovery diagnostic's graded metric closed that door:
-      linear matches the manifold there at every granularity.</p></div>
-    <div class="cav"><div class="ch">Shuffled at 0.80</div>
-      <p>The shuffled-order control scores high on a 7-cycle because many scrambles preserve chunks of
-      adjacency. The gate handles this — the manifold must strictly beat it, and 1.00 &gt; 0.80 — but a
-      longer ring (months, 12 points) would separate the arms further and is the natural follow-up.</p></div>
+    <div class="cav"><div class="ch">Reading ≠ routing — in both directions</div>
+      <p>Nearest-neighbour ring-adjacency (the <i>reading</i> metric) and routing dissociate both ways:
+      the days ring folds onto a single linear direction at layer 12 (1-D adjacency 1.0), while months
+      and zodiac route <b>1.00</b> with top-plane adjacency of only 0.50 and 0.42 — the 3-D projection
+      tangles, the walk doesn't. Routing is the decisive evidence; the plots are a faithful projection,
+      not the whole space.</p>
+      <div class="pairlist" id="pairList"></div></div>
+    <div class="cav"><div class="ch">The two fails are the controls working</div>
+      <p><b>Time-of-day</b> routes 1.00 — but its shuffled-order control also routes 1.00, so the gate
+      withholds the win. The shuffle is fair (0 of 6 cyclic adjacencies preserved); with six points in a
+      small region, any smooth path crosses the right neighborhoods. <b>Moon phases</b> are steer-resistant
+      at 2B: every arm flat at 0.20, every waypoint reads "new moon" — multi-word values, weak geometry,
+      no control at this scale.</p></div>
+    <div class="cav"><div class="ch">One model, one seed — but no longer one ring</div>
+      <p>The mechanism now replicates across four net-new rings beyond the days baseline, all on
+      Qwen3.5-2B (MLX, single seed), waypoints at the item centroids, full-string read-out. The chord's
+      failure is the ring's interior — off-centroid generalization between values is not tested here.
+      Other models and seeds remain the natural follow-up.</p></div>
+    <div class="cav"><div class="ch">Attribution</div>
+      <p>Days-of-week is the worked example in Goodfire's concept-manifold papers (arXiv 2604.28119,
+      2605.05115), and our protocol is their fit-then-steer blueprint. What is ours here: the census that
+      surfaced these concepts, the position-readout routing protocol with shuffled/random controls, the
+      four net-new rings that pass it, and the two that fail it.</p></div>
   </div>
 </section>
 
 <footer>
-  Evidence: <code>reports/manifold_census/cyclic.json</code> · runner <code>scripts/_cyclic_manifold.py</code> ·
+  Evidence: <code>reports/manifold_census/cyclic_atlas.json</code> (six net-new rings) ·
+  <code>reports/manifold_census/cyclic.json</code> (days baseline) ·
+  runners <code>scripts/_cyclic_atlas.py</code>, <code>scripts/_cyclic_manifold.py</code> ·
   method <code>docs/experiments/MANIFOLD_ATLAS_CENSUS.md</code><br>
-  Reproduce: <code>python scripts/_cyclic_manifold.py</code> (Apple Silicon, MLX) ·
-  companion pieces: <a href="manifold-atlas-3d.html">the manifold atlas</a> ·
+  Reproduce: <code>python scripts/_cyclic_atlas.py</code> (Apple Silicon, MLX) ·
+  companions: <a href="manifold-atlas-3d.html">the manifold atlas</a> ·
   <a href="emotion-manifold-centroid-routing.html">emotion centroid-routing</a><br>
-  Manifold framework credit: Goodfire's concept-manifold papers (arXiv 2604.28119, 2605.05115).
+  Manifold framework credit: Goodfire's concept-manifold papers (arXiv 2604.28119, 2605.05115) — the
+  days-of-week ring is their worked example and is kept here as the credited baseline.
 </footer>
 
 </div>
@@ -403,35 +414,34 @@ footer code{background:var(--card); border:1px solid var(--line); border-radius:
 <script>
 (function(){
 "use strict";
-var DATA = {"layer":14,"geometry":{"label":"Days of the week (ring)","layer":14,"kind":"cyclic","items":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"points_3d":[{"value":"Monday","index":0,"xyz":[-0.294,0.48,-0.152]},{"value":"Tuesday","index":1,"xyz":[-0.597,0.485,0.357]},{"value":"Wednesday","index":2,"xyz":[-0.343,0.034,0.539]},{"value":"Thursday","index":3,"xyz":[-0.228,0.047,-0.044]},{"value":"Friday","index":4,"xyz":[-0.031,0.146,-0.56]},{"value":"Saturday","index":5,"xyz":[0.662,-0.982,0.128]},{"value":"Sunday","index":6,"xyz":[0.844,-0.23,-0.261]}],"curve_3d":[[-0.294,0.48,-0.152],[-0.372,0.508,-0.112],[-0.437,0.531,-0.069],[-0.49,0.548,-0.024],[-0.533,0.56,0.022],[-0.566,0.566,0.069],[-0.59,0.568,0.116],[-0.605,0.564,0.163],[-0.613,0.555,0.21],[-0.615,0.54,0.256],[-0.611,0.52,0.3],[-0.601,0.495,0.342],[-0.588,0.465,0.382],[-0.571,0.43,0.419],[-0.552,0.391,0.453],[-0.53,0.349,0.483],[-0.506,0.305,0.509],[-0.481,0.261,0.53],[-0.455,0.216,0.546],[-0.43,0.172,0.557],[-0.404,0.13,0.561],[-0.38,0.091,0.559],[-0.358,0.056,0.55],[-0.337,0.026,0.534],[-0.319,0.0,0.51],[-0.304,-0.019,0.479],[-0.29,-0.034,0.441],[-0.278,-0.043,0.398],[-0.268,-0.047,0.348],[-0.259,-0.045,0.294],[-0.252,-0.038,0.235],[-0.245,-0.025,0.171],[-0.239,-0.008,0.104],[-0.234,0.016,0.034],[-0.229,0.044,-0.039],[-0.223,0.078,-0.114],[-0.218,0.115,-0.189],[-0.211,0.152,-0.263],[-0.203,0.188,-0.333],[-0.192,0.219,-0.398],[-0.178,0.243,-0.456],[-0.162,0.258,-0.504],[-0.141,0.261,-0.542],[-0.115,0.249,-0.566],[-0.085,0.221,-0.576],[-0.049,0.173,-0.569],[-0.006,0.104,-0.543],[0.043,0.014,-0.5],[0.096,-0.091,-0.443],[0.154,-0.207,-0.375],[0.216,-0.33,-0.3],[0.28,-0.455,-0.222],[0.347,-0.577,-0.143],[0.414,-0.692,-0.067],[0.481,-0.795,0.001],[0.547,-0.882,0.06],[0.612,-0.948,0.105],[0.675,-0.988,0.132],[0.734,-1.0,0.141],[0.788,-0.987,0.133],[0.837,-0.951,0.111],[0.878,-0.897,0.077],[0.91,-0.827,0.035],[0.933,-0.743,-0.014],[0.944,-0.65,-0.066],[0.943,-0.551,-0.119],[0.928,-0.448,-0.17],[0.898,-0.345,-0.217],[0.852,-0.244,-0.256],[0.788,-0.15,-0.287],[0.709,-0.061,-0.307],[0.617,0.021,-0.319],[0.515,0.097,-0.323],[0.406,0.166,-0.319],[0.292,0.23,-0.308],[0.176,0.288,-0.291],[0.061,0.341,-0.268],[-0.05,0.387,-0.24],[-0.155,0.429,-0.208],[-0.25,0.464,-0.171]],"path_3d":{"manifold":[[-0.294,0.48,-0.152],[0.619,0.019,-0.319],[0.922,-0.789,0.013],[0.477,-0.79,-0.002],[-0.031,0.146,-0.56]],"linear":[[-0.294,0.48,-0.152],[-0.228,0.397,-0.254],[-0.163,0.313,-0.356],[-0.097,0.23,-0.458],[-0.031,0.146,-0.56]]}},"way":{"man":[{"expected_idx":0,"expected":"Monday","induced_idx":0,"induced":"Monday","match":true,"p_induced":0.3405},{"expected_idx":1,"expected":"Tuesday","induced_idx":1,"induced":"Tuesday","match":true,"p_induced":0.3734},{"expected_idx":2,"expected":"Wednesday","induced_idx":2,"induced":"Wednesday","match":true,"p_induced":0.4602},{"expected_idx":3,"expected":"Thursday","induced_idx":3,"induced":"Thursday","match":true,"p_induced":0.5197},{"expected_idx":4,"expected":"Friday","induced_idx":4,"induced":"Friday","match":true,"p_induced":0.565}],"lin":[{"expected_idx":0,"expected":"Monday","induced_idx":0,"induced":"Monday","match":true,"p_induced":0.3405},{"expected_idx":1,"expected":"Tuesday","induced_idx":0,"induced":"Monday","match":false,"p_induced":0.3181},{"expected_idx":2,"expected":"Wednesday","induced_idx":4,"induced":"Friday","match":false,"p_induced":0.2942},{"expected_idx":3,"expected":"Thursday","induced_idx":4,"induced":"Friday","match":false,"p_induced":0.4598},{"expected_idx":4,"expected":"Friday","induced_idx":4,"induced":"Friday","match":true,"p_induced":0.565}]},"reading":{"best_layer_sweep":[{"layer":8,"ring_adj_1d_linear":0.5714,"ring_adj_2d_manifold":0.8571},{"layer":12,"ring_adj_1d_linear":1.0,"ring_adj_2d_manifold":0.5714},{"layer":14,"ring_adj_1d_linear":0.5714,"ring_adj_2d_manifold":1.0},{"layer":16,"ring_adj_1d_linear":0.8571,"ring_adj_2d_manifold":1.0}]},"concepts":[{"label":"Days of week","kind":"cyclic \u00b7 7-ring","man":1.0,"lin":0.4,"shuf":0.8,"tier":"win","tag":"routes \u00b7 1.00"},{"label":"Arousal","kind":"ordinal \u00b7 emotion","man":1.0,"lin":0.333,"shuf":0.833,"tier":"win","tag":"routes \u00b7 1.00"},{"label":"Wealth","kind":"ordinal","man":0.667,"lin":0.333,"shuf":0.5,"tier":"weak","tag":"routes, not faithful"},{"label":"Certainty","kind":"ordinal","man":0.5,"lin":0.333,"shuf":0.333,"tier":"weak","tag":"weak pass"},{"label":"Difficulty","kind":"ordinal","man":0.5,"lin":0.333,"shuf":1.0,"tier":"no","tag":"shuffled wins"},{"label":"Distance","kind":"ordinal","man":0.5,"lin":0.167,"shuf":0.667,"tier":"no","tag":"shuffled wins"},{"label":"Hardness","kind":"ordinal","man":0.5,"lin":0.333,"shuf":0.5,"tier":"no","tag":"no win"},{"label":"Formality","kind":"ordinal","man":0.5,"lin":0.333,"shuf":0.333,"tier":"weak","tag":"routes, not faithful"},{"label":"Life stage","kind":"ordinal","man":0.333,"lin":0.167,"shuf":0.167,"tier":"weak","tag":"weak pass"},{"label":"Quantity","kind":"ordinal","man":0.333,"lin":0.0,"shuf":0.0,"tier":"weak","tag":"routes, not faithful"},{"label":"Quality","kind":"ordinal","man":0.333,"lin":0.167,"shuf":0.333,"tier":"no","tag":"no win"},{"label":"Weight","kind":"ordinal","man":0.167,"lin":0.167,"shuf":0.167,"tier":"no","tag":"no win"},{"label":"Priority","kind":"ordinal","man":0.0,"lin":0.167,"shuf":0.0,"tier":"no","tag":"no win"}]};
+var DATA = {"rings":[{"name":"months_ring","tab":"months","label":"Months","layer":6,"items":["January","February","March","April","May","June","July","August","September","October","November","December"],"route":{"src":0,"tgt":6,"n_waypoints":7,"desc":"January -> July (around the ring)"},"reading":{"ring_adj_2d_manifold":0.5,"ring_adj_1d_linear":0.25},"routing":{"manifold":1.0,"linear":0.2857,"shuffled":0.8571,"random":0.1429,"routing_win":true},"way":{"man":[{"expected_idx":0,"expected":"January","induced_idx":0,"induced":"January","match":true,"p_induced":0.9274},{"expected_idx":1,"expected":"February","induced_idx":1,"induced":"February","match":true,"p_induced":0.873},{"expected_idx":2,"expected":"March","induced_idx":2,"induced":"March","match":true,"p_induced":0.8211},{"expected_idx":3,"expected":"April","induced_idx":3,"induced":"April","match":true,"p_induced":0.889},{"expected_idx":4,"expected":"May","induced_idx":4,"induced":"May","match":true,"p_induced":0.8747},{"expected_idx":5,"expected":"June","induced_idx":5,"induced":"June","match":true,"p_induced":0.9183},{"expected_idx":6,"expected":"July","induced_idx":6,"induced":"July","match":true,"p_induced":0.9038}],"lin":[{"expected_idx":0,"expected":"January","induced_idx":0,"induced":"January","match":true,"p_induced":0.9274},{"expected_idx":1,"expected":"February","induced_idx":0,"induced":"January","match":false,"p_induced":0.922},{"expected_idx":2,"expected":"March","induced_idx":0,"induced":"January","match":false,"p_induced":0.8814},{"expected_idx":3,"expected":"April","induced_idx":0,"induced":"January","match":false,"p_induced":0.5513},{"expected_idx":4,"expected":"May","induced_idx":6,"induced":"July","match":false,"p_induced":0.7728},{"expected_idx":5,"expected":"June","induced_idx":6,"induced":"July","match":false,"p_induced":0.8805},{"expected_idx":6,"expected":"July","induced_idx":6,"induced":"July","match":true,"p_induced":0.9038}]},"geometry":{"points_3d":[{"value":"January","index":0,"xyz":[-0.78,-0.272,-0.256]},{"value":"February","index":1,"xyz":[-0.216,-0.437,-0.841]},{"value":"March","index":2,"xyz":[0.092,0.209,-0.498]},{"value":"April","index":3,"xyz":[-0.145,-0.379,-0.089]},{"value":"May","index":4,"xyz":[-0.369,0.396,-0.026]},{"value":"June","index":5,"xyz":[0.565,0.142,0.467]},{"value":"July","index":6,"xyz":[0.355,0.461,0.914]},{"value":"August","index":7,"xyz":[0.52,0.441,0.819]},{"value":"September","index":8,"xyz":[0.447,0.297,-0.173]},{"value":"October","index":9,"xyz":[0.295,-0.351,-0.214]},{"value":"November","index":10,"xyz":[0.026,-0.063,-0.428]},{"value":"December","index":11,"xyz":[-0.736,-0.426,0.344]}],"curve_3d":[[-0.78,-0.272,-0.256],[-0.713,-0.297,-0.392],[-0.634,-0.344,-0.516],[-0.546,-0.397,-0.624],[-0.453,-0.444,-0.715],[-0.36,-0.471,-0.783],[-0.269,-0.464,-0.828],[-0.185,-0.411,-0.844],[-0.112,-0.311,-0.833],[-0.048,-0.184,-0.798],[0.005,-0.048,-0.745],[0.046,0.076,-0.677],[0.075,0.169,-0.6],[0.091,0.209,-0.519],[0.093,0.181,-0.437],[0.082,0.095,-0.358],[0.059,-0.026,-0.284],[0.023,-0.158,-0.217],[-0.025,-0.276,-0.161],[-0.084,-0.357,-0.116],[-0.154,-0.377,-0.086],[-0.233,-0.322,-0.071],[-0.31,-0.211,-0.066],[-0.376,-0.064,-0.067],[-0.42,0.094,-0.066],[-0.432,0.242,-0.059],[-0.403,0.358,-0.041],[-0.321,0.419,-0.005],[-0.191,0.423,0.048],[-0.031,0.385,0.116],[0.142,0.322,0.194],[0.309,0.25,0.28],[0.453,0.185,0.368],[0.556,0.144,0.456],[0.603,0.141,0.54],[0.601,0.171,0.619],[0.564,0.225,0.692],[0.506,0.292,0.76],[0.441,0.362,0.821],[0.384,0.425,0.877],[0.349,0.471,0.925],[0.342,0.494,0.965],[0.359,0.5,0.992],[0.391,0.492,1.0],[0.432,0.477,0.984],[0.474,0.46,0.939],[0.509,0.445,0.859],[0.532,0.438,0.74],[0.539,0.437,0.588],[0.534,0.435,0.418],[0.52,0.427,0.242],[0.499,0.406,0.076],[0.474,0.364,-0.067],[0.447,0.297,-0.173],[0.42,0.2,-0.233],[0.395,0.084,-0.253],[0.371,-0.04,-0.248],[0.348,-0.159,-0.23],[0.326,-0.259,-0.212],[0.307,-0.329,-0.206],[0.288,-0.356,-0.225],[0.27,-0.338,-0.271],[0.248,-0.288,-0.332],[0.219,-0.222,-0.392],[0.178,-0.153,-0.44],[0.123,-0.096,-0.461],[0.048,-0.065,-0.441],[-0.049,-0.073,-0.369],[-0.164,-0.116,-0.253],[-0.289,-0.182,-0.111],[-0.418,-0.259,0.039],[-0.542,-0.333,0.177],[-0.654,-0.394,0.286],[-0.746,-0.428,0.348],[-0.813,-0.429,0.351],[-0.855,-0.404,0.303],[-0.874,-0.365,0.214],[-0.872,-0.323,0.096],[-0.849,-0.288,-0.04],[-0.807,-0.27,-0.184]]},"prompt_pre":"The month is ","prompt_post":". So the current month is","ticks":["Jan","Feb","Mar","Apr","May","Jun","Jul"],"cam":[2.6, 0.4],"featured":true,"baseline":false,"note":"January → July is half the year — the chord is a diameter. The arc walks Feb, Mar, Apr, May, Jun in order; the chord never leaves the endpoints (Jan ×4, Jul ×3)."},{"name":"zodiac_ring","tab":"zodiac","label":"Zodiac","layer":6,"items":["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"],"route":{"src":0,"tgt":6,"n_waypoints":7,"desc":"Aries -> Libra (around the ring)"},"reading":{"ring_adj_2d_manifold":0.4167,"ring_adj_1d_linear":0.0},"routing":{"manifold":1.0,"linear":0.2857,"shuffled":0.7143,"random":0.1429,"routing_win":true},"way":{"man":[{"expected_idx":0,"expected":"Aries","induced_idx":0,"induced":"Aries","match":true,"p_induced":0.9638},{"expected_idx":1,"expected":"Taurus","induced_idx":1,"induced":"Taurus","match":true,"p_induced":0.8829},{"expected_idx":2,"expected":"Gemini","induced_idx":2,"induced":"Gemini","match":true,"p_induced":0.517},{"expected_idx":3,"expected":"Cancer","induced_idx":3,"induced":"Cancer","match":true,"p_induced":0.8309},{"expected_idx":4,"expected":"Leo","induced_idx":4,"induced":"Leo","match":true,"p_induced":0.8708},{"expected_idx":5,"expected":"Virgo","induced_idx":5,"induced":"Virgo","match":true,"p_induced":0.5411},{"expected_idx":6,"expected":"Libra","induced_idx":6,"induced":"Libra","match":true,"p_induced":0.8785}],"lin":[{"expected_idx":0,"expected":"Aries","induced_idx":0,"induced":"Aries","match":true,"p_induced":0.9638},{"expected_idx":1,"expected":"Taurus","induced_idx":0,"induced":"Aries","match":false,"p_induced":0.9551},{"expected_idx":2,"expected":"Gemini","induced_idx":0,"induced":"Aries","match":false,"p_induced":0.9155},{"expected_idx":3,"expected":"Cancer","induced_idx":0,"induced":"Aries","match":false,"p_induced":0.6966},{"expected_idx":4,"expected":"Leo","induced_idx":6,"induced":"Libra","match":false,"p_induced":0.6394},{"expected_idx":5,"expected":"Virgo","induced_idx":6,"induced":"Libra","match":false,"p_induced":0.8275},{"expected_idx":6,"expected":"Libra","induced_idx":6,"induced":"Libra","match":true,"p_induced":0.8785}]},"geometry":{"points_3d":[{"value":"Aries","index":0,"xyz":[-0.154,-0.736,0.308]},{"value":"Taurus","index":1,"xyz":[0.174,-0.244,0.342]},{"value":"Gemini","index":2,"xyz":[-0.936,0.383,-0.14]},{"value":"Cancer","index":3,"xyz":[-0.537,0.014,0.13]},{"value":"Leo","index":4,"xyz":[-0.954,0.19,-0.108]},{"value":"Virgo","index":5,"xyz":[0.488,0.79,0.216]},{"value":"Libra","index":6,"xyz":[0.02,0.809,0.554]},{"value":"Scorpio","index":7,"xyz":[0.784,0.225,-0.451]},{"value":"Sagittarius","index":8,"xyz":[0.129,-0.537,-0.346]},{"value":"Capricorn","index":9,"xyz":[0.058,-0.313,-0.3]},{"value":"Aquarius","index":10,"xyz":[0.582,-0.216,-0.37]},{"value":"Pisces","index":11,"xyz":[0.357,-0.314,0.144]}],"curve_3d":[[-0.154,-0.736,0.308],[-0.106,-0.729,0.331],[-0.025,-0.692,0.357],[0.068,-0.628,0.38],[0.152,-0.542,0.393],[0.206,-0.439,0.391],[0.208,-0.322,0.369],[0.138,-0.196,0.32],[-0.006,-0.067,0.246],[-0.199,0.059,0.157],[-0.414,0.174,0.064],[-0.623,0.27,-0.023],[-0.801,0.341,-0.093],[-0.919,0.379,-0.135],[-0.955,0.378,-0.139],[-0.917,0.343,-0.11],[-0.833,0.283,-0.059],[-0.727,0.21,0.001],[-0.625,0.133,0.061],[-0.554,0.062,0.108],[-0.539,0.009,0.131],[-0.594,-0.02,0.124],[-0.695,-0.026,0.092],[-0.814,-0.01,0.045],[-0.922,0.026,-0.008],[-0.99,0.08,-0.058],[-0.989,0.15,-0.096],[-0.891,0.234,-0.114],[-0.7,0.328,-0.107],[-0.448,0.428,-0.08],[-0.17,0.528,-0.032],[0.1,0.624,0.032],[0.327,0.71,0.112],[0.476,0.782,0.203],[0.521,0.835,0.304],[0.478,0.87,0.405],[0.376,0.886,0.496],[0.249,0.886,0.565],[0.127,0.87,0.601],[0.041,0.84,0.594],[0.023,0.797,0.533],[0.086,0.741,0.415],[0.207,0.673,0.257],[0.362,0.592,0.078],[0.523,0.499,-0.106],[0.666,0.393,-0.275],[0.764,0.274,-0.412],[0.794,0.141,-0.499],[0.754,0.001,-0.537],[0.663,-0.139,-0.534],[0.537,-0.271,-0.503],[0.395,-0.387,-0.454],[0.253,-0.478,-0.398],[0.129,-0.537,-0.346],[0.038,-0.558,-0.306],[-0.021,-0.546,-0.28],[-0.05,-0.51,-0.266],[-0.051,-0.459,-0.263],[-0.027,-0.401,-0.27],[0.019,-0.344,-0.286],[0.085,-0.297,-0.31],[0.166,-0.264,-0.339],[0.256,-0.242,-0.367],[0.348,-0.229,-0.391],[0.435,-0.222,-0.404],[0.512,-0.218,-0.402],[0.571,-0.216,-0.38],[0.606,-0.213,-0.332],[0.617,-0.21,-0.263],[0.604,-0.211,-0.18],[0.568,-0.219,-0.09],[0.513,-0.238,-0.0],[0.437,-0.271,0.083],[0.344,-0.321,0.151],[0.236,-0.389,0.201],[0.124,-0.468,0.234],[0.017,-0.55,0.257],[-0.073,-0.626,0.272],[-0.135,-0.688,0.285],[-0.16,-0.727,0.299]]},"prompt_pre":"She was born under ","prompt_post":". Her zodiac sign is","ticks":["Ari","Tau","Gem","Can","Leo","Vir","Lib"],"cam":[3.1, 0.2],"featured":true,"baseline":false,"note":"Aries → Libra, the opposite sign — another diameter. The arc hits Taurus through Virgo in order; the chord snaps to the endpoints."},{"name":"hues_ring","tab":"color wheel","label":"Color wheel","layer":6,"items":["red","orange","yellow","green","blue","purple"],"route":{"src":0,"tgt":4,"n_waypoints":5,"desc":"red -> blue (around the ring)"},"reading":{"ring_adj_2d_manifold":0.6667,"ring_adj_1d_linear":0.5},"routing":{"manifold":1.0,"linear":0.4,"shuffled":0.8,"random":0.2,"routing_win":true},"way":{"man":[{"expected_idx":0,"expected":"red","induced_idx":0,"induced":"red","match":true,"p_induced":0.7058},{"expected_idx":1,"expected":"orange","induced_idx":1,"induced":"orange","match":true,"p_induced":0.3982},{"expected_idx":2,"expected":"yellow","induced_idx":2,"induced":"yellow","match":true,"p_induced":0.5587},{"expected_idx":3,"expected":"green","induced_idx":3,"induced":"green","match":true,"p_induced":0.5561},{"expected_idx":4,"expected":"blue","induced_idx":4,"induced":"blue","match":true,"p_induced":0.6124}],"lin":[{"expected_idx":0,"expected":"red","induced_idx":0,"induced":"red","match":true,"p_induced":0.7058},{"expected_idx":1,"expected":"orange","induced_idx":0,"induced":"red","match":false,"p_induced":0.6283},{"expected_idx":2,"expected":"yellow","induced_idx":0,"induced":"red","match":false,"p_induced":0.4331},{"expected_idx":3,"expected":"green","induced_idx":4,"induced":"blue","match":false,"p_induced":0.5343},{"expected_idx":4,"expected":"blue","induced_idx":4,"induced":"blue","match":true,"p_induced":0.6124}]},"geometry":{"points_3d":[{"value":"red","index":0,"xyz":[-0.046,0.031,0.094]},{"value":"orange","index":1,"xyz":[0.108,0.867,-0.09]},{"value":"yellow","index":2,"xyz":[0.237,0.794,0.023]},{"value":"green","index":3,"xyz":[-0.03,-0.325,0.22]},{"value":"blue","index":4,"xyz":[0.007,-0.754,0.047]},{"value":"purple","index":5,"xyz":[-0.274,-0.614,-0.297]}],"curve_3d":[[-0.046,0.031,0.094],[-0.027,0.098,0.103],[-0.011,0.167,0.104],[0.002,0.237,0.099],[0.015,0.307,0.089],[0.026,0.377,0.074],[0.035,0.447,0.056],[0.045,0.514,0.035],[0.053,0.58,0.013],[0.062,0.643,-0.01],[0.071,0.703,-0.032],[0.081,0.759,-0.053],[0.092,0.81,-0.072],[0.104,0.856,-0.087],[0.118,0.896,-0.098],[0.133,0.93,-0.104],[0.149,0.958,-0.107],[0.166,0.979,-0.106],[0.182,0.993,-0.102],[0.197,0.999,-0.094],[0.211,0.999,-0.084],[0.224,0.99,-0.072],[0.234,0.974,-0.057],[0.241,0.949,-0.041],[0.245,0.916,-0.024],[0.245,0.874,-0.006],[0.241,0.823,0.013],[0.232,0.763,0.033],[0.218,0.694,0.052],[0.2,0.618,0.072],[0.179,0.536,0.091],[0.156,0.448,0.109],[0.131,0.358,0.127],[0.105,0.265,0.144],[0.079,0.171,0.16],[0.054,0.077,0.175],[0.031,-0.015,0.188],[0.009,-0.105,0.199],[-0.009,-0.19,0.209],[-0.023,-0.269,0.216],[-0.032,-0.342,0.221],[-0.037,-0.408,0.224],[-0.037,-0.466,0.224],[-0.034,-0.518,0.222],[-0.028,-0.563,0.217],[-0.02,-0.602,0.21],[-0.011,-0.636,0.199],[-0.003,-0.665,0.186],[0.005,-0.689,0.17],[0.012,-0.709,0.152],[0.016,-0.725,0.13],[0.017,-0.737,0.105],[0.014,-0.747,0.078],[0.007,-0.754,0.047],[-0.006,-0.759,0.013],[-0.024,-0.762,-0.023],[-0.046,-0.762,-0.06],[-0.07,-0.76,-0.098],[-0.097,-0.755,-0.135],[-0.125,-0.748,-0.17],[-0.152,-0.739,-0.203],[-0.18,-0.726,-0.233],[-0.205,-0.711,-0.258],[-0.228,-0.693,-0.279],[-0.247,-0.672,-0.293],[-0.262,-0.648,-0.3],[-0.272,-0.621,-0.299],[-0.276,-0.591,-0.289],[-0.274,-0.558,-0.271],[-0.266,-0.521,-0.247],[-0.254,-0.482,-0.217],[-0.238,-0.44,-0.182],[-0.219,-0.394,-0.145],[-0.198,-0.346,-0.106],[-0.175,-0.295,-0.067],[-0.15,-0.242,-0.029],[-0.126,-0.186,0.007],[-0.101,-0.127,0.039],[-0.078,-0.066,0.066],[-0.056,-0.002,0.086]]},"prompt_pre":"The paint is ","prompt_post":". The color is","ticks":["red","orange","yellow","green","blue"],"cam":[0.9, 0.12],"featured":true,"baseline":false,"note":"Red → blue around the wheel: orange, yellow, green induced in order on the arc; the chord skips straight across (red, red, red, blue, blue)."},{"name":"compass_ring","tab":"compass","label":"Compass","layer":6,"items":["North","Northeast","East","Southeast","South","Southwest","West","Northwest"],"route":{"src":0,"tgt":4,"n_waypoints":5,"desc":"North -> South (around the ring)"},"reading":{"ring_adj_2d_manifold":0.0,"ring_adj_1d_linear":0.0},"routing":{"manifold":0.6,"linear":0.4,"shuffled":0.4,"random":0.2,"routing_win":true},"way":{"man":[{"expected_idx":0,"expected":"North","induced_idx":0,"induced":"North","match":true,"p_induced":0.8554},{"expected_idx":1,"expected":"Northeast","induced_idx":0,"induced":"North","match":false,"p_induced":0.6998},{"expected_idx":2,"expected":"East","induced_idx":2,"induced":"East","match":true,"p_induced":0.4325},{"expected_idx":3,"expected":"Southeast","induced_idx":0,"induced":"North","match":false,"p_induced":0.3903},{"expected_idx":4,"expected":"South","induced_idx":4,"induced":"South","match":true,"p_induced":0.6434}],"lin":[{"expected_idx":0,"expected":"North","induced_idx":0,"induced":"North","match":true,"p_induced":0.8554},{"expected_idx":1,"expected":"Northeast","induced_idx":0,"induced":"North","match":false,"p_induced":0.7928},{"expected_idx":2,"expected":"East","induced_idx":0,"induced":"North","match":false,"p_induced":0.6555},{"expected_idx":3,"expected":"Southeast","induced_idx":4,"induced":"South","match":false,"p_induced":0.4753},{"expected_idx":4,"expected":"South","induced_idx":4,"induced":"South","match":true,"p_induced":0.6434}]},"geometry":{"points_3d":[{"value":"North","index":0,"xyz":[-0.127,0.985,0.385]},{"value":"Northeast","index":1,"xyz":[0.013,-0.951,-0.312]},{"value":"East","index":2,"xyz":[-0.081,0.902,0.356]},{"value":"Southeast","index":3,"xyz":[0.062,-1.0,-0.544]},{"value":"South","index":4,"xyz":[-0.053,0.882,0.233]},{"value":"Southwest","index":5,"xyz":[0.252,-0.961,-0.338]},{"value":"West","index":6,"xyz":[-0.098,0.792,0.366]},{"value":"Northwest","index":7,"xyz":[0.037,-0.697,-0.164]}],"curve_3d":[[-0.127,0.985,0.385],[-0.126,0.911,0.355],[-0.117,0.752,0.294],[-0.103,0.528,0.211],[-0.085,0.263,0.114],[-0.065,-0.021,0.011],[-0.043,-0.302,-0.09],[-0.023,-0.558,-0.181],[-0.006,-0.766,-0.253],[0.007,-0.904,-0.3],[0.013,-0.95,-0.312],[0.012,-0.891,-0.285],[0.006,-0.743,-0.226],[-0.006,-0.529,-0.143],[-0.02,-0.271,-0.045],[-0.036,0.006,0.058],[-0.051,0.282,0.158],[-0.065,0.531,0.247],[-0.076,0.733,0.315],[-0.081,0.864,0.353],[-0.08,0.901,0.353],[-0.072,0.832,0.31],[-0.058,0.675,0.232],[-0.04,0.453,0.127],[-0.02,0.189,0.006],[0.002,-0.095,-0.123],[0.022,-0.374,-0.249],[0.04,-0.627,-0.364],[0.054,-0.831,-0.458],[0.062,-0.962,-0.521],[0.062,-0.998,-0.545],[0.053,-0.929,-0.524],[0.039,-0.772,-0.466],[0.02,-0.552,-0.381],[-0.002,-0.29,-0.277],[-0.023,-0.009,-0.163],[-0.041,0.268,-0.048],[-0.055,0.518,0.058],[-0.063,0.719,0.147],[-0.061,0.847,0.209],[-0.048,0.88,0.236],[-0.024,0.81,0.224],[0.01,0.656,0.181],[0.049,0.439,0.113],[0.092,0.183,0.03],[0.136,-0.092,-0.06],[0.176,-0.362,-0.15],[0.21,-0.606,-0.23],[0.236,-0.802,-0.293],[0.251,-0.927,-0.331],[0.25,-0.96,-0.336],[0.235,-0.893,-0.304],[0.206,-0.746,-0.243],[0.168,-0.54,-0.161],[0.124,-0.296,-0.065],[0.076,-0.034,0.037],[0.029,0.223,0.138],[-0.016,0.456,0.229],[-0.055,0.642,0.302],[-0.085,0.761,0.351],[-0.103,0.792,0.368],[-0.108,0.732,0.35],[-0.102,0.598,0.305],[-0.088,0.41,0.24],[-0.067,0.19,0.163],[-0.044,-0.042,0.08],[-0.02,-0.267,-0.002],[0.003,-0.464,-0.073],[0.022,-0.611,-0.129],[0.034,-0.691,-0.16],[0.037,-0.681,-0.16],[0.031,-0.581,-0.129],[0.017,-0.411,-0.073],[-0.002,-0.192,-0.0],[-0.025,0.056,0.083],[-0.049,0.311,0.168],[-0.073,0.552,0.249],[-0.095,0.759,0.317],[-0.112,0.909,0.366],[-0.124,0.983,0.387]]},"prompt_pre":"The ship is sailing ","prompt_post":". Its heading is","ticks":["N","NE","E","SE","S"],"cam":[-1.2, 0.12],"featured":true,"baseline":false,"note":"A modest pass: the arc hits the cardinals (North, East, South) but misses the intercardinals; still beats both controls at 0.60."},{"name":"days_ring","tab":"days (baseline)","label":"Days of week","layer":14,"items":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"route":{"src":0,"tgt":4,"n_waypoints":5,"desc":"Monday -> Friday (around the ring)"},"reading":{"ring_adj_2d_manifold":1.0,"ring_adj_1d_linear":0.5714},"routing":{"manifold":1.0,"linear":0.4,"shuffled":0.8,"random":0.2,"routing_win":true},"way":{"man":[{"expected_idx":0,"expected":"Monday","induced_idx":0,"induced":"Monday","match":true,"p_induced":0.3405},{"expected_idx":1,"expected":"Tuesday","induced_idx":1,"induced":"Tuesday","match":true,"p_induced":0.3734},{"expected_idx":2,"expected":"Wednesday","induced_idx":2,"induced":"Wednesday","match":true,"p_induced":0.4602},{"expected_idx":3,"expected":"Thursday","induced_idx":3,"induced":"Thursday","match":true,"p_induced":0.5197},{"expected_idx":4,"expected":"Friday","induced_idx":4,"induced":"Friday","match":true,"p_induced":0.565}],"lin":[{"expected_idx":0,"expected":"Monday","induced_idx":0,"induced":"Monday","match":true,"p_induced":0.3405},{"expected_idx":1,"expected":"Tuesday","induced_idx":0,"induced":"Monday","match":false,"p_induced":0.3181},{"expected_idx":2,"expected":"Wednesday","induced_idx":4,"induced":"Friday","match":false,"p_induced":0.2942},{"expected_idx":3,"expected":"Thursday","induced_idx":4,"induced":"Friday","match":false,"p_induced":0.4598},{"expected_idx":4,"expected":"Friday","induced_idx":4,"induced":"Friday","match":true,"p_induced":0.565}]},"geometry":{"points_3d":[{"value":"Monday","index":0,"xyz":[-0.294,0.48,-0.152]},{"value":"Tuesday","index":1,"xyz":[-0.597,0.485,0.357]},{"value":"Wednesday","index":2,"xyz":[-0.343,0.034,0.539]},{"value":"Thursday","index":3,"xyz":[-0.228,0.047,-0.044]},{"value":"Friday","index":4,"xyz":[-0.031,0.146,-0.56]},{"value":"Saturday","index":5,"xyz":[0.662,-0.982,0.128]},{"value":"Sunday","index":6,"xyz":[0.844,-0.23,-0.261]}],"curve_3d":[[-0.294,0.48,-0.152],[-0.372,0.508,-0.112],[-0.437,0.531,-0.069],[-0.49,0.548,-0.024],[-0.533,0.56,0.022],[-0.566,0.566,0.069],[-0.59,0.568,0.116],[-0.605,0.564,0.163],[-0.613,0.555,0.21],[-0.615,0.54,0.256],[-0.611,0.52,0.3],[-0.601,0.495,0.342],[-0.588,0.465,0.382],[-0.571,0.43,0.419],[-0.552,0.391,0.453],[-0.53,0.349,0.483],[-0.506,0.305,0.509],[-0.481,0.261,0.53],[-0.455,0.216,0.546],[-0.43,0.172,0.557],[-0.404,0.13,0.561],[-0.38,0.091,0.559],[-0.358,0.056,0.55],[-0.337,0.026,0.534],[-0.319,0.0,0.51],[-0.304,-0.019,0.479],[-0.29,-0.034,0.441],[-0.278,-0.043,0.398],[-0.268,-0.047,0.348],[-0.259,-0.045,0.294],[-0.252,-0.038,0.235],[-0.245,-0.025,0.171],[-0.239,-0.008,0.104],[-0.234,0.016,0.034],[-0.229,0.044,-0.039],[-0.223,0.078,-0.114],[-0.218,0.115,-0.189],[-0.211,0.152,-0.263],[-0.203,0.188,-0.333],[-0.192,0.219,-0.398],[-0.178,0.243,-0.456],[-0.162,0.258,-0.504],[-0.141,0.261,-0.542],[-0.115,0.249,-0.566],[-0.085,0.221,-0.576],[-0.049,0.173,-0.569],[-0.006,0.104,-0.543],[0.043,0.014,-0.5],[0.096,-0.091,-0.443],[0.154,-0.207,-0.375],[0.216,-0.33,-0.3],[0.28,-0.455,-0.222],[0.347,-0.577,-0.143],[0.414,-0.692,-0.067],[0.481,-0.795,0.001],[0.547,-0.882,0.06],[0.612,-0.948,0.105],[0.675,-0.988,0.132],[0.734,-1.0,0.141],[0.788,-0.987,0.133],[0.837,-0.951,0.111],[0.878,-0.897,0.077],[0.91,-0.827,0.035],[0.933,-0.743,-0.014],[0.944,-0.65,-0.066],[0.943,-0.551,-0.119],[0.928,-0.448,-0.17],[0.898,-0.345,-0.217],[0.852,-0.244,-0.256],[0.788,-0.15,-0.287],[0.709,-0.061,-0.307],[0.617,0.021,-0.319],[0.515,0.097,-0.323],[0.406,0.166,-0.319],[0.292,0.23,-0.308],[0.176,0.288,-0.291],[0.061,0.341,-0.268],[-0.05,0.387,-0.24],[-0.155,0.429,-0.208],[-0.25,0.464,-0.171]]},"prompt_pre":"Today is ","prompt_post":". So today is","ticks":["Mon","Tue","Wed","Thu","Fri"],"cam":[-1.0, 0.3],"featured":true,"baseline":true,"note":"Goodfire's worked example, re-run under our protocol: the arc walks the week (1.00); the chord snaps Mon, Mon, Fri, Fri, Fri (0.40)."},{"name":"time_ring","tab":"time of day","label":"Time of day","layer":6,"items":["dawn","morning","noon","afternoon","evening","night"],"route":{"src":0,"tgt":4,"n_waypoints":5,"desc":"dawn -> evening (around the ring)"},"reading":{"ring_adj_2d_manifold":1.0,"ring_adj_1d_linear":0.8333},"routing":{"manifold":1.0,"linear":0.4,"shuffled":1.0,"random":0.2,"routing_win":false},"way":{"man":[{"expected_idx":0,"expected":"dawn","induced_idx":0,"induced":"dawn","match":true,"p_induced":0.4925},{"expected_idx":1,"expected":"morning","induced_idx":1,"induced":"morning","match":true,"p_induced":0.8618},{"expected_idx":2,"expected":"noon","induced_idx":2,"induced":"noon","match":true,"p_induced":0.8679},{"expected_idx":3,"expected":"afternoon","induced_idx":3,"induced":"afternoon","match":true,"p_induced":0.7608},{"expected_idx":4,"expected":"evening","induced_idx":4,"induced":"evening","match":true,"p_induced":0.5753}],"lin":[{"expected_idx":0,"expected":"dawn","induced_idx":0,"induced":"dawn","match":true,"p_induced":0.4925},{"expected_idx":1,"expected":"morning","induced_idx":0,"induced":"dawn","match":false,"p_induced":0.4293},{"expected_idx":2,"expected":"noon","induced_idx":4,"induced":"evening","match":false,"p_induced":0.3636},{"expected_idx":3,"expected":"afternoon","induced_idx":4,"induced":"evening","match":false,"p_induced":0.5907},{"expected_idx":4,"expected":"evening","induced_idx":4,"induced":"evening","match":true,"p_induced":0.5753}]},"geometry":{"points_3d":[{"value":"dawn","index":0,"xyz":[0.888,0.682,0.247]},{"value":"morning","index":1,"xyz":[0.271,0.261,0.086]},{"value":"noon","index":2,"xyz":[0.364,-0.945,0.299]},{"value":"afternoon","index":3,"xyz":[-0.202,-0.551,-0.233]},{"value":"evening","index":4,"xyz":[-0.638,0.129,-0.313]},{"value":"night","index":5,"xyz":[-0.714,0.4,-0.095]}],"curve_3d":[[0.888,0.682,0.247],[0.918,0.687,0.245],[0.924,0.689,0.238],[0.907,0.685,0.226],[0.873,0.676,0.21],[0.823,0.661,0.192],[0.761,0.64,0.173],[0.691,0.612,0.153],[0.616,0.577,0.134],[0.539,0.535,0.116],[0.463,0.485,0.101],[0.393,0.426,0.09],[0.331,0.358,0.084],[0.281,0.282,0.085],[0.246,0.195,0.091],[0.224,0.101,0.105],[0.216,0.0,0.123],[0.217,-0.105,0.145],[0.227,-0.212,0.17],[0.243,-0.32,0.196],[0.264,-0.427,0.222],[0.287,-0.53,0.246],[0.31,-0.627,0.268],[0.331,-0.717,0.286],[0.349,-0.798,0.299],[0.361,-0.867,0.305],[0.365,-0.923,0.303],[0.36,-0.964,0.292],[0.344,-0.989,0.272],[0.319,-1.0,0.245],[0.287,-0.997,0.21],[0.247,-0.983,0.17],[0.203,-0.958,0.126],[0.154,-0.925,0.078],[0.101,-0.883,0.028],[0.047,-0.834,-0.022],[-0.008,-0.78,-0.071],[-0.063,-0.722,-0.119],[-0.116,-0.661,-0.164],[-0.167,-0.598,-0.205],[-0.214,-0.536,-0.241],[-0.256,-0.473,-0.271],[-0.294,-0.412,-0.295],[-0.329,-0.352,-0.314],[-0.362,-0.294,-0.328],[-0.392,-0.237,-0.337],[-0.421,-0.182,-0.343],[-0.449,-0.129,-0.345],[-0.477,-0.079,-0.345],[-0.506,-0.031,-0.342],[-0.536,0.014,-0.336],[-0.567,0.056,-0.33],[-0.601,0.094,-0.321],[-0.638,0.129,-0.313],[-0.679,0.16,-0.303],[-0.721,0.188,-0.293],[-0.762,0.212,-0.283],[-0.802,0.234,-0.272],[-0.838,0.255,-0.259],[-0.867,0.273,-0.246],[-0.888,0.29,-0.231],[-0.899,0.307,-0.214],[-0.898,0.323,-0.196],[-0.883,0.34,-0.176],[-0.852,0.357,-0.154],[-0.803,0.375,-0.129],[-0.734,0.395,-0.102],[-0.644,0.417,-0.072],[-0.534,0.44,-0.041],[-0.409,0.464,-0.008],[-0.272,0.49,0.026],[-0.126,0.516,0.06],[0.023,0.541,0.093],[0.173,0.566,0.125],[0.319,0.59,0.155],[0.458,0.612,0.181],[0.585,0.633,0.204],[0.698,0.651,0.223],[0.791,0.666,0.237],[0.862,0.677,0.245]]},"prompt_pre":"It is ","prompt_post":" right now. The time of day is","ticks":["dawn","morning","noon","afternoon","evening"],"cam":[-2.8, 0.3],"featured":false,"baseline":false,"note":"Routes 1.00 — but the shuffled-order control ALSO routes 1.00, so the gate withholds the win. Six points in a small region: any smooth path crosses the right neighborhoods."},{"name":"moon_ring","tab":"moon phases","label":"Moon phases","layer":6,"items":["new moon","waxing crescent","first quarter","waxing gibbous","full moon","waning gibbous","last quarter","waning crescent"],"route":{"src":0,"tgt":4,"n_waypoints":5,"desc":"new moon -> full moon (around the ring)"},"reading":{"ring_adj_2d_manifold":0.0,"ring_adj_1d_linear":0.0},"routing":{"manifold":0.2,"linear":0.2,"shuffled":0.2,"random":0.2,"routing_win":false},"way":{"man":[{"expected_idx":0,"expected":"new moon","induced_idx":0,"induced":"new moon","match":true,"p_induced":0.9409},{"expected_idx":1,"expected":"waxing crescent","induced_idx":0,"induced":"new moon","match":false,"p_induced":0.9107},{"expected_idx":2,"expected":"first quarter","induced_idx":0,"induced":"new moon","match":false,"p_induced":0.564},{"expected_idx":3,"expected":"waxing gibbous","induced_idx":0,"induced":"new moon","match":false,"p_induced":0.9223},{"expected_idx":4,"expected":"full moon","induced_idx":0,"induced":"new moon","match":false,"p_induced":0.9403}],"lin":[{"expected_idx":0,"expected":"new moon","induced_idx":0,"induced":"new moon","match":true,"p_induced":0.9409},{"expected_idx":1,"expected":"waxing crescent","induced_idx":0,"induced":"new moon","match":false,"p_induced":0.9407},{"expected_idx":2,"expected":"first quarter","induced_idx":0,"induced":"new moon","match":false,"p_induced":0.9409},{"expected_idx":3,"expected":"waxing gibbous","induced_idx":0,"induced":"new moon","match":false,"p_induced":0.9407},{"expected_idx":4,"expected":"full moon","induced_idx":0,"induced":"new moon","match":false,"p_induced":0.9403}]},"geometry":{"points_3d":[{"value":"new moon","index":0,"xyz":[0.033,0.773,-0.732]},{"value":"waxing crescent","index":1,"xyz":[-0.205,-0.519,-0.19]},{"value":"first quarter","index":2,"xyz":[0.851,0.175,0.566]},{"value":"waxing gibbous","index":3,"xyz":[-0.816,-0.341,0.335]},{"value":"full moon","index":4,"xyz":[0.045,0.633,-0.69]},{"value":"waning gibbous","index":5,"xyz":[-0.783,-0.341,0.316]},{"value":"last quarter","index":6,"xyz":[0.975,0.149,0.598]},{"value":"waning crescent","index":7,"xyz":[-0.101,-0.565,-0.168]}],"curve_3d":[[0.033,0.773,-0.732],[0.014,0.743,-0.726],[-0.024,0.657,-0.705],[-0.076,0.527,-0.671],[-0.134,0.367,-0.625],[-0.19,0.188,-0.569],[-0.238,0.004,-0.505],[-0.27,-0.172,-0.432],[-0.279,-0.327,-0.354],[-0.258,-0.448,-0.271],[-0.2,-0.522,-0.185],[-0.101,-0.542,-0.097],[0.03,-0.514,-0.008],[0.181,-0.448,0.08],[0.341,-0.356,0.166],[0.499,-0.247,0.249],[0.642,-0.132,0.328],[0.76,-0.022,0.4],[0.84,0.073,0.466],[0.872,0.143,0.524],[0.844,0.177,0.572],[0.75,0.17,0.609],[0.602,0.129,0.635],[0.414,0.062,0.648],[0.2,-0.021,0.648],[-0.025,-0.111,0.634],[-0.248,-0.198,0.604],[-0.453,-0.273,0.558],[-0.627,-0.327,0.495],[-0.755,-0.35,0.415],[-0.824,-0.335,0.315],[-0.826,-0.275,0.198],[-0.773,-0.181,0.069],[-0.678,-0.061,-0.067],[-0.554,0.073,-0.203],[-0.415,0.213,-0.333],[-0.273,0.347,-0.452],[-0.144,0.466,-0.553],[-0.039,0.56,-0.63],[0.028,0.618,-0.678],[0.043,0.631,-0.69],[0.002,0.595,-0.663],[-0.084,0.518,-0.604],[-0.202,0.411,-0.518],[-0.337,0.283,-0.411],[-0.476,0.145,-0.288],[-0.606,0.007,-0.156],[-0.713,-0.121,-0.02],[-0.783,-0.23,0.113],[-0.804,-0.309,0.238],[-0.762,-0.349,0.349],[-0.653,-0.345,0.443],[-0.49,-0.307,0.519],[-0.289,-0.244,0.578],[-0.063,-0.164,0.622],[0.173,-0.077,0.65],[0.405,0.007,0.664],[0.617,0.08,0.663],[0.795,0.132,0.648],[0.925,0.154,0.621],[0.992,0.137,0.582],[0.993,0.08,0.531],[0.937,-0.007,0.47],[0.837,-0.114,0.401],[0.704,-0.231,0.324],[0.55,-0.346,0.242],[0.386,-0.45,0.155],[0.224,-0.531,0.066],[0.076,-0.58,-0.026],[-0.047,-0.585,-0.117],[-0.134,-0.537,-0.207],[-0.181,-0.435,-0.294],[-0.195,-0.293,-0.377],[-0.184,-0.122,-0.455],[-0.153,0.064,-0.526],[-0.111,0.252,-0.589],[-0.064,0.429,-0.642],[-0.02,0.581,-0.684],[0.015,0.697,-0.714],[0.033,0.763,-0.73]]},"prompt_pre":"The moon tonight is ","prompt_post":". The moon phase is","ticks":["new","wax cr","1st qtr","wax gib","full"],"cam":[-0.3, 0.3],"featured":false,"baseline":false,"note":"Steer-resistant at 2B: every arm flat at 0.20, every waypoint reads “new moon”. Multi-word values, weak geometry, no control at this scale."}],"groups":[{"title":"cyclic — the structural lane","rows":[{"label":"Months","kind":"cyclic · 12-ring","man":1.0,"lin":0.286,"shuf":0.857,"tier":"win","tag":"routes · 1.00"},{"label":"Zodiac","kind":"cyclic · 12-ring","man":1.0,"lin":0.286,"shuf":0.714,"tier":"win","tag":"routes · 1.00"},{"label":"Color wheel","kind":"cyclic · 6-ring","man":1.0,"lin":0.4,"shuf":0.8,"tier":"win","tag":"routes · 1.00"},{"label":"Days of week","kind":"cyclic · 7-ring · baseline","man":1.0,"lin":0.4,"shuf":0.8,"tier":"win","tag":"routes · 1.00"},{"label":"Compass","kind":"cyclic · 8-ring","man":0.6,"lin":0.4,"shuf":0.4,"tier":"win","tag":"passes · 0.60"},{"label":"Time of day","kind":"cyclic · 6-ring","man":1.0,"lin":0.4,"shuf":1.0,"tier":"no","tag":"shuffled ties"},{"label":"Moon phases","kind":"cyclic · 8-ring","man":0.2,"lin":0.2,"shuf":0.2,"tier":"no","tag":"steer-resistant"}]},{"title":"ordinal — the chord interpolates for free","rows":[{"label":"Arousal","kind":"ordinal · emotion","man":1.0,"lin":0.333,"shuf":0.833,"tier":"win","tag":"routes · 1.00"},{"label":"Wealth","kind":"ordinal","man":0.667,"lin":0.333,"shuf":0.5,"tier":"weak","tag":"routes, not faithful"},{"label":"Certainty","kind":"ordinal","man":0.5,"lin":0.333,"shuf":0.333,"tier":"weak","tag":"weak pass"},{"label":"Difficulty","kind":"ordinal","man":0.5,"lin":0.333,"shuf":1.0,"tier":"no","tag":"shuffled wins"},{"label":"Distance","kind":"ordinal","man":0.5,"lin":0.167,"shuf":0.667,"tier":"no","tag":"shuffled wins"},{"label":"Hardness","kind":"ordinal","man":0.5,"lin":0.333,"shuf":0.5,"tier":"no","tag":"no win"},{"label":"Formality","kind":"ordinal","man":0.5,"lin":0.333,"shuf":0.333,"tier":"weak","tag":"routes, not faithful"},{"label":"Life stage","kind":"ordinal","man":0.333,"lin":0.167,"shuf":0.167,"tier":"weak","tag":"weak pass"},{"label":"Quantity","kind":"ordinal","man":0.333,"lin":0.0,"shuf":0.0,"tier":"weak","tag":"routes, not faithful"},{"label":"Quality","kind":"ordinal","man":0.333,"lin":0.167,"shuf":0.333,"tier":"no","tag":"no win"},{"label":"Weight","kind":"ordinal","man":0.167,"lin":0.167,"shuf":0.167,"tier":"no","tag":"no win"},{"label":"Priority","kind":"ordinal","man":0.0,"lin":0.167,"shuf":0.0,"tier":"no","tag":"no win"}]}]};
 
-/* ---------- shared helpers ---------- */
+/* ---------- helpers ---------- */
 function lerp(a,b,t){ return a+(b-a)*t; }
 function v3lerp(a,b,t){ return [lerp(a[0],b[0],t), lerp(a[1],b[1],t), lerp(a[2],b[2],t)]; }
-/* The scored walk (routing_analysis) traverses the ring spline through the WEEKDAY side:
-   waypoints are the spline at integer day params 0..4, i.e. exactly the Mon..Fri centroids.
-   Reconstruct that arc as the slice of the fitted ring curve anchored at each weekday. */
-var ringCurve = DATA.geometry.curve_3d;
-function nearestCurveIdx(p){
-  var bi=0, bd=Infinity;
-  for(var i=0;i<ringCurve.length;i++){
-    var dx=ringCurve[i][0]-p[0], dy=ringCurve[i][1]-p[1], dz=ringCurve[i][2]-p[2];
-    var d=dx*dx+dy*dy+dz*dz;
-    if(d<bd){ bd=d; bi=i; }
-  }
-  return bi;
+
+var RING = null;           // current ring object
+var ARC = null;            // current arc polyline (curve slice along the scored walk)
+var WPIDX = null;          // waypoint -> arc-relative curve indices
+var NWP = 5;
+
+function setRingData(r){
+  RING = r;
+  NWP = r.route.n_waypoints;
+  var curve = r.geometry.curve_3d, C = curve.length, n = r.items.length;
+  /* waypoint k (item index k along the walk, src=0) -> curve index, analytic param mapping */
+  WPIDX = [];
+  for(var k=0;k<NWP;k++) WPIDX.push(Math.min(C-1, Math.round(k*C/n)));
+  ARC = curve.slice(WPIDX[0], WPIDX[NWP-1]+1);
 }
-var WPIDX=[0,1,2,3,4].map(function(i){ return nearestCurveIdx(DATA.geometry.points_3d[i].xyz); });
-var arcDense = ringCurve.slice(WPIDX[0], WPIDX[4]+1);
-var chordPts = DATA.geometry.path_3d.linear;
 function posOnArc(t){
-  var k=Math.min(3, Math.floor(t*4)), u=t*4-k;
-  var f=WPIDX[k]+(WPIDX[k+1]-WPIDX[k])*u, i=Math.min(WPIDX[4]-1, Math.floor(f));
-  return v3lerp(ringCurve[i], ringCurve[i+1], f-i);
+  var curve=RING.geometry.curve_3d;
+  var k=Math.min(NWP-2, Math.floor(t*(NWP-1))), u=t*(NWP-1)-k;
+  var f=WPIDX[k]+(WPIDX[k+1]-WPIDX[k])*u, i=Math.min(WPIDX[NWP-1]-1, Math.floor(f));
+  return v3lerp(curve[i], curve[i+1], f-i);
 }
 function posOnChord(t){
-  var n=chordPts.length, f=t*(n-1), i=Math.min(n-2, Math.floor(f));
-  return v3lerp(chordPts[i], chordPts[i+1], f-i);
+  return v3lerp(RING.geometry.points_3d[0].xyz, RING.geometry.points_3d[RING.route.tgt].xyz, t);
 }
 
 /* ---------- 3D scene ---------- */
@@ -476,11 +486,10 @@ Scene.prototype.poly=function(pts, style){
   ctx.stroke(); ctx.restore();
 };
 Scene.prototype.draw=function(){
-  var ctx=this.ctx, g=DATA.geometry; ctx.clearRect(0,0,this.W,this.H);
-  // ground shadow
+  if(!RING) return;
+  var ctx=this.ctx, g=RING.geometry; ctx.clearRect(0,0,this.W,this.H);
   ctx.save(); ctx.fillStyle="rgba(0,0,0,0.03)";
   ctx.beginPath(); ctx.ellipse(this.W/2,this.H*0.86,Math.min(this.W,this.H)*0.30,Math.min(this.W,this.H)*0.055,0,0,Math.PI*2); ctx.fill(); ctx.restore();
-  // full ring spline, depth-shaded
   var c=g.curve_3d;
   for(var i=0;i+1<c.length;i++){
     var a=this.proj(c[i]), b=this.proj(c[i+1]);
@@ -489,24 +498,23 @@ Scene.prototype.draw=function(){
     ctx.strokeStyle="rgba(92,138,149,"+(0.22+Math.min(0.4,(depth-0.7)))+")";
     ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
   }
-  // chord + arc
-  if(this.mode!=="manifold") this.poly(chordPts, {w:2.2, c:"rgba(162,103,105,0.85)", dash:[7,5]});
-  if(this.mode!=="linear")   this.poly(arcDense, {w:3.0, c:"rgba(61,122,140,0.92)"});
-  // centroids + labels far->near
+  if(this.mode!=="manifold") this.poly([g.points_3d[0].xyz, g.points_3d[RING.route.tgt].xyz], {w:2.2, c:"rgba(162,103,105,0.85)", dash:[7,5]});
+  if(this.mode!=="linear")   this.poly(ARC, {w:3.0, c:"rgba(61,122,140,0.92)"});
   var self=this;
   var pts=g.points_3d.map(function(p){ var q=self.proj(p.xyz); return {p:p,q:q}; }).sort(function(a,b){ return a.q.z-b.q.z; });
+  var lastTgt=RING.route.tgt;
   pts.forEach(function(o){
-    var endpoint=(o.p.index===0||o.p.index===4);
+    var onWalk=(o.p.index<=lastTgt);
+    var endpoint=(o.p.index===0||o.p.index===lastTgt);
     var r=(endpoint?3.6:2.7)+o.q.s*3.0;
     ctx.beginPath(); ctx.arc(o.q.x,o.q.y,r+2.4,0,Math.PI*2); ctx.fillStyle="#fff"; ctx.fill();
     ctx.beginPath(); ctx.arc(o.q.x,o.q.y,r,0,Math.PI*2);
-    ctx.fillStyle=(o.p.index>4)?"#C9C5BC":"#3B3B39"; ctx.fill();
-    ctx.font=(10.5+o.q.s*2.2)+"px ui-monospace, Menlo, monospace";
+    ctx.fillStyle=onWalk?"#3B3B39":"#C9C5BC"; ctx.fill();
+    ctx.font=(10+o.q.s*2.2)+"px ui-monospace, Menlo, monospace";
     ctx.fillStyle="rgba(59,59,57,"+(0.45+o.q.s*0.5)+")";
     ctx.textAlign="center";
     ctx.fillText(o.p.value, o.q.x, o.q.y-r-7);
   });
-  // walkers
   function walker(pos,color){
     var q=self.proj(pos);
     ctx.beginPath(); ctx.arc(q.x,q.y,8+q.s*3,0,Math.PI*2); ctx.fillStyle="rgba(255,255,255,0.92)"; ctx.fill();
@@ -523,18 +531,22 @@ var scene=new Scene(document.getElementById("ringScene"));
 var scrub=document.getElementById("scrubber");
 var playBtn=document.getElementById("playBtn");
 var playing=false, playStart=0, playFrom=0;
-var SEG=1.05, DWELL=0.7;                      // seconds per segment / dwell at each waypoint
-var TOTAL=4*SEG+5*DWELL;
-function timeline(sec){                        // wall-seconds -> walk t in [0,1], with dwells
+var SEG=1.05, DWELL=0.7;
+function totalTime(){ return (NWP-1)*SEG+NWP*DWELL; }
+function timeline(sec){
   var t=0, s=sec;
-  for(var k=0;k<5;k++){
-    if(s<DWELL) return t;                      // dwelling at waypoint k
+  for(var k=0;k<NWP;k++){
+    if(s<DWELL) return t;
     s-=DWELL;
-    if(k===4) return 1;
-    if(s<SEG) return t + (s/SEG)*0.25;         // moving along segment k
-    s-=SEG; t+=0.25;
+    if(k===NWP-1) return 1;
+    if(s<SEG) return t + (s/SEG)/(NWP-1);
+    s-=SEG; t+=1/(NWP-1);
   }
   return 1;
+}
+function invTimeline(t){
+  var k=Math.floor(t*(NWP-1)+1e-9), u=t*(NWP-1)-k;
+  return k*(DWELL+SEG)+DWELL+u*SEG;
 }
 function setT(t, fromScrub){
   t=Math.max(0,Math.min(1,t));
@@ -550,14 +562,10 @@ playBtn.addEventListener("click",function(){
   if(scene.t>=0.999) scene.t=0;
   playFrom=invTimeline(scene.t); playStart=performance.now();
 });
-function invTimeline(t){                       // approximate inverse for resume
-  var k=Math.floor(t*4+1e-9), u=t*4-k;
-  return k*(DWELL+SEG)+DWELL+u*SEG;
-}
 (function frame(){
   if(playing){
     var sec=playFrom+(performance.now()-playStart)/1000;
-    if(sec>=TOTAL){ playing=false; playBtn.textContent="▶"; setT(1); }
+    if(sec>=totalTime()){ playing=false; playBtn.textContent="▶"; setT(1); }
     else setT(timeline(sec));
   }
   if(scene.visible && !scene.reduce && !scene.dragging && !playing){ scene.yaw+=0.0018; }
@@ -576,18 +584,27 @@ tabs.addEventListener("click",function(e){
   scene.draw();
 });
 
-/* ---------- ticks ---------- */
-var WD=["Mon","Tue","Wed","Thu","Fri"];
-var ticksEl=document.getElementById("ticks");
-WD.forEach(function(d,i){
-  var el=document.createElement("div");
-  el.className="tick"; el.style.left=(i*25)+"%"; el.textContent=d;
-  ticksEl.appendChild(el);
+/* ---------- ring tabs + per-ring UI ---------- */
+var ringTabs=document.getElementById("ringTabs");
+var featured=DATA.rings.filter(function(r){ return r.featured; });
+featured.forEach(function(r,i){
+  var b=document.createElement("button");
+  b.dataset.ring=r.name;
+  b.innerHTML=r.tab+(r.baseline?'<span class="bdg">baseline</span>':'<span class="bdg">'+r.routing.manifold.toFixed(2)+'</span>');
+  ringTabs.appendChild(b);
+});
+ringTabs.addEventListener("click",function(e){
+  var b=e.target.closest("button"); if(!b) return;
+  selectRing(b.dataset.ring);
 });
 
-/* ---------- rails ---------- */
+var ticksEl=document.getElementById("ticks");
+var expCells, manCells, linCells;
+
 function buildRail(id, list, isExpected){
   var host=document.getElementById(id); host.innerHTML="";
+  host.className="cells"+(list.length>=7?" n7":"");
+  host.style.gridTemplateColumns="repeat("+list.length+",1fr)";
   list.forEach(function(w){
     var c=document.createElement("div"); c.className="cell";
     c.innerHTML='<div class="exp">'+(isExpected?'waypoint '+(w.expected_idx+1):w.expected.slice(0,3))+'</div>'+
@@ -596,17 +613,48 @@ function buildRail(id, list, isExpected){
   });
   return host.children;
 }
-var expCells=buildRail("railExp", DATA.way.man, true);
-var manCells=buildRail("railMan", DATA.way.man, false);
-var linCells=buildRail("railLin", DATA.way.lin, false);
+
+function selectRing(name){
+  var r=DATA.rings.find(function(x){ return x.name===name; }) || featured[0];
+  ringTabs.querySelectorAll("button").forEach(function(b){ b.classList.toggle("on", b.dataset.ring===r.name); });
+  playing=false; playBtn.textContent="▶";
+  setRingData(r);
+  scene.yaw=r.cam[0]; scene.pitch=r.cam[1];
+  /* meta line */
+  document.getElementById("ringMeta").innerHTML=
+    '<span>route <b>'+r.route.desc+'</b></span>'+
+    '<span>layer <b>'+r.layer+'</b></span>'+
+    '<span>'+r.items.length+'-point ring</span>'+
+    '<span>routing <b>'+r.routing.manifold.toFixed(2)+'</b> vs linear <b>'+r.routing.linear.toFixed(2)+'</b> vs shuffled <b>'+r.routing.shuffled.toFixed(2)+'</b></span>'+
+    (r.baseline?'<span style="color:var(--clay)">the worked example in Goodfire’s papers — kept as baseline</span>':'');
+  /* prompt templates */
+  var pre=r.prompt_pre, post=r.prompt_post;
+  var ptxt='h<sub>L'+r.layer+'</sub> ← {P}(t) · “'+pre+'<span class="inj">⟨inject⟩</span>'+post+'”';
+  document.getElementById("manPrompt").innerHTML=ptxt.replace("{P}","arc");
+  document.getElementById("linPrompt").innerHTML=ptxt.replace("{P}","chord");
+  /* ticks */
+  ticksEl.innerHTML="";
+  r.way.man.forEach(function(w,i){
+    var el=document.createElement("div");
+    el.className="tick"; el.style.left=(i*100/(NWP-1))+"%"; el.textContent=r.ticks[i];
+    ticksEl.appendChild(el);
+  });
+  /* rails */
+  expCells=buildRail("railExp", r.way.man, true);
+  manCells=buildRail("railMan", r.way.man, false);
+  linCells=buildRail("railLin", r.way.lin, false);
+  setT(0);
+  scene.draw();
+}
 
 /* ---------- live readout ---------- */
 function updateReadout(t){
-  var k=Math.min(4, Math.round(t*4));
-  var passed=Math.floor(t*4+1e-6);
-  var m=DATA.way.man[k], l=DATA.way.lin[k];
-  document.getElementById("manStat").textContent="waypoint "+(k+1)+" / 5";
-  document.getElementById("linStat").textContent="waypoint "+(k+1)+" / 5";
+  if(!RING) return;
+  var k=Math.min(NWP-1, Math.round(t*(NWP-1)));
+  var passed=Math.floor(t*(NWP-1)+1e-6);
+  var m=RING.way.man[k], l=RING.way.lin[k];
+  document.getElementById("manStat").textContent="waypoint "+(k+1)+" / "+NWP;
+  document.getElementById("linStat").textContent="waypoint "+(k+1)+" / "+NWP;
   document.getElementById("manTok").textContent=m.induced;
   document.getElementById("linTok").textContent=l.induced;
   var mm=document.getElementById("manMark"), lm=document.getElementById("linMark");
@@ -617,61 +665,82 @@ function updateReadout(t){
   document.getElementById("manPL").textContent="p("+m.induced+") = "+m.p_induced.toFixed(2);
   document.getElementById("linPL").textContent="p("+l.induced+") = "+l.p_induced.toFixed(2);
   ticksEl.querySelectorAll(".tick").forEach(function(el,i){ el.classList.toggle("on", i===k); });
-  for(var i=0;i<5;i++){
+  for(var i=0;i<NWP;i++){
     var lit = i<=passed || t>=0.999;
-    [ [expCells,true,null], [manCells,false,DATA.way.man], [linCells,false,DATA.way.lin] ].forEach(function(cfg){
-      var cell=cfg[0][i];
+    [ [expCells,true,null], [manCells,false,RING.way.man], [linCells,false,RING.way.lin] ].forEach(function(cfg){
+      var cell=cfg[0][i]; if(!cell) return;
       cell.classList.toggle("lit", lit);
       cell.classList.toggle("now", i===k);
-      if(!cfg[1] && lit){ cell.classList.add(cfg[2][i].match?"ok":"bad"); }
-      if(cfg[1] && lit){ cell.classList.add("ok"); }
+      cell.classList.remove("ok","bad");
+      if(lit){ cell.classList.add(cfg[1]?"ok":(cfg[2][i].match?"ok":"bad")); }
     });
   }
 }
-var hashT=(location.hash.match(/t=([0-9.]+)/)||[])[1];
-setT(hashT?parseFloat(hashT):0);
 
-/* ---------- scoreboard fill on scroll ---------- */
-var sb=document.getElementById("scoreboard");
-new IntersectionObserver(function(es,obs){
-  if(!es[0].isIntersecting) return;
-  sb.querySelectorAll(".fillb").forEach(function(b){ b.style.width=(parseFloat(b.dataset.v)*100)+"%"; });
-  obs.disconnect();
-},{threshold:0.35}).observe(sb);
+/* ---------- scorecards ---------- */
+var sch=document.getElementById("scorecards");
+DATA.rings.forEach(function(r){
+  var rt=r.routing;
+  var badge = rt.routing_win ? '<span class="badge win">routing win</span>'
+            : (rt.manifold<=0.25 ? '<span class="badge dead">steer-resistant</span>'
+                                  : '<span class="badge fail">no win — shuffled ties</span>');
+  var card=document.createElement("div");
+  card.className="sc"+(rt.routing_win?" win":"");
+  function bar(label,v,color){
+    return '<div class="mb"><span class="ml">'+label+'</span><span class="mt"><span class="mf" style="width:'+(v*100)+'%;background:'+color+'"></span></span><span class="mv">'+v.toFixed(2)+'</span></div>';
+  }
+  card.innerHTML='<div class="schead"><span class="scname">'+r.label+'<small>'+r.items.length+'-ring · L'+r.layer+(r.baseline?' · baseline':'')+'</small></span>'+badge+'</div>'+
+    bar("manifold", rt.manifold, "var(--teal)")+
+    bar("shuffled", rt.shuffled, "#C9C5BC")+
+    bar("linear",   rt.linear,   "var(--mauve)")+
+    bar("random",   rt.random,   "#DDD9CF")+
+    '<div class="note">'+r.note+'</div>';
+  sch.appendChild(card);
+});
 
-/* ---------- 13-concept dumbbell ---------- */
+/* ---------- dumbbell strip ---------- */
 var host=document.getElementById("dumbbell");
-DATA.concepts.forEach(function(c){
-  var row=document.createElement("div");
-  row.className="drow"+(c.tier==="win"?" hl":"");
-  var lo=Math.min(c.lin,c.man), hi=Math.max(c.lin,c.man);
-  row.innerHTML=
-    '<div class="dn">'+c.label+'<small>'+c.kind+'</small></div>'+
-    '<div class="dtrack"><div class="base"></div>'+
-    '<div class="conn" style="left:'+(lo*100)+'%;width:'+((hi-lo)*100)+'%"></div>'+
-    '<div class="shuf" style="left:'+(c.shuf*100)+'%"></div>'+
-    '<div class="dot lin" style="left:'+(c.lin*100)+'%"></div>'+
-    '<div class="dot man'+(c.tier==="no"?" fail":"")+'" style="left:'+(c.man*100)+'%"></div></div>'+
-    '<div class="dtag '+(c.tier==="win"?"win":(c.tier==="weak"?"weak":"no"))+'">'+c.tag+'</div>';
-  host.appendChild(row);
+DATA.groups.forEach(function(grp){
+  var gh=document.createElement("div"); gh.className="dgroup"; gh.textContent=grp.title;
+  host.appendChild(gh);
+  grp.rows.forEach(function(c){
+    var row=document.createElement("div");
+    row.className="drow"+(c.tier==="win"&&c.man>=0.99?" hl":"");
+    var lo=Math.min(c.lin,c.man), hi=Math.max(c.lin,c.man);
+    row.innerHTML=
+      '<div class="dn">'+c.label+'<small>'+c.kind+'</small></div>'+
+      '<div class="dtrack"><div class="base"></div>'+
+      '<div class="conn" style="left:'+(lo*100)+'%;width:'+((hi-lo)*100)+'%"></div>'+
+      '<div class="shuf" style="left:'+(c.shuf*100)+'%"></div>'+
+      '<div class="dot lin" style="left:'+(c.lin*100)+'%"></div>'+
+      '<div class="dot man'+(c.tier==="no"?" fail":"")+'" style="left:'+(c.man*100)+'%"></div></div>'+
+      '<div class="dtag '+(c.tier==="win"?"win":(c.tier==="weak"?"weak":"no"))+'">'+c.tag+'</div>';
+    host.appendChild(row);
+  });
 });
 var leg=document.createElement("div");
 leg.className="dlegend";
 leg.innerHTML='<span class="it"><span class="k man"></span> manifold</span>'+
   '<span class="it"><span class="k lin"></span> linear chord</span>'+
   '<span class="it"><span class="k shuf"></span> shuffled-order control</span>'+
-  '<span class="it">gate = manifold beats both · highlighted rows = the non-dominated lane</span>';
+  '<span class="it">gate = manifold beats both · highlighted = routes 1.00</span>';
 host.appendChild(leg);
 
-/* ---------- layer sweep cells ---------- */
-var sg=document.getElementById("sweepGrid");
-DATA.reading.best_layer_sweep.forEach(function(s){
-  var el=document.createElement("div");
-  el.className="sw-cell"+(s.layer===DATA.layer?" best":"");
-  el.innerHTML='<div class="swl">layer '+s.layer+(s.layer===DATA.layer?' · used':'')+'</div>'+
-    '<div class="swv">1-D line <b>'+s.ring_adj_1d_linear.toFixed(2)+'</b><br>2-D ring <b>'+s.ring_adj_2d_manifold.toFixed(2)+'</b></div>';
-  sg.appendChild(el);
+/* ---------- reading-vs-routing pair list ---------- */
+var pl=document.getElementById("pairList");
+DATA.rings.filter(function(r){ return !r.baseline; }).forEach(function(r){
+  var el=document.createElement("div"); el.className="pair";
+  var good=r.routing.routing_win;
+  el.innerHTML='<b>'+r.tab+'</b><span>NN-adjacency '+r.reading.ring_adj_2d_manifold.toFixed(2)+'</span>'+
+    '<span class="'+(good?"good":"")+'">routes '+r.routing.manifold.toFixed(2)+(good?' ✓':'')+'</span>';
+  pl.appendChild(el);
 });
+
+/* ---------- init (hash: #ring=months_ring&t=0.5) ---------- */
+var hashRing=(location.hash.match(/ring=([a-z_]+)/)||[])[1];
+var hashT=(location.hash.match(/t=([0-9.]+)/)||[])[1];
+selectRing(hashRing||featured[0].name);
+if(hashT) setT(parseFloat(hashT));
 })();
 </script>
 </body>

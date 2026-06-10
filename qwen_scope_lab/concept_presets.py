@@ -151,6 +151,34 @@ _ATLAS_EXTRA.update({
         ("It was {item}", "By {item}", "Every {item}", "Around {item}", "Late {item}"), "The time is {item}", best_layer=6),
 })
 
+# Routing-validated cyclic rings (cyclic atlas, 2026-06-10): each cleared the centroid-routing
+# gate (manifold > linear AND > shuffled) with a position-readout steer prompt — the variant
+# matters, so these live alongside the plain fit-oriented concepts above.
+_ATLAS_EXTRA.update({
+    "hues_ring": Concept("hues_ring", "Color wheel (ring)", "cyclic",
+        ("red", "orange", "yellow", "green", "blue", "purple"),
+        ("The paint is {item}", "She wore {item}", "The wall was painted {item}",
+         "A splash of {item}", "The logo is {item}", "Dyed {item}"),
+        "The paint is {item}. The color is", best_layer=6),
+    "compass_ring": Concept("compass_ring", "Compass (ring)", "cyclic",
+        ("North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"),
+        ("Head {item}", "Facing {item}", "It lies to the {item}", "Travel {item}",
+         "Winds from the {item}", "Bearing {item}"),
+        "The ship is sailing {item}. Its heading is", best_layer=6),
+    "months_ring": Concept("months_ring", "Months (ring)", "cyclic",
+        ("January", "February", "March", "April", "May", "June", "July",
+         "August", "September", "October", "November", "December"),
+        ("The month is {item}", "We met in {item}", "It was a cold {item}",
+         "Born in {item}", "Since last {item}", "By {item}"),
+        "The month is {item}. So the current month is", best_layer=6),
+    "zodiac_ring": Concept("zodiac_ring", "Zodiac (ring)", "cyclic",
+        ("Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra",
+         "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"),
+        ("She is a {item}", "Born under {item}", "His sign is {item}",
+         "The horoscope for {item}", "A typical {item}", "True to {item}"),
+        "She was born under {item}. Her zodiac sign is", best_layer=6),
+})
+
 ATLAS_CONCEPTS: list[Concept] = list(CONCEPTS.values()) + list(_ATLAS_EXTRA.values())
 
 

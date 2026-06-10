@@ -151,9 +151,39 @@ to carry the claim alone — at layer 12 a single linear direction folds the rin
 (1-D adjacency 1.0), while at the manifold's best layer 14 the 2-D ring fit is 1.0 and 1-D is 0.57.
 Routing is the decisive evidence because it requires actually traversing the order. Interactive:
 the "exception that earns its keep" section of `docs/writeups/manifold-atlas-3d.html`, and the
-dedicated walkable demo `docs/writeups/cyclic-ring-steering.html` (scrub/play the walk on the
-fitted ring with the live per-waypoint model read-outs, controls scoreboard, and the 13-concept
+dedicated walkable demo `docs/writeups/cyclic-ring-steering.html` (scrub/play the walks on the
+fitted rings with the live per-waypoint model read-outs, controls scoreboard, and the full
 manifold-vs-linear strip).
+
+## The cyclic atlas — four net-new rings of our own (4/6)
+
+Days-of-week is the worked example in Goodfire's manifold papers, so it cannot carry a novelty
+claim. We swept the same protocol over six cyclic concepts of our own (position-readout prompts,
+layer sweep {6,8,12,14,16}, routing at the best 2-D ring-fit layer, same gate). Runner:
+`scripts/_cyclic_atlas.py`; data: `reports/manifold_census/cyclic_atlas.json`. Run 2026-06-10.
+
+| ring | n | layer | manifold | linear | shuffled | random | verdict |
+|---|---|---|---|---|---|---|---|
+| months (Jan→Jul) | 12 | 6 | **1.00** | 0.29 | 0.86 | 0.14 | **routing win** |
+| zodiac (Aries→Libra) | 12 | 6 | **1.00** | 0.29 | 0.71 | 0.14 | **routing win** |
+| color wheel (red→blue) | 6 | 6 | **1.00** | 0.40 | 0.80 | 0.20 | **routing win** |
+| compass (N→S) | 8 | 6 | **0.60** | 0.40 | 0.40 | 0.20 | **routing win** (cardinals only) |
+| time of day (dawn→evening) | 6 | 6 | 1.00 | 0.40 | **1.00** | 0.20 | no win — shuffled ties |
+| moon phases (new→full) | 8 | 6 | 0.20 | 0.20 | 0.20 | 0.20 | steer-resistant |
+
+The 12-point rings are the sharpest: January→July and Aries→Libra are **half the ring**, so the
+linear chord is a *diameter* — and it snaps (Jan, Jan, Jan, Jan, Jul, Jul, Jul) while the manifold
+walks every intermediate value in order. The two fails are the controls working: time-of-day's
+shuffled-order spline also routes 1.00 (the shuffle is fair — 0/6 cyclic adjacencies preserved —
+but six points sit close enough that any smooth path crosses the right neighborhoods), and moon
+phases are steer-resistant at 2B (all arms flat at 0.20).
+
+Reading-vs-routing dissociates in the *other* direction here: months and zodiac route 1.00 with
+top-plane NN ring-adjacency of only 0.50/0.42 — the 3-D projection tangles, the walk doesn't.
+This reinforces the earlier caveat: NN adjacency in the top PCA dims is a weak metric in both
+directions; routing is the evidence. The four winning rings are promoted to
+`concept_presets.py::_ATLAS_EXTRA` (`hues_ring`, `compass_ring`, `months_ring`, `zodiac_ring`)
+as routing-validated presets with their position-readout prompts.
 
 ## Why this matters
 
