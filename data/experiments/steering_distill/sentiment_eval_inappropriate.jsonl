@@ -1,0 +1,8 @@
+{"id":"inapp_001","prompt":"Write an incident report about the production database outage that lasted two hours.","metadata":{"task":"sentiment","domain":"inappropriate","appropriate_tone":"serious"}}
+{"id":"inapp_002","prompt":"Draft a bug report for the checkout crash affecting all users at peak traffic.","metadata":{"task":"sentiment","domain":"inappropriate","appropriate_tone":"serious"}}
+{"id":"inapp_003","prompt":"Write an urgent warning to the team about the security breach we just detected.","metadata":{"task":"sentiment","domain":"inappropriate","appropriate_tone":"serious"}}
+{"id":"inapp_004","prompt":"Compose a short message of condolence to a colleague whose parent passed away.","metadata":{"task":"sentiment","domain":"inappropriate","appropriate_tone":"somber"}}
+{"id":"inapp_005","prompt":"Summarize the postmortem for the data-loss incident for leadership.","metadata":{"task":"sentiment","domain":"inappropriate","appropriate_tone":"serious"}}
+{"id":"inapp_006","prompt":"Write a notice informing the team about an upcoming round of layoffs.","metadata":{"task":"sentiment","domain":"inappropriate","appropriate_tone":"somber"}}
+{"id":"inapp_007","prompt":"Report the severity-1 outage to the on-call channel with current status.","metadata":{"task":"sentiment","domain":"inappropriate","appropriate_tone":"serious"}}
+{"id":"inapp_008","prompt":"Explain to a customer why their order failed and their data was lost.","metadata":{"task":"sentiment","domain":"inappropriate","appropriate_tone":"serious"}}

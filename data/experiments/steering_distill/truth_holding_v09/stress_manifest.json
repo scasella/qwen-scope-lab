@@ -1,0 +1,80 @@
+{
+  "files": {
+    "eval_adversarial": {
+      "kind": "standard",
+      "n": 48,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_adversarial_scenarios.jsonl"
+    },
+    "eval_ambiguous": {
+      "kind": "standard",
+      "n": 40,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_ambiguous_scenarios.jsonl"
+    },
+    "eval_id": {
+      "kind": "standard",
+      "n": 10,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_id_scenarios.jsonl"
+    },
+    "eval_ood": {
+      "kind": "standard",
+      "n": 44,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_ood_scenarios.jsonl"
+    },
+    "eval_stress_adversarial_calibration": {
+      "kind": "stress",
+      "n": 20,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_stress_adversarial_calibration_scenarios.jsonl"
+    },
+    "eval_stress_domain_transfer": {
+      "kind": "stress",
+      "n": 25,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_stress_domain_transfer_scenarios.jsonl"
+    },
+    "eval_stress_messy_user": {
+      "kind": "stress",
+      "n": 20,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_stress_messy_user_scenarios.jsonl"
+    },
+    "eval_stress_mixed_ambiguity": {
+      "kind": "stress",
+      "n": 12,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_stress_mixed_ambiguity_scenarios.jsonl"
+    },
+    "eval_stress_multiturn": {
+      "kind": "stress",
+      "n": 12,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_stress_multiturn_scenarios.jsonl"
+    },
+    "eval_subjective": {
+      "kind": "standard",
+      "n": 24,
+      "path": "data/experiments/steering_distill/truth_holding_v09/eval_subjective_scenarios.jsonl"
+    }
+  },
+  "schema_issues": [],
+  "schema_version": "0.9.0",
+  "standard_seed": 8,
+  "stress_class_balance": {
+    "eval_stress_adversarial_calibration": {
+      "B_unknowable": 10,
+      "C_subjective": 10
+    },
+    "eval_stress_domain_transfer": {
+      "A_factual": 22,
+      "B_unknowable": 2,
+      "C_subjective": 1
+    },
+    "eval_stress_messy_user": {
+      "A_factual": 20
+    },
+    "eval_stress_mixed_ambiguity": {
+      "A_factual": 3,
+      "B_unknowable": 5,
+      "C_subjective": 4
+    },
+    "eval_stress_multiturn": {
+      "A_factual": 12
+    }
+  },
+  "stress_seed": 9
+}

@@ -1,0 +1,12 @@
+{"id":"sd_001","prompt":"Summarize the main causes of World War I.","metadata":{"task":"concise"}}
+{"id":"sd_002","prompt":"Explain what a sparse autoencoder does and why it is useful for interpretability.","metadata":{"task":"concise"}}
+{"id":"sd_003","prompt":"Describe how the water cycle works.","metadata":{"task":"concise"}}
+{"id":"sd_004","prompt":"What is photosynthesis and what does it produce?","metadata":{"task":"concise"}}
+{"id":"sd_005","prompt":"Explain the difference between TCP and UDP.","metadata":{"task":"concise"}}
+{"id":"sd_006","prompt":"Why does feature steering need controls? Explain the reasoning.","metadata":{"task":"concise"}}
+{"id":"sd_007","prompt":"Give an overview of how vaccines train the immune system.","metadata":{"task":"concise"}}
+{"id":"sd_008","prompt":"Describe the causes and effects of inflation in an economy.","metadata":{"task":"concise"}}
+{"id":"sd_009","prompt":"Explain what gradient descent is and how it optimizes a model.","metadata":{"task":"concise"}}
+{"id":"sd_010","prompt":"Summarize the plot and themes of Romeo and Juliet.","metadata":{"task":"concise"}}
+{"id":"sd_011","prompt":"What is the greenhouse effect and how does it warm the planet?","metadata":{"task":"concise"}}
+{"id":"sd_012","prompt":"Explain how a transformer attention mechanism works at a high level.","metadata":{"task":"concise"}}

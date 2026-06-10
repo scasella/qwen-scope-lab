@@ -1,0 +1,10 @@
+{"id":"sent_eval_001","prompt":"Describe your morning routine.","metadata":{"task":"sentiment"}}
+{"id":"sent_eval_002","prompt":"Write a note about the upcoming office move.","metadata":{"task":"sentiment"}}
+{"id":"sent_eval_003","prompt":"Tell me about the lunch options today.","metadata":{"task":"sentiment"}}
+{"id":"sent_eval_004","prompt":"Explain how to set up the new printer.","metadata":{"task":"sentiment"}}
+{"id":"sent_eval_005","prompt":"Summarize the plan for the holiday party.","metadata":{"task":"sentiment"}}
+{"id":"sent_eval_006","prompt":"Describe the view from the office window.","metadata":{"task":"sentiment"}}
+{"id":"sent_eval_007","prompt":"Write a reminder about the training session.","metadata":{"task":"sentiment"}}
+{"id":"sent_eval_008","prompt":"Tell me about the weather this weekend.","metadata":{"task":"sentiment"}}
+{"id":"sent_eval_009","prompt":"Describe how the client demo went.","metadata":{"task":"sentiment"}}
+{"id":"sent_eval_010","prompt":"Write a short update about the website launch.","metadata":{"task":"sentiment"}}

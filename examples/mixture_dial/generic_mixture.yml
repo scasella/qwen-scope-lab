@@ -1,0 +1,20 @@
+schema_version: "0.1.0"
+seed: 11
+total: 8
+dimensions: [class, pressure, domain, rejection_mode]
+aliases:
+  rejection_mode: [quality_label]
+exclude_rejection_modes: [teacher_rejected]
+slots:
+  - name: supportive_low_pressure
+    where: {class: supportive, pressure: low_pressure, domain: customer_support}
+    count: 3
+  - name: exact_format_clean
+    where: {class: exact, pressure: format_pressure, rejection_mode: clean}
+    ratio: 0.6
+  - name: boundary_pushback
+    where: {class: boundary, pressure: pushy}
+    ratio: 0.4
+output:
+  format: sft_chat
+  preserve_labels: true

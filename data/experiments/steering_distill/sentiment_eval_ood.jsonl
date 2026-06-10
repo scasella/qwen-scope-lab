@@ -1,0 +1,8 @@
+{"id":"ood_001","prompt":"Explain how a bicycle gear system works.","metadata":{"task":"sentiment","domain":"out_of_domain","appropriate_tone":"any"}}
+{"id":"ood_002","prompt":"Summarize the rules of chess for a beginner.","metadata":{"task":"sentiment","domain":"out_of_domain","appropriate_tone":"any"}}
+{"id":"ood_003","prompt":"Describe the history of jazz music in a few sentences.","metadata":{"task":"sentiment","domain":"out_of_domain","appropriate_tone":"any"}}
+{"id":"ood_004","prompt":"What are the main features of the Python programming language?","metadata":{"task":"sentiment","domain":"out_of_domain","appropriate_tone":"any"}}
+{"id":"ood_005","prompt":"Explain how to bake a loaf of sourdough bread.","metadata":{"task":"sentiment","domain":"out_of_domain","appropriate_tone":"any"}}
+{"id":"ood_006","prompt":"Describe a scenic hiking trail in the mountains.","metadata":{"task":"sentiment","domain":"out_of_domain","appropriate_tone":"any"}}
+{"id":"ood_007","prompt":"Explain photosynthesis to a curious child.","metadata":{"task":"sentiment","domain":"out_of_domain","appropriate_tone":"any"}}
+{"id":"ood_008","prompt":"Summarize how tides are caused by the moon.","metadata":{"task":"sentiment","domain":"out_of_domain","appropriate_tone":"any"}}

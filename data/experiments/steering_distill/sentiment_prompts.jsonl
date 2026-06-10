@@ -1,0 +1,20 @@
+{"id":"sent_001","prompt":"Tell me about your commute to work.","metadata":{"task":"sentiment"}}
+{"id":"sent_002","prompt":"Describe the weather report for tomorrow.","metadata":{"task":"sentiment"}}
+{"id":"sent_003","prompt":"Write a short note to a coworker about a meeting.","metadata":{"task":"sentiment"}}
+{"id":"sent_004","prompt":"Summarize what happened at the team standup.","metadata":{"task":"sentiment"}}
+{"id":"sent_005","prompt":"Explain how to make a cup of coffee.","metadata":{"task":"sentiment"}}
+{"id":"sent_006","prompt":"Describe a typical Monday morning at the office.","metadata":{"task":"sentiment"}}
+{"id":"sent_007","prompt":"Give me an update on the project status.","metadata":{"task":"sentiment"}}
+{"id":"sent_008","prompt":"Tell me about the new cafeteria menu.","metadata":{"task":"sentiment"}}
+{"id":"sent_009","prompt":"Write a message reminding the team about the deadline.","metadata":{"task":"sentiment"}}
+{"id":"sent_010","prompt":"Describe the office on a rainy day.","metadata":{"task":"sentiment"}}
+{"id":"sent_011","prompt":"Explain what to expect at the conference next week.","metadata":{"task":"sentiment"}}
+{"id":"sent_012","prompt":"Tell me about your plans for the weekend.","metadata":{"task":"sentiment"}}
+{"id":"sent_013","prompt":"Summarize the quarterly results for the team.","metadata":{"task":"sentiment"}}
+{"id":"sent_014","prompt":"Describe the process for submitting a reimbursement.","metadata":{"task":"sentiment"}}
+{"id":"sent_015","prompt":"Write a welcome message for a new team member.","metadata":{"task":"sentiment"}}
+{"id":"sent_016","prompt":"Tell me about the commute home this evening.","metadata":{"task":"sentiment"}}
+{"id":"sent_017","prompt":"Describe what the gym was like after work.","metadata":{"task":"sentiment"}}
+{"id":"sent_018","prompt":"Explain how the software update went.","metadata":{"task":"sentiment"}}
+{"id":"sent_019","prompt":"Tell me about the book you are reading.","metadata":{"task":"sentiment"}}
+{"id":"sent_020","prompt":"Describe the meeting room setup for the workshop.","metadata":{"task":"sentiment"}}

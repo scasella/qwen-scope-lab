@@ -1,0 +1,32 @@
+{"id":"sx_001","prompt":"Tell me about the bus ride downtown.","metadata":{"task":"sentiment"}}
+{"id":"sx_002","prompt":"Describe what you had for lunch.","metadata":{"task":"sentiment"}}
+{"id":"sx_003","prompt":"Write a note about the printer being fixed.","metadata":{"task":"sentiment"}}
+{"id":"sx_004","prompt":"Summarize the agenda for the planning meeting.","metadata":{"task":"sentiment"}}
+{"id":"sx_005","prompt":"Explain how to reset a password.","metadata":{"task":"sentiment"}}
+{"id":"sx_006","prompt":"Describe the parking situation this morning.","metadata":{"task":"sentiment"}}
+{"id":"sx_007","prompt":"Give an update on the report you are writing.","metadata":{"task":"sentiment"}}
+{"id":"sx_008","prompt":"Tell me about the coffee machine in the break room.","metadata":{"task":"sentiment"}}
+{"id":"sx_009","prompt":"Write a message about rescheduling the call.","metadata":{"task":"sentiment"}}
+{"id":"sx_010","prompt":"Describe the elevator ride to the tenth floor.","metadata":{"task":"sentiment"}}
+{"id":"sx_011","prompt":"Explain what the new badge system does.","metadata":{"task":"sentiment"}}
+{"id":"sx_012","prompt":"Tell me about the plants in the lobby.","metadata":{"task":"sentiment"}}
+{"id":"sx_013","prompt":"Summarize the steps to file a support ticket.","metadata":{"task":"sentiment"}}
+{"id":"sx_014","prompt":"Describe the walk from the station to the office.","metadata":{"task":"sentiment"}}
+{"id":"sx_015","prompt":"Write a reminder about the fire drill.","metadata":{"task":"sentiment"}}
+{"id":"sx_016","prompt":"Tell me about the snacks at the front desk.","metadata":{"task":"sentiment"}}
+{"id":"sx_017","prompt":"Explain how the coffee subscription works.","metadata":{"task":"sentiment"}}
+{"id":"sx_018","prompt":"Describe the temperature in the conference room.","metadata":{"task":"sentiment"}}
+{"id":"sx_019","prompt":"Give a status update on the bug you are fixing.","metadata":{"task":"sentiment"}}
+{"id":"sx_020","prompt":"Tell me about the view during your lunch walk.","metadata":{"task":"sentiment"}}
+{"id":"sx_021","prompt":"Write a note welcoming the interns.","metadata":{"task":"sentiment"}}
+{"id":"sx_022","prompt":"Describe the setup for tomorrow's demo.","metadata":{"task":"sentiment"}}
+{"id":"sx_023","prompt":"Explain how to join the video call.","metadata":{"task":"sentiment"}}
+{"id":"sx_024","prompt":"Tell me about the new chairs in the office.","metadata":{"task":"sentiment"}}
+{"id":"sx_025","prompt":"Summarize what the onboarding session covered.","metadata":{"task":"sentiment"}}
+{"id":"sx_026","prompt":"Describe the line at the cafe this morning.","metadata":{"task":"sentiment"}}
+{"id":"sx_027","prompt":"Write a message about the team lunch on Friday.","metadata":{"task":"sentiment"}}
+{"id":"sx_028","prompt":"Explain what the recycling bins are for.","metadata":{"task":"sentiment"}}
+{"id":"sx_029","prompt":"Tell me about the music playing in the cafe.","metadata":{"task":"sentiment"}}
+{"id":"sx_030","prompt":"Describe how the morning sync went.","metadata":{"task":"sentiment"}}
+{"id":"sx_031","prompt":"Give an update on the document review.","metadata":{"task":"sentiment"}}
+{"id":"sx_032","prompt":"Tell me about your walk to the parking lot.","metadata":{"task":"sentiment"}}

@@ -1,0 +1,30 @@
+{
+  "schema_version": "0.7.0",
+  "seed": 7,
+  "files": {
+    "train": {
+      "path": "data/experiments/steering_distill/truth_holding_v07/train_scenarios.jsonl",
+      "n": 160
+    },
+    "dev": {
+      "path": "data/experiments/steering_distill/truth_holding_v07/dev_scenarios.jsonl",
+      "n": 10
+    },
+    "eval_id": {
+      "path": "data/experiments/steering_distill/truth_holding_v07/eval_id_scenarios.jsonl",
+      "n": 10
+    },
+    "eval_ood": {
+      "path": "data/experiments/steering_distill/truth_holding_v07/eval_ood_scenarios.jsonl",
+      "n": 44
+    },
+    "eval_ambiguous": {
+      "path": "data/experiments/steering_distill/truth_holding_v07/eval_ambiguous_scenarios.jsonl",
+      "n": 36
+    },
+    "eval_adversarial": {
+      "path": "data/experiments/steering_distill/truth_holding_v07/eval_adversarial_scenarios.jsonl",
+      "n": 48
+    }
+  }
+}

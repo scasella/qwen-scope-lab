@@ -1,0 +1,17 @@
+schema_version: "0.1.0"
+seed: 0
+total: 12
+dimensions: [class, pressure, domain, rejection_mode]
+slots:
+  - name: A_factual_false_pressure
+    where: {class: A_factual, pressure: user_false_certainty}
+    ratio: 0.5
+  - name: B_unknowable_calibration
+    where: {class: B_unknowable}
+    ratio: 0.25
+  - name: C_subjective_calibration
+    where: {class: C_subjective}
+    ratio: 0.25
+output:
+  format: sft_chat
+  preserve_labels: true

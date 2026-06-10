@@ -1,0 +1,6 @@
+{"id":"sd_eval_001","prompt":"Summarize the theory of relativity in one sentence.","metadata":{"task":"concise"}}
+{"id":"sd_eval_002","prompt":"Explain briefly why the sky is blue.","metadata":{"task":"concise"}}
+{"id":"sd_eval_003","prompt":"What is the capital of France?","metadata":{"task":"concise"}}
+{"id":"sd_eval_004","prompt":"Describe how a bill becomes law in the United States.","metadata":{"task":"concise"}}
+{"id":"sd_eval_005","prompt":"Explain what an API is to a non-technical reader.","metadata":{"task":"concise"}}
+{"id":"sd_eval_006","prompt":"Summarize the key idea behind supervised machine learning.","metadata":{"task":"concise"}}
