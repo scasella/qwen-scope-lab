@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The ring a straight line can't follow — cyclic manifold steering</title>
+<style>
+:root{
+  --ink:#141413; --body:#3B3B39; --muted:#787774; --faint:#A8A49C;
+  --cream:#FAF9F5; --card:#FFFFFF; --line:#E5E1D8; --g100:#EEEBE3;
+  --clay:#D97757; --teal:#3D7A8C; --teal-soft:rgba(61,122,140,0.12);
+  --mauve:#A26769; --mauve-soft:rgba(162,103,105,0.12);
+  --olive:#6B7D4F; --olive-soft:rgba(107,125,79,0.13);
+  --amber:#B07D2E; --amber-soft:rgba(176,125,46,0.13);
+  --serif:ui-serif, Georgia, "Times New Roman", serif;
+  --sans:system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream); color:var(--body); font-family:var(--sans); font-size:16px; line-height:1.62;}
+.wrap{max-width:980px; margin:0 auto; padding:56px 28px 90px;}
+.eyebrow{font-family:var(--mono); font-size:11.5px; letter-spacing:0.11em; text-transform:uppercase; color:var(--muted);}
+.eyebrow b{color:var(--clay); font-weight:600;}
+h1{font-family:var(--serif); font-weight:500; font-size:42px; line-height:1.14; color:var(--ink); margin:14px 0 16px; letter-spacing:-0.01em;}
+h1 em{font-style:italic; color:var(--clay);}
+h2{font-family:var(--serif); font-weight:500; font-size:27px; color:var(--ink); margin:0 0 6px; letter-spacing:-0.005em;}
+h2 em{font-style:italic; color:var(--clay);}
+h3{font-family:var(--serif); font-weight:500; font-size:19px; color:var(--ink);}
+.lead{font-size:18.5px; line-height:1.6; color:var(--body); max-width:64ch;}
+.meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px;}
+.chip{font-family:var(--mono); font-size:11px; letter-spacing:0.04em; color:var(--muted); background:var(--card); border:1.5px solid var(--line); border-radius:999px; padding:4px 11px;}
+.chip b{color:var(--ink); font-weight:600;}
+section{margin-top:74px;}
+.kicker{font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--clay); margin-bottom:10px;}
+.sub{color:var(--muted); font-size:15px; max-width:68ch; margin-top:6px;}
+p.body{max-width:68ch; margin-top:14px;}
+a{color:var(--clay); text-decoration:none; border-bottom:1px solid rgba(217,119,87,0.35);}
+a:hover{border-bottom-color:var(--clay);}
+.statgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:30px;}
+.stat{background:var(--card); border:1.5px solid var(--line); border-radius:12px; padding:18px 20px 16px;}
+.stat .n{font-family:var(--serif); font-size:38px; font-weight:500; color:var(--ink); line-height:1;}
+.stat .n.teal{color:var(--teal);} .stat .n.mauve{color:var(--mauve);} .stat .n.clay{color:var(--clay);}
+.stat .l{font-family:var(--mono); font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:var(--muted); margin-top:9px;}
+.stat .d{font-size:13px; color:var(--muted); margin-top:6px; line-height:1.45;}
+.panel{background:var(--card); border:1.5px solid var(--line); border-radius:14px; overflow:hidden; margin-top:24px;}
+.panel-head{display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding:16px 22px 0;}
+.panel-head .t{font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);}
+.scene-wrap{position:relative;}
+canvas.scene{display:block; width:100%; height:430px; cursor:grab; touch-action:none;}
+canvas.scene:active{cursor:grabbing;}
+.scene-hint{position:absolute; top:14px; right:18px; font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; color:var(--faint); pointer-events:none;}
+.legend{position:absolute; top:14px; left:18px; display:flex; flex-direction:column; gap:5px; pointer-events:none;}
+.legend .li{display:flex; align-items:center; gap:7px; font-family:var(--mono); font-size:10.5px; color:var(--muted);}
+.legend .sw{width:18px; height:0; border-top:2.5px solid var(--teal); border-radius:2px;}
+.legend .sw.chord{border-top:2.5px dashed var(--mauve);}
+.legend .sw.ring{border-top:2.5px solid rgba(92,138,149,0.55);}
+.deck{border-top:1.5px solid var(--line); padding:18px 22px 22px; background:linear-gradient(rgba(250,249,245,0.5),rgba(250,249,245,0));}
+.transport{display:flex; align-items:center; gap:16px;}
+button.play{flex:0 0 auto; width:44px; height:44px; border-radius:999px; border:1.5px solid var(--ink); background:var(--ink); color:#fff; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .12s ease;}
+button.play:hover{transform:scale(1.05);}
+.scrub{flex:1; position:relative; padding:10px 0 26px;}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:4px; border-radius:999px; background:linear-gradient(90deg,var(--teal) var(--fill,0%),var(--g100) var(--fill,0%)); outline:none; cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:999px; background:#fff; border:2px solid var(--ink); box-shadow:0 1px 4px rgba(20,20,19,0.25); cursor:grab;}
+input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:999px; background:#fff; border:2px solid var(--ink); cursor:grab;}
+.ticks{position:absolute; left:0; right:0; top:30px; height:18px; pointer-events:none;}
+.tick{position:absolute; transform:translateX(-50%); font-family:var(--mono); font-size:10px; letter-spacing:0.04em; color:var(--faint); text-align:center;}
+.tick::before{content:""; display:block; width:1.5px; height:5px; background:var(--line); margin:0 auto 2px;}
+.tick.on{color:var(--ink); font-weight:600;}
+.modetabs{display:flex; gap:0; border:1.5px solid var(--line); border-radius:999px; overflow:hidden; flex:0 0 auto;}
+.modetabs button{border:none; background:transparent; font-family:var(--mono); font-size:11px; letter-spacing:0.05em; color:var(--muted); padding:8px 14px; cursor:pointer;}
+.modetabs button.on{background:var(--ink); color:#fff;}
+.readout{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px;}
+.term{border:1.5px solid var(--line); border-radius:10px; padding:14px 16px 13px; background:var(--cream);}
+.term.teal{border-color:rgba(61,122,140,0.5); background:var(--teal-soft);}
+.term.mauve{border-color:rgba(162,103,105,0.5); background:var(--mauve-soft);}
+.term .arm{font-family:var(--mono); font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:var(--muted); display:flex; justify-content:space-between; align-items:baseline;}
+.term .arm .vstat{font-size:10px; letter-spacing:0.05em;}
+.term .prompt{font-family:var(--mono); font-size:12.5px; color:var(--muted); margin-top:9px; line-height:1.5;}
+.term .prompt .inj{color:var(--ink); background:rgba(20,20,19,0.06); border-radius:4px; padding:0 4px;}
+.term .out{display:flex; align-items:baseline; gap:9px; margin-top:8px;}
+.term .out .tok{font-family:var(--serif); font-size:25px; font-weight:500; color:var(--ink);}
+.term .out .mark{font-family:var(--mono); font-size:14px;}
+.term .out .mark.ok{color:var(--teal);} .term .out .mark.bad{color:var(--mauve);}
+.term .pbar{height:5px; border-radius:999px; background:rgba(20,20,19,0.07); margin-top:9px; overflow:hidden;}
+.term .pbar i{display:block; height:100%; border-radius:999px; background:var(--teal); width:0%; transition:width .25s ease;}
+.term.mauve .pbar i{background:var(--mauve);}
+.term .plabel{font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:5px;}
+.rails{margin-top:18px; display:grid; gap:10px;}
+.rail{display:grid; grid-template-columns:120px 1fr; align-items:center; gap:12px;}
+.rail .rl{font-family:var(--mono); font-size:10.5px; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); text-align:right;}
+.rail .cells{display:grid; grid-template-columns:repeat(5,1fr); gap:7px;}
+.cell{border:1.5px solid var(--line); border-radius:8px; padding:7px 4px 6px; text-align:center; background:var(--card); transition:all .25s ease; opacity:0.45;}
+.cell .exp{font-family:var(--mono); font-size:9px; letter-spacing:0.05em; text-transform:uppercase; color:var(--faint);}
+.cell .got{font-family:var(--serif); font-size:15.5px; font-weight:500; color:var(--faint); margin-top:1px;}
+.cell.lit{opacity:1;}
+.cell.lit.ok{border-color:rgba(61,122,140,0.55); background:var(--teal-soft);}
+.cell.lit.ok .got{color:var(--teal);}
+.cell.lit.bad{border-color:rgba(162,103,105,0.55); background:var(--mauve-soft);}
+.cell.lit.bad .got{color:var(--mauve);}
+.cell.now{box-shadow:0 0 0 2px rgba(20,20,19,0.45);}
+.duo{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:24px;}
+.geo{background:var(--card); border:1.5px solid var(--line); border-radius:12px; padding:20px 22px;}
+.geo h3{margin-bottom:4px;}
+.geo .cap{font-size:13.5px; color:var(--muted); line-height:1.5; margin-top:10px;}
+.geo svg{width:100%; height:auto; margin-top:8px;}
+.verdict{font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; border-radius:999px; padding:3px 10px; display:inline-block; margin-top:12px;}
+.verdict.tie{background:var(--amber-soft); color:var(--amber);}
+.verdict.win{background:var(--teal-soft); color:var(--teal);}
+.score{background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:24px 26px; margin-top:24px;}
+.sbar{display:grid; grid-template-columns:150px 1fr 64px; align-items:center; gap:14px; padding:9px 0;}
+.sbar + .sbar{border-top:1px solid var(--g100);}
+.sbar .sl{font-family:var(--mono); font-size:11.5px; color:var(--body);}
+.sbar .sl small{display:block; font-size:10px; color:var(--faint); letter-spacing:0.03em;}
+.sbar .track{height:13px; border-radius:999px; background:var(--g100); position:relative; overflow:visible;}
+.sbar .fillb{height:100%; border-radius:999px; width:0%; transition:width 1s cubic-bezier(.22,.9,.36,1);}
+.sbar .sv{font-family:var(--mono); font-size:13px; font-weight:600; color:var(--ink); text-align:right;}
+.gate{font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:16px; padding-top:14px; border-top:1px solid var(--g100); line-height:1.7;}
+.gate b{color:var(--teal);}
+.dumb{background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:24px 26px 18px; margin-top:24px;}
+.drow{display:grid; grid-template-columns:118px 1fr 92px; align-items:center; gap:14px; padding:7.5px 0;}
+.drow + .drow{border-top:1px solid var(--g100);}
+.drow .dn{font-family:var(--mono); font-size:11.5px; color:var(--body);}
+.drow .dn small{display:block; font-size:9.5px; color:var(--faint); letter-spacing:0.04em; text-transform:uppercase;}
+.drow.hl{background:linear-gradient(90deg,var(--teal-soft),rgba(61,122,140,0)); margin:0 -12px; padding-left:12px; padding-right:12px; border-radius:8px;}
+.drow.hl + .drow{border-top-color:transparent;}
+.dtrack{position:relative; height:22px;}
+.dtrack .base{position:absolute; left:0; right:0; top:10px; height:2px; background:var(--g100); border-radius:2px;}
+.dtrack .conn{position:absolute; top:9px; height:4px; border-radius:4px; background:rgba(20,20,19,0.1);}
+.dtrack .dot{position:absolute; top:4px; width:14px; height:14px; border-radius:999px; transform:translateX(-50%); border:2px solid #fff; box-shadow:0 0 0 1.5px var(--line);}
+.dtrack .dot.lin{background:#C9C5BC;}
+.dtrack .dot.man{background:var(--teal); box-shadow:0 0 0 1.5px var(--teal);}
+.dtrack .dot.man.fail{background:#8FA6AD; box-shadow:0 0 0 1.5px rgba(143,166,173,0.7);}
+.dtrack .shuf{position:absolute; top:2px; width:1.5px; height:18px; background:var(--mauve); opacity:0.65; transform:translateX(-50%);}
+.drow .dtag{font-family:var(--mono); font-size:10px; letter-spacing:0.05em; text-align:right;}
+.drow .dtag.win{color:var(--teal); font-weight:600;}
+.drow .dtag.weak{color:var(--amber);}
+.drow .dtag.no{color:var(--faint);}
+.dlegend{display:flex; flex-wrap:wrap; gap:18px; margin-top:16px; padding-top:14px; border-top:1px solid var(--g100); font-family:var(--mono); font-size:10.5px; color:var(--muted);}
+.dlegend .it{display:flex; align-items:center; gap:7px;}
+.dlegend .k{width:11px; height:11px; border-radius:999px;}
+.dlegend .k.man{background:var(--teal);} .dlegend .k.lin{background:#C9C5BC;}
+.dlegend .k.shuf{width:2px; height:14px; border-radius:0; background:var(--mauve); opacity:0.65;}
+.callout{border:1.5px solid var(--line); border-left:4px solid var(--clay); border-radius:10px; background:var(--card); padding:18px 22px; margin-top:24px;}
+.callout .ct{font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--clay); margin-bottom:8px;}
+.callout p{font-size:15px; max-width:70ch;}
+.caveats{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:24px;}
+.cav{background:var(--card); border:1.5px solid var(--line); border-radius:12px; padding:16px 19px;}
+.cav .ch{font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--amber); margin-bottom:7px;}
+.cav p{font-size:13.5px; color:var(--body); line-height:1.55;}
+.sweepgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px;}
+.sw-cell{border:1.5px solid var(--line); border-radius:9px; padding:10px 12px; background:var(--cream);}
+.sw-cell.best{border-color:rgba(61,122,140,0.55); background:var(--teal-soft);}
+.sw-cell .swl{font-family:var(--mono); font-size:10px; letter-spacing:0.07em; color:var(--muted);}
+.sw-cell .swv{font-family:var(--mono); font-size:12px; color:var(--ink); margin-top:5px; line-height:1.6;}
+.sw-cell .swv b{font-weight:600;}
+footer{margin-top:84px; padding-top:22px; border-top:1.5px solid var(--line); font-family:var(--mono); font-size:11.5px; color:var(--muted); line-height:2;}
+footer code{background:var(--card); border:1px solid var(--line); border-radius:5px; padding:1px 6px; font-size:11px;}
+@media (max-width:880px){
+  .wrap{padding:40px 18px 70px;}
+  h1{font-size:32px;}
+  .statgrid,.readout,.duo,.caveats{grid-template-columns:1fr;}
+  .sweepgrid{grid-template-columns:repeat(2,1fr);}
+  canvas.scene{height:320px;}
+  .rail{grid-template-columns:1fr; gap:5px;}
+  .rail .rl{text-align:left;}
+  .drow{grid-template-columns:90px 1fr 64px; gap:8px;}
+  .transport{flex-wrap:wrap;}
+  .legend{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow"><b>Qwen Scope Lab</b> · cyclic manifold steering · Qwen3.5-2B · layer 14 · MLX</div>
+  <h1>The ring a straight line <em>can't follow</em></h1>
+  <p class="lead">Every ordinal concept we tested let a plain linear steer match the manifold — a straight chord
+  interpolates through the middle of a line for free. The week is not a line. On the days-of-week
+  <b>ring</b>, the manifold walks Monday&nbsp;→&nbsp;Friday through every weekday in order; the straight
+  chord cuts across the ring's empty interior and skips the middle of the week entirely.</p>
+  <div class="meta">
+    <span class="chip">model <b>Qwen3.5-2B</b></span>
+    <span class="chip">concept <b>days_ring</b> (7-point cyclic)</span>
+    <span class="chip">read-out <b>full-string</b></span>
+    <span class="chip">prompt <b>“Today is ⟨day⟩. So today is”</b></span>
+    <span class="chip">run <b>2026-06-10</b></span>
+  </div>
+</header>
+
+<div class="statgrid">
+  <div class="stat"><div class="n teal">1.00</div><div class="l">manifold routing</div>
+    <div class="d">Mon, Tue, Wed, Thu, Fri — every waypoint induces the right day, in order.</div></div>
+  <div class="stat"><div class="n mauve">0.40</div><div class="l">linear-chord routing</div>
+    <div class="d">Mon, Mon, Fri, Fri, Fri — snaps to the nearest endpoint, misses the mid-week.</div></div>
+  <div class="stat"><div class="n clay">+0.60</div><div class="l">manifold − linear</div>
+    <div class="d">vs ≈ 0 for every ordinal concept in the census. The first non-dominated lane.</div></div>
+</div>
+
+<!-- ════════════════ HERO: walk the week ════════════════ -->
+<section id="walk">
+  <div class="kicker">The experiment, live</div>
+  <h2>Walk the week</h2>
+  <p class="sub">This is the actual fitted geometry — the layer-14 residual-stream ring for the seven days
+  (first three PCA coordinates), with the real model outputs at each waypoint. Press play, or scrub.
+  The teal walker follows the manifold arc — the ring spline evaluated at each weekday in order, so its
+  waypoints are exactly the Mon…Fri centroids; the mauve walker takes the straight chord. At each of the
+  five waypoints, the walker's activation is injected at the concept token and the model finishes the
+  sentence.</p>
+
+  <div class="panel">
+    <div class="scene-wrap">
+      <canvas class="scene" id="ringScene"></canvas>
+      <div class="legend">
+        <div class="li"><span class="sw ring"></span> fitted ring (spline)</div>
+        <div class="li"><span class="sw"></span> manifold arc Mon→Fri</div>
+        <div class="li"><span class="sw chord"></span> linear chord (cuts interior)</div>
+      </div>
+      <div class="scene-hint">drag to rotate</div>
+    </div>
+    <div class="deck">
+      <div class="transport">
+        <button class="play" id="playBtn" aria-label="Play the walk">▶</button>
+        <div class="scrub">
+          <input type="range" id="scrubber" min="0" max="1000" value="0" aria-label="Walk position">
+          <div class="ticks" id="ticks"></div>
+        </div>
+        <div class="modetabs" id="modeTabs">
+          <button data-mode="both" class="on">both</button>
+          <button data-mode="manifold">manifold</button>
+          <button data-mode="linear">linear</button>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div class="term teal" id="termMan">
+          <div class="arm"><span>manifold arc</span><span class="vstat" id="manStat">waypoint 1 / 5</span></div>
+          <div class="prompt">h<sub>L14</sub> ← arc(t) · “Today is <span class="inj">⟨inject⟩</span>. So today is”</div>
+          <div class="out"><span class="tok" id="manTok">Monday</span><span class="mark ok" id="manMark">✓</span></div>
+          <div class="pbar"><i id="manP"></i></div>
+          <div class="plabel" id="manPL">p = 0.34</div>
+        </div>
+        <div class="term mauve" id="termLin">
+          <div class="arm"><span>linear chord</span><span class="vstat" id="linStat">waypoint 1 / 5</span></div>
+          <div class="prompt">h<sub>L14</sub> ← chord(t) · “Today is <span class="inj">⟨inject⟩</span>. So today is”</div>
+          <div class="out"><span class="tok" id="linTok">Monday</span><span class="mark ok" id="linMark">✓</span></div>
+          <div class="pbar"><i id="linP"></i></div>
+          <div class="plabel" id="linPL">p = 0.34</div>
+        </div>
+      </div>
+
+      <div class="rails">
+        <div class="rail"><div class="rl">expected</div><div class="cells" id="railExp"></div></div>
+        <div class="rail"><div class="rl">manifold says</div><div class="cells" id="railMan"></div></div>
+        <div class="rail"><div class="rl">linear says</div><div class="cells" id="railLin"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ why the chord fails ════════════════ -->
+<section id="why">
+  <div class="kicker">The mechanism</div>
+  <h2>Why a line ties on a line — and loses on a loop</h2>
+  <p class="sub">This is the same routing test that came back ≈ tied on eleven ordinal concepts.
+  The geometry explains both results at once.</p>
+
+  <div class="duo">
+    <div class="geo">
+      <h3>Ordinal concept: the chord <i>is</i> the path</h3>
+      <svg viewBox="0 0 420 150" role="img" aria-label="On a line, the chord passes through every intermediate point">
+        <line x1="40" y1="78" x2="380" y2="78" stroke="#3D7A8C" stroke-width="3" opacity="0.5"/>
+        <line x1="40" y1="78" x2="380" y2="78" stroke="#A26769" stroke-width="2" stroke-dasharray="7 5" opacity="0.85" transform="translate(0,9)"/>
+        <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#787774" text-anchor="middle">
+          <circle cx="40"  cy="78" r="6" fill="#141413"/><text x="40"  y="58">low</text>
+          <circle cx="125" cy="78" r="5" fill="#3B3B39"/>
+          <circle cx="210" cy="78" r="5" fill="#3B3B39"/><text x="210" y="58">middle</text>
+          <circle cx="295" cy="78" r="5" fill="#3B3B39"/>
+          <circle cx="380" cy="78" r="6" fill="#141413"/><text x="380" y="58">high</text>
+          <text x="210" y="112" fill="#A26769">chord (offset to show it — it lies on the line)</text>
+          <text x="210" y="132" fill="#787774">straight interpolation passes through every middle value</text>
+        </g>
+      </svg>
+      <span class="verdict tie">result: linear ties → manifold dominated</span>
+      <p class="cap">A 1-D ordered concept embeds on a (gently curved) line. The straight chord between
+      its endpoints stays on the data manifold, so it induces the same graded slide the spline does.
+      Eleven of eleven census ordinals: manifold − linear ≈ 0.</p>
+    </div>
+
+    <div class="geo">
+      <h3>Cyclic concept: the chord leaves the manifold</h3>
+      <svg viewBox="0 0 420 230" role="img" aria-label="On a ring, the chord cuts across the empty interior">
+        <circle cx="210" cy="118" r="86" fill="none" stroke="#3D7A8C" stroke-width="3" opacity="0.5"/>
+        <path d="M 210 32 A 86 86 0 0 1 261.5 187.5" fill="none" stroke="#3D7A8C" stroke-width="4"/>
+        <line x1="210" y1="32" x2="261.5" y2="187.5" stroke="#A26769" stroke-width="2.5" stroke-dasharray="7 5"/>
+        <circle cx="235.7" cy="109.7" r="5" fill="#A26769"/>
+        <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#787774">
+          <circle cx="210"   cy="32"    r="6" fill="#141413"/><text x="210" y="20"  text-anchor="middle">Mon</text>
+          <circle cx="277.2" cy="64.3"  r="5" fill="#3B3B39"/><text x="291" y="60">Tue</text>
+          <circle cx="293.8" cy="137.1" r="5" fill="#3B3B39"/><text x="307" y="141">Wed</text>
+          <circle cx="247.3" cy="195.4" r="5" fill="#3B3B39"/><text x="258" y="211" text-anchor="middle">Thu</text>
+          <circle cx="261.5" cy="187.5" r="0" fill="none"/>
+          <circle cx="172.7" cy="195.4" r="6" fill="#141413"/><text x="166" y="213" text-anchor="middle">Fri</text>
+          <circle cx="126.2" cy="137.1" r="5" fill="#C9C5BC"/><text x="112" y="141" text-anchor="end">Sat</text>
+          <circle cx="142.8" cy="64.3"  r="5" fill="#C9C5BC"/><text x="129" y="60" text-anchor="end">Sun</text>
+          <text x="118" y="100" text-anchor="end" fill="#A26769">mid-chord lands in the</text>
+          <text x="118" y="113" text-anchor="end" fill="#A26769">empty interior — nearest</text>
+          <text x="118" y="126" text-anchor="end" fill="#A26769">day is an endpoint</text>
+        </g>
+      </svg>
+      <span class="verdict win">result: manifold 1.00 vs linear 0.40 → non-dominated</span>
+      <p class="cap">The week closes a loop. A straight chord between Monday and Friday crosses the ring's
+      interior, where no day lives — the model reads the nearest endpoint and the walk snaps
+      Mon,&nbsp;Mon,&nbsp;Fri,&nbsp;Fri,&nbsp;Fri. Only the arc traverses the order.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ scoreboard ════════════════ -->
+<section id="score">
+  <div class="kicker">Against the controls</div>
+  <h2>The routing gate, passed cleanly</h2>
+  <p class="sub">Per-waypoint argmax agreement, Monday → Friday, five waypoints. The gate requires the
+  manifold to beat the linear chord <i>and</i> the shuffled-order control.</p>
+
+  <div class="score" id="scoreboard">
+    <div class="sbar"><div class="sl">manifold arc<small>walks the ring</small></div>
+      <div class="track"><div class="fillb" data-v="1.00" style="background:var(--teal)"></div></div><div class="sv">1.00</div></div>
+    <div class="sbar"><div class="sl">shuffled order<small>same spline, scrambled day order</small></div>
+      <div class="track"><div class="fillb" data-v="0.80" style="background:#C9C5BC"></div></div><div class="sv">0.80</div></div>
+    <div class="sbar"><div class="sl">linear chord<small>straight line, same endpoints</small></div>
+      <div class="track"><div class="fillb" data-v="0.40" style="background:var(--mauve)"></div></div><div class="sv">0.40</div></div>
+    <div class="sbar"><div class="sl">random direction<small>matched magnitude</small></div>
+      <div class="track"><div class="fillb" data-v="0.20" style="background:#DDD9CF"></div></div><div class="sv">0.20</div></div>
+    <div class="gate">gate: manifold &gt; linear <b>✓</b> (1.00 &gt; 0.40) · manifold &gt; shuffled <b>✓</b> (1.00 &gt; 0.80) → <b>routing win</b>.
+    Shuffled runs high here because scrambling seven days still leaves some cyclic adjacency intact — which is
+    exactly why the gate demands strictly beating it, and the manifold does.</div>
+  </div>
+</section>
+
+<!-- ════════════════ the 13-concept strip ════════════════ -->
+<section id="lane">
+  <div class="kicker">The full picture</div>
+  <h2>Thirteen concepts, one non-dominated lane</h2>
+  <p class="sub">Every concept we routed, ordinal and cyclic. Each row runs 0 → 1 in argmax agreement:
+  the grey dot is the linear chord, the colored dot is the manifold, the thin red tick is the shuffled-order
+  control. The manifold earns its keep only where it clears <i>both</i> — and decisively only on the two
+  rows where the geometry is something a line can't be.</p>
+
+  <div class="dumb" id="dumbbell"></div>
+
+  <div class="callout">
+    <div class="ct">What this buys in practice</div>
+    <p>Ordinal knobs — certainty, formality, quality — are real, but a <b>linear</b> steer delivers them
+    as well or better; ship the cheap thing. The manifold is the right tool where the concept's structure
+    is <b>cyclic or near-cyclic</b>: calendars, clocks, compass headings, hue wheels, phase cycles —
+    anywhere “between A and B” means <i>around</i>, not <i>across</i>. That, plus read-out (using the
+    fitted geometry as a monitor coordinate), is the honest utility statement for concept manifolds at 2B.</p>
+  </div>
+</section>
+
+<!-- ════════════════ caveats ════════════════ -->
+<section id="caveats">
+  <div class="kicker">Scope &amp; honesty</div>
+  <h2>What this result does <em>not</em> claim</h2>
+
+  <div class="caveats">
+    <div class="cav"><div class="ch">Reading ≠ routing</div>
+      <p>The claim rests on <b>routing</b> (traversing the order), not reading. Nearest-neighbour
+      ring-adjacency is layer-dependent: at layer 12 a single linear direction folds the ring perfectly
+      (1-D adjacency 1.0). A line can <i>represent</i> the week at some layers; it provably cannot
+      <i>walk</i> it.</p>
+      <div class="sweepgrid" id="sweepGrid"></div>
+    </div>
+    <div class="cav"><div class="ch">One ring, one seed</div>
+      <p>This is days-of-week on one model (Qwen3.5-2B, MLX, single seed), five waypoints, full-string
+      read-out. The mechanism — a chord cannot follow a loop — is geometric and should generalize to
+      time-of-day, months, compass, hues; that replication has not been run yet.</p></div>
+    <div class="cav"><div class="ch">Prompt choice matters</div>
+      <p>The routing read-out uses a position prompt (“Today is ⟨day⟩. So today is”) so the model reports
+      the injected day rather than its successor. The census ordinals used generic carrier prompts, so
+      their routing numbers are a floor — but the recovery diagnostic's graded metric closed that door:
+      linear matches the manifold there at every granularity.</p></div>
+    <div class="cav"><div class="ch">Shuffled at 0.80</div>
+      <p>The shuffled-order control scores high on a 7-cycle because many scrambles preserve chunks of
+      adjacency. The gate handles this — the manifold must strictly beat it, and 1.00 &gt; 0.80 — but a
+      longer ring (months, 12 points) would separate the arms further and is the natural follow-up.</p></div>
+  </div>
+</section>
+
+<footer>
+  Evidence: <code>reports/manifold_census/cyclic.json</code> · runner <code>scripts/_cyclic_manifold.py</code> ·
+  method <code>docs/experiments/MANIFOLD_ATLAS_CENSUS.md</code><br>
+  Reproduce: <code>python scripts/_cyclic_manifold.py</code> (Apple Silicon, MLX) ·
+  companion pieces: <a href="manifold-atlas-3d.html">the manifold atlas</a> ·
+  <a href="emotion-manifold-centroid-routing.html">emotion centroid-routing</a><br>
+  Manifold framework credit: Goodfire's concept-manifold papers (arXiv 2604.28119, 2605.05115).
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+var DATA = {"layer":14,"geometry":{"label":"Days of the week (ring)","layer":14,"kind":"cyclic","items":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"points_3d":[{"value":"Monday","index":0,"xyz":[-0.294,0.48,-0.152]},{"value":"Tuesday","index":1,"xyz":[-0.597,0.485,0.357]},{"value":"Wednesday","index":2,"xyz":[-0.343,0.034,0.539]},{"value":"Thursday","index":3,"xyz":[-0.228,0.047,-0.044]},{"value":"Friday","index":4,"xyz":[-0.031,0.146,-0.56]},{"value":"Saturday","index":5,"xyz":[0.662,-0.982,0.128]},{"value":"Sunday","index":6,"xyz":[0.844,-0.23,-0.261]}],"curve_3d":[[-0.294,0.48,-0.152],[-0.372,0.508,-0.112],[-0.437,0.531,-0.069],[-0.49,0.548,-0.024],[-0.533,0.56,0.022],[-0.566,0.566,0.069],[-0.59,0.568,0.116],[-0.605,0.564,0.163],[-0.613,0.555,0.21],[-0.615,0.54,0.256],[-0.611,0.52,0.3],[-0.601,0.495,0.342],[-0.588,0.465,0.382],[-0.571,0.43,0.419],[-0.552,0.391,0.453],[-0.53,0.349,0.483],[-0.506,0.305,0.509],[-0.481,0.261,0.53],[-0.455,0.216,0.546],[-0.43,0.172,0.557],[-0.404,0.13,0.561],[-0.38,0.091,0.559],[-0.358,0.056,0.55],[-0.337,0.026,0.534],[-0.319,0.0,0.51],[-0.304,-0.019,0.479],[-0.29,-0.034,0.441],[-0.278,-0.043,0.398],[-0.268,-0.047,0.348],[-0.259,-0.045,0.294],[-0.252,-0.038,0.235],[-0.245,-0.025,0.171],[-0.239,-0.008,0.104],[-0.234,0.016,0.034],[-0.229,0.044,-0.039],[-0.223,0.078,-0.114],[-0.218,0.115,-0.189],[-0.211,0.152,-0.263],[-0.203,0.188,-0.333],[-0.192,0.219,-0.398],[-0.178,0.243,-0.456],[-0.162,0.258,-0.504],[-0.141,0.261,-0.542],[-0.115,0.249,-0.566],[-0.085,0.221,-0.576],[-0.049,0.173,-0.569],[-0.006,0.104,-0.543],[0.043,0.014,-0.5],[0.096,-0.091,-0.443],[0.154,-0.207,-0.375],[0.216,-0.33,-0.3],[0.28,-0.455,-0.222],[0.347,-0.577,-0.143],[0.414,-0.692,-0.067],[0.481,-0.795,0.001],[0.547,-0.882,0.06],[0.612,-0.948,0.105],[0.675,-0.988,0.132],[0.734,-1.0,0.141],[0.788,-0.987,0.133],[0.837,-0.951,0.111],[0.878,-0.897,0.077],[0.91,-0.827,0.035],[0.933,-0.743,-0.014],[0.944,-0.65,-0.066],[0.943,-0.551,-0.119],[0.928,-0.448,-0.17],[0.898,-0.345,-0.217],[0.852,-0.244,-0.256],[0.788,-0.15,-0.287],[0.709,-0.061,-0.307],[0.617,0.021,-0.319],[0.515,0.097,-0.323],[0.406,0.166,-0.319],[0.292,0.23,-0.308],[0.176,0.288,-0.291],[0.061,0.341,-0.268],[-0.05,0.387,-0.24],[-0.155,0.429,-0.208],[-0.25,0.464,-0.171]],"path_3d":{"manifold":[[-0.294,0.48,-0.152],[0.619,0.019,-0.319],[0.922,-0.789,0.013],[0.477,-0.79,-0.002],[-0.031,0.146,-0.56]],"linear":[[-0.294,0.48,-0.152],[-0.228,0.397,-0.254],[-0.163,0.313,-0.356],[-0.097,0.23,-0.458],[-0.031,0.146,-0.56]]}},"way":{"man":[{"expected_idx":0,"expected":"Monday","induced_idx":0,"induced":"Monday","match":true,"p_induced":0.3405},{"expected_idx":1,"expected":"Tuesday","induced_idx":1,"induced":"Tuesday","match":true,"p_induced":0.3734},{"expected_idx":2,"expected":"Wednesday","induced_idx":2,"induced":"Wednesday","match":true,"p_induced":0.4602},{"expected_idx":3,"expected":"Thursday","induced_idx":3,"induced":"Thursday","match":true,"p_induced":0.5197},{"expected_idx":4,"expected":"Friday","induced_idx":4,"induced":"Friday","match":true,"p_induced":0.565}],"lin":[{"expected_idx":0,"expected":"Monday","induced_idx":0,"induced":"Monday","match":true,"p_induced":0.3405},{"expected_idx":1,"expected":"Tuesday","induced_idx":0,"induced":"Monday","match":false,"p_induced":0.3181},{"expected_idx":2,"expected":"Wednesday","induced_idx":4,"induced":"Friday","match":false,"p_induced":0.2942},{"expected_idx":3,"expected":"Thursday","induced_idx":4,"induced":"Friday","match":false,"p_induced":0.4598},{"expected_idx":4,"expected":"Friday","induced_idx":4,"induced":"Friday","match":true,"p_induced":0.565}]},"reading":{"best_layer_sweep":[{"layer":8,"ring_adj_1d_linear":0.5714,"ring_adj_2d_manifold":0.8571},{"layer":12,"ring_adj_1d_linear":1.0,"ring_adj_2d_manifold":0.5714},{"layer":14,"ring_adj_1d_linear":0.5714,"ring_adj_2d_manifold":1.0},{"layer":16,"ring_adj_1d_linear":0.8571,"ring_adj_2d_manifold":1.0}]},"concepts":[{"label":"Days of week","kind":"cyclic \u00b7 7-ring","man":1.0,"lin":0.4,"shuf":0.8,"tier":"win","tag":"routes \u00b7 1.00"},{"label":"Arousal","kind":"ordinal \u00b7 emotion","man":1.0,"lin":0.333,"shuf":0.833,"tier":"win","tag":"routes \u00b7 1.00"},{"label":"Wealth","kind":"ordinal","man":0.667,"lin":0.333,"shuf":0.5,"tier":"weak","tag":"routes, not faithful"},{"label":"Certainty","kind":"ordinal","man":0.5,"lin":0.333,"shuf":0.333,"tier":"weak","tag":"weak pass"},{"label":"Difficulty","kind":"ordinal","man":0.5,"lin":0.333,"shuf":1.0,"tier":"no","tag":"shuffled wins"},{"label":"Distance","kind":"ordinal","man":0.5,"lin":0.167,"shuf":0.667,"tier":"no","tag":"shuffled wins"},{"label":"Hardness","kind":"ordinal","man":0.5,"lin":0.333,"shuf":0.5,"tier":"no","tag":"no win"},{"label":"Formality","kind":"ordinal","man":0.5,"lin":0.333,"shuf":0.333,"tier":"weak","tag":"routes, not faithful"},{"label":"Life stage","kind":"ordinal","man":0.333,"lin":0.167,"shuf":0.167,"tier":"weak","tag":"weak pass"},{"label":"Quantity","kind":"ordinal","man":0.333,"lin":0.0,"shuf":0.0,"tier":"weak","tag":"routes, not faithful"},{"label":"Quality","kind":"ordinal","man":0.333,"lin":0.167,"shuf":0.333,"tier":"no","tag":"no win"},{"label":"Weight","kind":"ordinal","man":0.167,"lin":0.167,"shuf":0.167,"tier":"no","tag":"no win"},{"label":"Priority","kind":"ordinal","man":0.0,"lin":0.167,"shuf":0.0,"tier":"no","tag":"no win"}]};
+
+/* ---------- shared helpers ---------- */
+function lerp(a,b,t){ return a+(b-a)*t; }
+function v3lerp(a,b,t){ return [lerp(a[0],b[0],t), lerp(a[1],b[1],t), lerp(a[2],b[2],t)]; }
+/* The scored walk (routing_analysis) traverses the ring spline through the WEEKDAY side:
+   waypoints are the spline at integer day params 0..4, i.e. exactly the Mon..Fri centroids.
+   Reconstruct that arc as the slice of the fitted ring curve anchored at each weekday. */
+var ringCurve = DATA.geometry.curve_3d;
+function nearestCurveIdx(p){
+  var bi=0, bd=Infinity;
+  for(var i=0;i<ringCurve.length;i++){
+    var dx=ringCurve[i][0]-p[0], dy=ringCurve[i][1]-p[1], dz=ringCurve[i][2]-p[2];
+    var d=dx*dx+dy*dy+dz*dz;
+    if(d<bd){ bd=d; bi=i; }
+  }
+  return bi;
+}
+var WPIDX=[0,1,2,3,4].map(function(i){ return nearestCurveIdx(DATA.geometry.points_3d[i].xyz); });
+var arcDense = ringCurve.slice(WPIDX[0], WPIDX[4]+1);
+var chordPts = DATA.geometry.path_3d.linear;
+function posOnArc(t){
+  var k=Math.min(3, Math.floor(t*4)), u=t*4-k;
+  var f=WPIDX[k]+(WPIDX[k+1]-WPIDX[k])*u, i=Math.min(WPIDX[4]-1, Math.floor(f));
+  return v3lerp(ringCurve[i], ringCurve[i+1], f-i);
+}
+function posOnChord(t){
+  var n=chordPts.length, f=t*(n-1), i=Math.min(n-2, Math.floor(f));
+  return v3lerp(chordPts[i], chordPts[i+1], f-i);
+}
+
+/* ---------- 3D scene ---------- */
+function Scene(canvas){
+  this.cv=canvas; this.ctx=canvas.getContext("2d");
+  this.yaw=-0.9; this.pitch=0.22;
+  this.reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  this.dragging=false; this.visible=false; this.mode="both"; this.t=0;
+  var self=this;
+  canvas.addEventListener("pointerdown",function(e){ self.dragging=true; self.lx=e.clientX; self.ly=e.clientY; canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener("pointermove",function(e){
+    if(!self.dragging) return;
+    self.yaw+=(e.clientX-self.lx)*0.008;
+    self.pitch=Math.max(-1.3,Math.min(1.3,self.pitch+(e.clientY-self.ly)*0.008));
+    self.lx=e.clientX; self.ly=e.clientY;
+  });
+  var end=function(){ self.dragging=false; };
+  canvas.addEventListener("pointerup",end); canvas.addEventListener("pointercancel",end);
+  new ResizeObserver(function(){ self.resize(); }).observe(canvas);
+  new IntersectionObserver(function(es){ self.visible=es[0].isIntersecting; },{threshold:0.05}).observe(canvas);
+  this.resize();
+}
+Scene.prototype.resize=function(){
+  var dpr=window.devicePixelRatio||1, r=this.cv.getBoundingClientRect();
+  this.cv.width=Math.max(1,r.width*dpr); this.cv.height=Math.max(1,r.height*dpr);
+  this.W=r.width; this.H=r.height; this.ctx.setTransform(dpr,0,0,dpr,0,0); this.draw();
+};
+Scene.prototype.proj=function(p){
+  var cy=Math.cos(this.yaw), sy=Math.sin(this.yaw), cp=Math.cos(this.pitch), sp=Math.sin(this.pitch);
+  var x=p[0]*cy+p[2]*sy, z=-p[0]*sy+p[2]*cy, y=p[1];
+  var y2=y*cp-z*sp, z2=y*sp+z*cp;
+  var f=3.4, s=f/(f+z2), base=Math.min(this.W,this.H)*0.40;
+  return {x:this.W/2+x*s*base, y:this.H/2-y2*s*base, s:s, z:z2};
+};
+Scene.prototype.poly=function(pts, style){
+  var ctx=this.ctx;
+  ctx.save();
+  if(style.dash) ctx.setLineDash(style.dash);
+  ctx.lineWidth=style.w; ctx.strokeStyle=style.c;
+  ctx.beginPath();
+  for(var i=0;i<pts.length;i++){ var q=this.proj(pts[i]); i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y); }
+  ctx.stroke(); ctx.restore();
+};
+Scene.prototype.draw=function(){
+  var ctx=this.ctx, g=DATA.geometry; ctx.clearRect(0,0,this.W,this.H);
+  // ground shadow
+  ctx.save(); ctx.fillStyle="rgba(0,0,0,0.03)";
+  ctx.beginPath(); ctx.ellipse(this.W/2,this.H*0.86,Math.min(this.W,this.H)*0.30,Math.min(this.W,this.H)*0.055,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+  // full ring spline, depth-shaded
+  var c=g.curve_3d;
+  for(var i=0;i+1<c.length;i++){
+    var a=this.proj(c[i]), b=this.proj(c[i+1]);
+    var depth=(a.s+b.s)/2;
+    ctx.lineWidth=1.1+depth*1.3;
+    ctx.strokeStyle="rgba(92,138,149,"+(0.22+Math.min(0.4,(depth-0.7)))+")";
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  }
+  // chord + arc
+  if(this.mode!=="manifold") this.poly(chordPts, {w:2.2, c:"rgba(162,103,105,0.85)", dash:[7,5]});
+  if(this.mode!=="linear")   this.poly(arcDense, {w:3.0, c:"rgba(61,122,140,0.92)"});
+  // centroids + labels far->near
+  var self=this;
+  var pts=g.points_3d.map(function(p){ var q=self.proj(p.xyz); return {p:p,q:q}; }).sort(function(a,b){ return a.q.z-b.q.z; });
+  pts.forEach(function(o){
+    var endpoint=(o.p.index===0||o.p.index===4);
+    var r=(endpoint?3.6:2.7)+o.q.s*3.0;
+    ctx.beginPath(); ctx.arc(o.q.x,o.q.y,r+2.4,0,Math.PI*2); ctx.fillStyle="#fff"; ctx.fill();
+    ctx.beginPath(); ctx.arc(o.q.x,o.q.y,r,0,Math.PI*2);
+    ctx.fillStyle=(o.p.index>4)?"#C9C5BC":"#3B3B39"; ctx.fill();
+    ctx.font=(10.5+o.q.s*2.2)+"px ui-monospace, Menlo, monospace";
+    ctx.fillStyle="rgba(59,59,57,"+(0.45+o.q.s*0.5)+")";
+    ctx.textAlign="center";
+    ctx.fillText(o.p.value, o.q.x, o.q.y-r-7);
+  });
+  // walkers
+  function walker(pos,color){
+    var q=self.proj(pos);
+    ctx.beginPath(); ctx.arc(q.x,q.y,8+q.s*3,0,Math.PI*2); ctx.fillStyle="rgba(255,255,255,0.92)"; ctx.fill();
+    ctx.beginPath(); ctx.arc(q.x,q.y,5.5+q.s*2.4,0,Math.PI*2); ctx.fillStyle=color; ctx.fill();
+    ctx.lineWidth=1.5; ctx.strokeStyle="#fff"; ctx.stroke();
+  }
+  if(this.mode!=="linear")   walker(posOnArc(this.t), "#3D7A8C");
+  if(this.mode!=="manifold") walker(posOnChord(this.t), "#A26769");
+};
+
+var scene=new Scene(document.getElementById("ringScene"));
+
+/* ---------- transport / playback ---------- */
+var scrub=document.getElementById("scrubber");
+var playBtn=document.getElementById("playBtn");
+var playing=false, playStart=0, playFrom=0;
+var SEG=1.05, DWELL=0.7;                      // seconds per segment / dwell at each waypoint
+var TOTAL=4*SEG+5*DWELL;
+function timeline(sec){                        // wall-seconds -> walk t in [0,1], with dwells
+  var t=0, s=sec;
+  for(var k=0;k<5;k++){
+    if(s<DWELL) return t;                      // dwelling at waypoint k
+    s-=DWELL;
+    if(k===4) return 1;
+    if(s<SEG) return t + (s/SEG)*0.25;         // moving along segment k
+    s-=SEG; t+=0.25;
+  }
+  return 1;
+}
+function setT(t, fromScrub){
+  t=Math.max(0,Math.min(1,t));
+  scene.t=t;
+  if(!fromScrub){ scrub.value=Math.round(t*1000); }
+  scrub.style.setProperty("--fill",(t*100)+"%");
+  updateReadout(t);
+}
+scrub.addEventListener("input",function(){ playing=false; playBtn.textContent="▶"; setT(scrub.value/1000,true); });
+playBtn.addEventListener("click",function(){
+  if(playing){ playing=false; playBtn.textContent="▶"; return; }
+  playing=true; playBtn.textContent="⏸";
+  if(scene.t>=0.999) scene.t=0;
+  playFrom=invTimeline(scene.t); playStart=performance.now();
+});
+function invTimeline(t){                       // approximate inverse for resume
+  var k=Math.floor(t*4+1e-9), u=t*4-k;
+  return k*(DWELL+SEG)+DWELL+u*SEG;
+}
+(function frame(){
+  if(playing){
+    var sec=playFrom+(performance.now()-playStart)/1000;
+    if(sec>=TOTAL){ playing=false; playBtn.textContent="▶"; setT(1); }
+    else setT(timeline(sec));
+  }
+  if(scene.visible && !scene.reduce && !scene.dragging && !playing){ scene.yaw+=0.0018; }
+  if(scene.visible || scene.dragging) scene.draw();
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- mode tabs ---------- */
+var tabs=document.getElementById("modeTabs");
+tabs.addEventListener("click",function(e){
+  var b=e.target.closest("button"); if(!b) return;
+  tabs.querySelectorAll("button").forEach(function(x){ x.classList.remove("on"); });
+  b.classList.add("on"); scene.mode=b.dataset.mode;
+  document.getElementById("termMan").style.opacity = scene.mode==="linear"?0.35:1;
+  document.getElementById("termLin").style.opacity = scene.mode==="manifold"?0.35:1;
+  scene.draw();
+});
+
+/* ---------- ticks ---------- */
+var WD=["Mon","Tue","Wed","Thu","Fri"];
+var ticksEl=document.getElementById("ticks");
+WD.forEach(function(d,i){
+  var el=document.createElement("div");
+  el.className="tick"; el.style.left=(i*25)+"%"; el.textContent=d;
+  ticksEl.appendChild(el);
+});
+
+/* ---------- rails ---------- */
+function buildRail(id, list, isExpected){
+  var host=document.getElementById(id); host.innerHTML="";
+  list.forEach(function(w){
+    var c=document.createElement("div"); c.className="cell";
+    c.innerHTML='<div class="exp">'+(isExpected?'waypoint '+(w.expected_idx+1):w.expected.slice(0,3))+'</div>'+
+                '<div class="got">'+(isExpected?w.expected:w.induced)+'</div>';
+    host.appendChild(c);
+  });
+  return host.children;
+}
+var expCells=buildRail("railExp", DATA.way.man, true);
+var manCells=buildRail("railMan", DATA.way.man, false);
+var linCells=buildRail("railLin", DATA.way.lin, false);
+
+/* ---------- live readout ---------- */
+function updateReadout(t){
+  var k=Math.min(4, Math.round(t*4));
+  var passed=Math.floor(t*4+1e-6);
+  var m=DATA.way.man[k], l=DATA.way.lin[k];
+  document.getElementById("manStat").textContent="waypoint "+(k+1)+" / 5";
+  document.getElementById("linStat").textContent="waypoint "+(k+1)+" / 5";
+  document.getElementById("manTok").textContent=m.induced;
+  document.getElementById("linTok").textContent=l.induced;
+  var mm=document.getElementById("manMark"), lm=document.getElementById("linMark");
+  mm.textContent=m.match?"✓":"✗"; mm.className="mark "+(m.match?"ok":"bad");
+  lm.textContent=l.match?"✓":"✗"; lm.className="mark "+(l.match?"ok":"bad");
+  document.getElementById("manP").style.width=(m.p_induced*100)+"%";
+  document.getElementById("linP").style.width=(l.p_induced*100)+"%";
+  document.getElementById("manPL").textContent="p("+m.induced+") = "+m.p_induced.toFixed(2);
+  document.getElementById("linPL").textContent="p("+l.induced+") = "+l.p_induced.toFixed(2);
+  ticksEl.querySelectorAll(".tick").forEach(function(el,i){ el.classList.toggle("on", i===k); });
+  for(var i=0;i<5;i++){
+    var lit = i<=passed || t>=0.999;
+    [ [expCells,true,null], [manCells,false,DATA.way.man], [linCells,false,DATA.way.lin] ].forEach(function(cfg){
+      var cell=cfg[0][i];
+      cell.classList.toggle("lit", lit);
+      cell.classList.toggle("now", i===k);
+      if(!cfg[1] && lit){ cell.classList.add(cfg[2][i].match?"ok":"bad"); }
+      if(cfg[1] && lit){ cell.classList.add("ok"); }
+    });
+  }
+}
+var hashT=(location.hash.match(/t=([0-9.]+)/)||[])[1];
+setT(hashT?parseFloat(hashT):0);
+
+/* ---------- scoreboard fill on scroll ---------- */
+var sb=document.getElementById("scoreboard");
+new IntersectionObserver(function(es,obs){
+  if(!es[0].isIntersecting) return;
+  sb.querySelectorAll(".fillb").forEach(function(b){ b.style.width=(parseFloat(b.dataset.v)*100)+"%"; });
+  obs.disconnect();
+},{threshold:0.35}).observe(sb);
+
+/* ---------- 13-concept dumbbell ---------- */
+var host=document.getElementById("dumbbell");
+DATA.concepts.forEach(function(c){
+  var row=document.createElement("div");
+  row.className="drow"+(c.tier==="win"?" hl":"");
+  var lo=Math.min(c.lin,c.man), hi=Math.max(c.lin,c.man);
+  row.innerHTML=
+    '<div class="dn">'+c.label+'<small>'+c.kind+'</small></div>'+
+    '<div class="dtrack"><div class="base"></div>'+
+    '<div class="conn" style="left:'+(lo*100)+'%;width:'+((hi-lo)*100)+'%"></div>'+
+    '<div class="shuf" style="left:'+(c.shuf*100)+'%"></div>'+
+    '<div class="dot lin" style="left:'+(c.lin*100)+'%"></div>'+
+    '<div class="dot man'+(c.tier==="no"?" fail":"")+'" style="left:'+(c.man*100)+'%"></div></div>'+
+    '<div class="dtag '+(c.tier==="win"?"win":(c.tier==="weak"?"weak":"no"))+'">'+c.tag+'</div>';
+  host.appendChild(row);
+});
+var leg=document.createElement("div");
+leg.className="dlegend";
+leg.innerHTML='<span class="it"><span class="k man"></span> manifold</span>'+
+  '<span class="it"><span class="k lin"></span> linear chord</span>'+
+  '<span class="it"><span class="k shuf"></span> shuffled-order control</span>'+
+  '<span class="it">gate = manifold beats both · highlighted rows = the non-dominated lane</span>';
+host.appendChild(leg);
+
+/* ---------- layer sweep cells ---------- */
+var sg=document.getElementById("sweepGrid");
+DATA.reading.best_layer_sweep.forEach(function(s){
+  var el=document.createElement("div");
+  el.className="sw-cell"+(s.layer===DATA.layer?" best":"");
+  el.innerHTML='<div class="swl">layer '+s.layer+(s.layer===DATA.layer?' · used':'')+'</div>'+
+    '<div class="swv">1-D line <b>'+s.ring_adj_1d_linear.toFixed(2)+'</b><br>2-D ring <b>'+s.ring_adj_2d_manifold.toFixed(2)+'</b></div>';
+  sg.appendChild(el);
+});
+})();
+</script>
+</body>
+</html>

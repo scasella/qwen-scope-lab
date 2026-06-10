@@ -150,7 +150,10 @@ Honest scope on the *reading* half: nearest-neighbour ring-adjacency is layer-de
 to carry the claim alone — at layer 12 a single linear direction folds the ring cleanly
 (1-D adjacency 1.0), while at the manifold's best layer 14 the 2-D ring fit is 1.0 and 1-D is 0.57.
 Routing is the decisive evidence because it requires actually traversing the order. Interactive:
-the "exception that earns its keep" section of `docs/writeups/manifold-atlas-3d.html`.
+the "exception that earns its keep" section of `docs/writeups/manifold-atlas-3d.html`, and the
+dedicated walkable demo `docs/writeups/cyclic-ring-steering.html` (scrub/play the walk on the
+fitted ring with the live per-waypoint model read-outs, controls scoreboard, and the 13-concept
+manifold-vs-linear strip).
 
 ## Why this matters
 
