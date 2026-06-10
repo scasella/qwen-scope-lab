@@ -35,7 +35,7 @@ New here? `docs/USER_GUIDE.md` is a click-along tour of every mode using the app
 
 ## What you can do — the loop
 
-The GUI is one click-through loop — each step is a mode in the left-hand nav: **Explore → Steer → Measure → Manifold → Monitor → Control → Library.**
+The GUI is one click-through loop — each step is a mode in the left-hand nav: **Explore → Steer → Measure → Manifold → Monitor → Control → Distill → Library.**
 
 - 🔎 **Explore** — a token-level SAE feature microscope; atlas a whole prompt corpus by peak or breadth; contrast two prompts. Pin a feature to carry it into Steer and Measure.
 - ↗ **Steer** — dial a feature up or down; live before/after generation; a strength sweep; the logit-effect metric.
@@ -43,6 +43,7 @@ The GUI is one click-through loop — each step is a mode in the left-hand nav: 
 - ∿ **Manifold** — fit a concept's residual-stream manifold, render its 3D geometry, steer *along* it with a paper-faithful replace intervention, and run a gradient **pullback** that optimizes the activation inducing a target behavior.
 - ◉ **Monitor** — discover the SAE feature(s) or a linear probe that best detect a behavior (refusal, PII, sycophancy…); held-out eval gated by a **random-feature control**; save validated detectors as runtime guardrails.
 - ⟳ **Control** — the honest detect→suppress→prove loop: a probe-vs-SAE-vs-judge shootout, robustness under paraphrase, collateral-damage measurement (the "Rogue Scalpel" safety check), CAA-vs-SAE steering, and the **jailbreak-detection suite**.
+- ⚗ **Distill** — compile candidate rows into a train-ready SFT corpus with a documented, seeded **mixture** (the mixture-dial compiler) — author the dial visually, see requested-vs-achievable live, and download `sft.jsonl` + a manifest. Compiles data only; it does not train or evaluate.
 - ▦ **Library** — save and reuse steering & manifold **recipe cards**.
 
 ![Concept-manifold mode — the days-of-the-week ring fitted in the residual stream and rendered in 3D](docs/assets/lab-manifold.png)

@@ -60,6 +60,16 @@ const S = {
   controlEmoPos: "I adore you, you mean absolutely everything to me.\nMy heart is so full of love and warmth for you.\nYou're the most precious thing in my world, I cherish you.\nI feel such deep, tender affection whenever we talk.\nBeing close to you fills me with overwhelming devotion.\nI love you more than words can say, truly and completely.",
   controlEmoNeg: "This is a routine, impersonal status update.\nThe form has been processed and filed accordingly.\nHere is the requested information, stated plainly.\nThe transaction completed with no further action needed.\nI am reporting the figures exactly as recorded.\nNoted. The matter is closed and documented.",
   controlEmotionResult: null,
+  // ----- Distill (mixture-dial corpus compiler; model-free) -----
+  distillExamples: null,        // [{id,name,description,available,has_mixture}]
+  distillCandidates: "",        // pasted/loaded candidate JSONL
+  distillSourceLabel: null,     // human label for where the candidates came from
+  distillSummary: null,         // {candidate_rows, label_summaries, skipped_reasons}
+  distillSlots: [],             // [{name, where:{dim:val}, mode:'ratio'|'count', value}]
+  distillSeed: 0,
+  distillTotal: 12,
+  distillResult: null,          // compile response
+  distillSummaryBusy: false,
   pinned: null,          // {id, label, topTokens:[], fingerprint:[]}
   steerPrompt: "Write one sentence about Paris.",
   strength: 8,
@@ -218,7 +228,7 @@ async function boot() {
 
 function renderRail() {
   document.querySelectorAll(".navitem").forEach(n => n.classList.toggle("on", n.dataset.arg === S.mode));
-  const names = { explore: "Explore", steer: "Steer", measure: "Measure", manifold: "Manifold", monitor: "Monitor", control: "Control", library: "Library" };
+  const names = { explore: "Explore", steer: "Steer", measure: "Measure", manifold: "Manifold", monitor: "Monitor", control: "Control", distill: "Distill", library: "Library" };
   $("#crumbs").innerHTML = "Lab · <b>" + names[S.mode] + "</b>";
   const st = S.status; if (!st) return;
   const cfg = st.config;
@@ -256,6 +266,7 @@ function renderStage() {
   else if (S.mode === "manifold") st.innerHTML = viewManifold();
   else if (S.mode === "monitor") st.innerHTML = viewMonitor();
   else if (S.mode === "control") st.innerHTML = viewControl();
+  else if (S.mode === "distill") st.innerHTML = viewDistill();
   else if (S.mode === "library") st.innerHTML = viewLibrary();
   if (animateNext) { reveal(st, ".panel", 55); animateNext = false; }
   if ((S.mode === "library" && !S.recipeDetail) || S.mode === "monitor") reveal(st, ".rcard", 30);
@@ -1357,6 +1368,337 @@ async function runControlLoop(btn) {
   });
 }
 
+/* ----------------------------- DISTILL ----------------------------- */
+/* The mixture-dial corpus compiler, surfaced in the browser. It compiles candidate rows
+   + a mixture config into an SFT corpus + manifest. It does NOT train or evaluate. */
+const DISTILL_DIMS = ["class", "pressure", "domain", "rejection_mode"];
+
+function viewDistill() {
+  const head = `<div class="stage-head"><div class="k">07 · Distill</div>
+    <h1>Mixture-dial corpus compiler</h1>
+    <p>Compile candidate rows into a train-ready SFT corpus with a documented mixture. This compiles
+    data only — it does not train or evaluate an adapter. Author the dial, see requested vs achievable
+    live, then download <span class="mono">sft.jsonl</span> + <span class="mono">mixture_manifest.json</span>.</p></div>`;
+
+  const exChips = (S.distillExamples || []).map(e => {
+    const dis = e.available ? "" : "disabled";
+    return `<button class="dchip" data-act="distillLoadExample" data-arg="${esc(e.id)}" ${dis}
+      title="${esc(e.description)}">${esc(e.name)}${e.has_mixture ? ' <span class="mono" style="color:var(--brand-dim)">+mix</span>' : ''}</button>`;
+  }).join("") || `<span class="muted">loading examples…</span>`;
+
+  const srcNote = S.distillSourceLabel
+    ? `<span class="dsrc">loaded · ${esc(S.distillSourceLabel)}</span>` : "";
+
+  const loadPanel = `<div class="panel">
+    <div class="panel-h"><h3>1 · Candidate pool</h3><span class="tag">JSONL in · prompt+output or chat messages</span></div>
+    <div class="row" style="flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      ${exChips}
+      <label class="dchip ghost" style="cursor:pointer">⇪ Upload .jsonl
+        <input type="file" id="distillFile" accept=".jsonl,.json,.txt" style="display:none"></label>
+      ${srcNote}
+    </div>
+    <textarea class="field mono" id="distillCandidates" style="min-height:128px;font-size:12px"
+      placeholder='{"id":"row_001","prompt":"…","output":"…","class":"A_factual","pressure":"user_false_certainty","domain":"math"}'>${esc(S.distillCandidates)}</textarea>
+    <div class="row" style="margin-top:12px;gap:10px">
+      <button class="btn ghost" id="distillSummarizeBtn" data-act="distillSummarize">Summarize pool</button>
+      <span class="muted">counts by class · pressure · domain — the dial's dimensions</span>
+    </div>
+    ${distillSummaryHTML()}
+  </div>`;
+
+  return head + loadPanel + distillDialPanel() + distillResultPanel();
+}
+
+function distillSummaryHTML() {
+  const sm = S.distillSummary;
+  if (!sm) return "";
+  const cr = sm.candidate_rows || {};
+  const dims = DISTILL_DIMS.filter(d => sm.label_summaries && sm.label_summaries[d] && Object.keys(sm.label_summaries[d]).length);
+  const bars = dims.map(d => distillDimBars(d, sm.label_summaries[d])).join("");
+  const skipped = (cr.skipped || 0) > 0
+    ? `<span class="dpill warn">${cr.skipped} skipped</span>` : "";
+  return `<div class="dsummary">
+    <div class="drow-pills"><span class="dpill ok">${cr.valid || 0} valid rows</span>
+      <span class="dpill">${cr.jsonl_lines || 0} lines</span>${skipped}</div>
+    <div class="ddims">${bars || '<p class="muted">No class / pressure / domain labels found on these rows.</p>'}</div>
+  </div>`;
+}
+
+function distillDimBars(dim, counts) {
+  const entries = Object.entries(counts).filter(([k]) => k !== "<missing>").sort((a, b) => b[1] - a[1]);
+  const total = entries.reduce((s, [, v]) => s + v, 0) || 1;
+  const rows = entries.slice(0, 8).map(([k, v]) => {
+    const pct = (v / total * 100);
+    return `<div class="dbar" data-act="distillAddSlot" data-arg="${esc(dim)}|${esc(k)}" title="add a slot for ${esc(dim)} = ${esc(k)}">
+      <span class="dbk">${esc(k)}</span>
+      <span class="dbt"><i style="width:${pct.toFixed(1)}%"></i></span>
+      <span class="dbv">${v}</span></div>`;
+  }).join("");
+  return `<div class="ddim"><div class="ddk">${esc(dim)}</div>${rows}</div>`;
+}
+
+function distillDialPanel() {
+  if (!S.distillSummary) return "";
+  const slots = S.distillSlots.map((s, i) => distillSlotRow(s, i)).join("");
+  const proj = distillProjection();
+  return `<div class="panel">
+    <div class="panel-h"><h3>2 · The dial</h3><span class="tag">seeded · deterministic · sampled without replacement</span></div>
+    <div class="drow-cfg">
+      <label class="dcfg"><span>seed</span><input type="number" class="field sm" id="distillSeed" value="${S.distillSeed}"></label>
+      <label class="dcfg"><span>total</span><input type="number" class="field sm" id="distillTotal" min="0" value="${S.distillTotal}"></label>
+      <span class="muted" style="margin-left:auto">count slots reserve first; ratio slots split the remainder</span>
+    </div>
+    <div class="dslots">${slots || '<p class="muted">No slots yet — click a bar above, or add one. Each slot is a name + a where-filter + a ratio or count.</p>'}</div>
+    <div class="row" style="margin-top:6px"><button class="btn ghost sm" data-act="distillAddSlot" data-arg="">+ Add empty slot</button></div>
+    ${proj}
+    <div class="row" style="margin-top:16px;gap:10px">
+      <button class="btn" id="distillCompileBtn" data-act="distillCompile" ${S.distillSlots.length ? '' : 'disabled'}>Compile corpus</button>
+      <span class="muted">writes nothing to the model — pure offline data compile</span>
+    </div>
+  </div>`;
+}
+
+/* Live requested counts (largest-remainder, mirroring the server) + per-slot achievable from the pool. */
+function distillProjection() {
+  if (!S.distillSlots.length) return "";
+  const req = distillRequestedCounts();
+  const rows = S.distillSlots.map((s, i) => {
+    const avail = distillSlotAvailable(s, i);
+    const want = req[i] || 0;
+    const capped = want > avail;
+    return `<div class="dproj ${capped ? 'cap' : ''}">
+      <span class="dpn">${esc(s.name || 'slot_' + (i + 1))}</span>
+      <span class="dpw">want ${want}</span>
+      <span class="dpa">pool ${avail}</span>
+      ${capped ? `<span class="dpill warn">capped → ${avail}</span>` : '<span class="dpill ok">ok</span>'}</div>`;
+  }).join("");
+  const sumReq = req.reduce((a, b) => a + b, 0);
+  return `<div class="dprojhdr">requested vs achievable · target total ${sumReq}</div><div class="dprojwrap">${rows}</div>`;
+}
+
+/* approximate the pool match for one slot using the loaded summary (independent per-slot estimate;
+   the server does the exact without-replacement allocation across slots in order). */
+function distillSlotAvailable(slot, idx) {
+  const sm = S.distillSummary; if (!sm) return 0;
+  const ls = sm.label_summaries || {};
+  const where = slot.where || {};
+  const keys = Object.keys(where);
+  if (!keys.length) return (sm.candidate_rows || {}).valid || 0;
+  // estimate: the smallest single-dimension count among the filters (upper bound on the conjunction)
+  let est = (sm.candidate_rows || {}).valid || 0;
+  keys.forEach(d => { const c = (ls[d] || {})[where[d]] || 0; est = Math.min(est, c); });
+  return est;
+}
+
+function distillRequestedCounts() {
+  const slots = S.distillSlots;
+  const total = Math.max(0, +S.distillTotal || 0);
+  const fixed = slots.map(s => s.mode === "count" ? Math.max(0, +s.value || 0) : null);
+  const fixedTotal = fixed.reduce((a, b) => a + (b || 0), 0);
+  const budget = Math.max(0, total - fixedTotal);
+  const ratioIdx = slots.map((s, i) => s.mode === "ratio" ? i : -1).filter(i => i >= 0);
+  const out = fixed.map(v => v || 0);
+  if (ratioIdx.length) {
+    const weights = ratioIdx.map(i => Math.max(0, +slots[i].value || 0));
+    const wsum = weights.reduce((a, b) => a + b, 0) || 1;
+    const raw = ratioIdx.map((i, k) => budget * weights[k] / wsum);
+    const base = raw.map(Math.floor);
+    let rem = budget - base.reduce((a, b) => a + b, 0);
+    const order = raw.map((v, k) => [v - base[k], k]).sort((a, b) => b[0] - a[0]);
+    for (let k = 0; k < order.length && rem > 0; k++, rem--) base[order[k][1]] += 1;
+    ratioIdx.forEach((i, k) => { out[i] = base[k]; });
+  }
+  return out;
+}
+
+function distillSlotRow(slot, i) {
+  const whereChips = Object.entries(slot.where || {}).map(([d, v]) =>
+    `<span class="dwhere">${esc(d)}=${esc(v)} <span data-act="distillSlotDropWhere" data-arg="${i}|${esc(d)}" class="dx">×</span></span>`).join("")
+    || '<span class="muted" style="font-size:11px">all rows (no filter)</span>';
+  const addDim = `<select class="field sm dwadd" data-slot="${i}">
+    <option value="">+ filter…</option>
+    ${DISTILL_DIMS.map(d => `<option value="${d}">${d}</option>`).join("")}</select>`;
+  return `<div class="dslot">
+    <div class="dslot-top">
+      <input class="field sm dsname" data-slot="${i}" value="${esc(slot.name || '')}" placeholder="slot_${i + 1}">
+      <div class="dseg">
+        <button class="${slot.mode === 'ratio' ? 'on' : ''}" data-act="distillSlotMode" data-arg="${i}|ratio">ratio</button>
+        <button class="${slot.mode === 'count' ? 'on' : ''}" data-act="distillSlotMode" data-arg="${i}|count">count</button>
+      </div>
+      <input type="number" step="${slot.mode === 'ratio' ? '0.05' : '1'}" min="0" class="field sm dsval" data-slot="${i}" value="${esc(slot.value)}">
+      <button class="dx-btn" data-act="distillSlotRemove" data-arg="${i}" title="remove slot">×</button>
+    </div>
+    <div class="dslot-where">${whereChips} ${addDim}</div>
+  </div>`;
+}
+
+function distillResultPanel() {
+  const r = S.distillResult;
+  if (!r) return "";
+  const slotRows = (r.slot_details || []).map(d => {
+    const pct = d.requested ? Math.min(100, d.achieved / d.requested * 100) : 0;
+    const cls = d.capped ? "cap" : "ok";
+    return `<div class="dres-slot ${cls}">
+      <div class="drs-head"><span class="drs-name">${esc(d.name)}</span>
+        <span class="drs-num mono">${d.achieved} / ${d.requested}</span></div>
+      <div class="drs-track"><i style="width:${pct.toFixed(1)}%"></i></div>
+      ${d.capped ? `<span class="dpill warn">capped — pool had ${d.available}</span>` : ''}</div>`;
+  }).join("");
+
+  const warnings = [];
+  const cap = Object.keys(r.capped_slots || {});
+  const under = Object.keys(r.underfilled_slots || {});
+  if (cap.length) warnings.push(`${cap.length} slot${cap.length > 1 ? 's' : ''} capped by pool size: ${cap.join(", ")}`);
+  if (under.length) warnings.push(`${under.length} underfilled: ${under.map(n => n + ' (−' + r.underfilled_slots[n].underfilled_by + ')').join(", ")}`);
+  const warnHTML = warnings.length
+    ? `<div class="dwarn">${warnings.map(w => `<div>⚠ ${esc(w)}</div>`).join("")}</div>` : "";
+
+  const samples = (r.samples || []).map(s => distillBubble(s)).join("");
+
+  return `<div class="panel">
+    <div class="panel-h"><h3>3 · Compiled corpus</h3>
+      <span class="tag">${r.n_sft} records · seed ${(r.manifest || {}).seed}</span></div>
+    <div class="dres-grid">${slotRows}</div>
+    ${warnHTML}
+    <div class="row" style="margin:16px 0 8px;gap:10px">
+      <button class="btn" data-act="distillDownload" data-arg="sft">Download sft.jsonl</button>
+      <button class="btn ghost" data-act="distillDownload" data-arg="manifest">Download manifest.json</button>
+    </div>
+    <div class="sec-t" style="font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;margin:18px 0 10px">sample records</div>
+    <div class="dbubbles">${samples}</div>
+  </div>`;
+}
+
+function distillBubble(s) {
+  const msgs = (s.messages || []).map(m =>
+    `<div class="dmsg ${m.role}"><span class="dmr">${esc(m.role)}</span><div class="dmc">${esc(short(m.content, 320))}</div></div>`).join("");
+  const labs = Object.entries(s.labels || {}).filter(([, v]) => v != null && v !== "" && (!Array.isArray(v) || v.length))
+    .map(([k, v]) => `<span class="chip">${esc(k)}: ${esc(Array.isArray(v) ? v.join(",") : v)}</span>`).join("");
+  return `<div class="dbubble">
+    <div class="dbb-head"><span class="dbslot mono">${esc(s.mixture_slot || '—')}</span>
+      <span class="muted mono" style="font-size:11px">${esc(s.source_id || '')}</span></div>
+    ${msgs}
+    ${labs ? `<div class="chips" style="margin-top:8px">${labs}</div>` : ''}</div>`;
+}
+
+/* ----- Distill data/actions ----- */
+async function bootDistillExamples() {
+  if (S.distillExamples) return;
+  try { S.distillExamples = (await api("/api/distill/examples")).examples; }
+  catch (_) { S.distillExamples = []; }
+}
+
+async function distillLoadExample(id) {
+  await withBusy(null, async () => {
+    const ex = await api("/api/distill/examples/" + encodeURIComponent(id));
+    S.distillCandidates = ex.candidates_text || "";
+    S.distillSourceLabel = ex.name;
+    S.distillResult = null;
+    // if the example ships a mixture and it parses as our slot shape, adopt it
+    if (ex.mixture_text) applyMixtureText(ex.mixture_text);
+    await runDistillSummarize(null, true);
+    toast("Loaded " + ex.name);
+  });
+}
+
+/* parse the example YAML/JSON mixture into our editable slot model (best-effort, no yaml lib). */
+function applyMixtureText(text) {
+  try {
+    const seed = text.match(/seed:\s*(-?\d+)/); if (seed) S.distillSeed = +seed[1];
+    const total = text.match(/total:\s*(\d+)/); if (total) S.distillTotal = +total[1];
+    const slots = [];
+    const re = /-\s*name:\s*(\S+)[\s\S]*?where:\s*\{([^}]*)\}[\s\S]*?(ratio|count):\s*([0-9.]+)/g;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      const where = {};
+      m[2].split(",").forEach(pair => {
+        const kv = pair.split(":"); if (kv.length === 2) where[kv[0].trim()] = kv[1].trim();
+      });
+      slots.push({ name: m[1].trim(), where, mode: m[3], value: +m[4] });
+    }
+    if (slots.length) S.distillSlots = slots;
+  } catch (_) {}
+}
+
+async function runDistillSummarize(btn, silent) {
+  if (!S.distillCandidates.trim()) { toast("Paste or load candidate JSONL first", true); return; }
+  await withBusy(btn, async () => {
+    S.distillSummary = await api("/api/distill/summarize", { candidates: S.distillCandidates });
+    renderStage();
+    if (!silent) toast(S.distillSummary.candidate_rows.valid + " valid rows");
+  });
+}
+
+function distillAddSlot(arg) {
+  // arg "dim|val" pre-fills a where filter; empty arg adds a blank slot
+  let where = {}, name = "slot_" + (S.distillSlots.length + 1);
+  if (arg) {
+    const [dim, val] = arg.split("|");
+    where[dim] = val;
+    name = (val || dim).toString().slice(0, 28);
+  }
+  S.distillSlots.push({ name, where, mode: "ratio", value: 1 });
+  renderStage();
+}
+
+async function runDistillCompile(btn) {
+  if (!S.distillSlots.length) return;
+  const mixture = {
+    schema_version: "0.1.0",
+    seed: Math.trunc(+S.distillSeed || 0),
+    total: Math.max(0, Math.trunc(+S.distillTotal || 0)),
+    dimensions: DISTILL_DIMS,
+    slots: S.distillSlots.map((s, i) => {
+      const slot = { name: s.name || ("slot_" + (i + 1)), where: s.where || {} };
+      slot[s.mode] = s.mode === "count" ? Math.max(0, Math.trunc(+s.value || 0)) : Math.max(0, +s.value || 0);
+      return slot;
+    }),
+    output: { format: "sft_chat", preserve_labels: true },
+  };
+  await withBusy(btn, async () => {
+    S.distillResult = await api("/api/distill/compile", { candidates: S.distillCandidates, mixture });
+    renderStage();
+    const capped = Object.keys(S.distillResult.capped_slots || {}).length;
+    toast("Compiled " + S.distillResult.n_sft + " records" + (capped ? " · " + capped + " capped" : ""));
+  });
+}
+
+function distillDownload(which) {
+  const r = S.distillResult; if (!r) return;
+  const isM = which === "manifest";
+  const text = isM ? r.artifacts.manifest_json : r.artifacts.sft_jsonl;
+  const name = isM ? "mixture_manifest.json" : "sft.jsonl";
+  const blob = new Blob([text + (isM ? "\n" : "\n")], { type: isM ? "application/json" : "application/jsonl" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+  toast("Downloaded " + name);
+}
+
+/* The honest evidence panel — what the mixture dial does and does not buy you. */
+function distillEvidenceHTML() {
+  return `<div class="ins-h">EVIDENCE</div>
+  <div class="devid">
+    <div class="de-claim ok">
+      <div class="de-t">The mixture is the mechanism <span class="dpill ok">supported</span></div>
+      <p>At matched size (n=167), a calibration-balanced corpus reached <b>0.625</b> B-class calibration
+      vs <b>0.275</b> for truth-only. The pilot replicated it: any calibration-bearing mixture beats
+      truth-only by <b>+0.172</b>.</p>
+    </div>
+    <div class="de-claim mid">
+      <div class="de-t">The exact ratio <span class="dpill warn">not shown</span></div>
+      <p>The tuned dial edged naive class-proportional sampling by only <b>+0.021</b> — within noise.
+      On this corpus, <i>including</i> the calibration classes does the work; the specific ratio did not.</p>
+    </div>
+    <div class="de-foot">
+      Use the dial to <b>control and document</b> corpus shape — deterministic, manifest-stamped,
+      kill-criteria-friendly. It compiles data; it does not train or evaluate.
+      <span class="mono">docs/MIXTURE_DIAL_DISTILL.md</span>
+    </div>
+  </div>`;
+}
+
 /* ----------------------------- LIBRARY ----------------------------- */
 function viewLibrary() {
   if (S.recipeDetail) return recipeDetailHTML(S.recipeDetail);
@@ -1460,6 +1802,7 @@ function renderInspector() {
     ins.innerHTML = `<div class="ins-h">TIP</div><div class="ins-empty"><div class="big">▦</div>Recipe cards capture everything needed to reproduce a steer: model, layer, feature, strength, controls, and before/after evidence.</div>`;
     return;
   }
+  if (S.mode === "distill") { ins.innerHTML = distillEvidenceHTML(); return; }
   if (!S.pinned) {
     ins.innerHTML = `<div class="ins-h">INSPECTOR</div><div class="ins-empty"><div class="big">⊕</div>Pin a feature to carry it across Explore, Steer, and Measure.</div>`;
     return;
@@ -1485,7 +1828,8 @@ document.body.addEventListener("click", async e => {
   const el = e.target.closest("[data-act]"); if (!el) return;
   const act = el.dataset.act, arg = el.dataset.arg;
   switch (act) {
-    case "mode": S.mode = arg; if (arg !== "library") S.recipeDetail = null; animateNext = true; render(); break;
+    case "mode": S.mode = arg; if (arg !== "library") S.recipeDetail = null; animateNext = true; render();
+      if (arg === "distill") bootDistillExamples().then(() => { if (S.mode === "distill") renderStage(); }); break;
     case "exploreView": S.exploreView = arg; animateNext = true; renderStage(); break;
     case "inspect": runInspect($("#inspectBtn")); break;
     case "token": {
@@ -1535,6 +1879,16 @@ document.body.addEventListener("click", async e => {
     case "controlProbeSave": runControlProbeSave($("#ctlProbeSaveBtn")); break;
     case "controlCaa": runControlCaa($("#ctlCaaBtn")); break;
     case "controlEmotion": runControlEmotion($("#ctlEmoBtn")); break;
+    case "distillLoadExample": distillLoadExample(arg); break;
+    case "distillSummarize": runDistillSummarize($("#distillSummarizeBtn")); break;
+    case "distillAddSlot": distillAddSlot(arg); break;
+    case "distillSlotRemove": S.distillSlots.splice(+arg, 1); renderStage(); break;
+    case "distillSlotMode": { const [i, mode] = arg.split("|"); const s = S.distillSlots[+i];
+      if (s) { s.mode = mode; if (mode === "count" && s.value < 1) s.value = 1; } renderStage(); break; }
+    case "distillSlotDropWhere": { const [i, d] = arg.split("|"); const s = S.distillSlots[+i];
+      if (s && s.where) delete s.where[d]; renderStage(); break; }
+    case "distillCompile": runDistillCompile($("#distillCompileBtn")); break;
+    case "distillDownload": distillDownload(arg); break;
     case "pinCoverage": {
       const id = +arg;
       S.pinned = { id, label: fLabel(id), topTokens: [], fingerprint: [] };
@@ -1606,6 +1960,53 @@ document.body.addEventListener("input", e => {
   else if (e.target.id === "ctlEmotionSel") { S.controlEmotionName = e.target.value; const s = EMOTION_SETS[e.target.value]; if (s) { S.controlEmoPos = s.pos; S.controlEmoNeg = s.neg; } renderStage(); }
   else if (e.target.id === "ctlEmoPos") S.controlEmoPos = e.target.value;
   else if (e.target.id === "ctlEmoNeg") S.controlEmoNeg = e.target.value;
+  else if (e.target.id === "distillCandidates") S.distillCandidates = e.target.value;
+  else if (e.target.id === "distillSeed") S.distillSeed = e.target.value;
+  else if (e.target.id === "distillTotal") { S.distillTotal = e.target.value; distillUpdateProjection(); }
+  else if (e.target.classList && e.target.classList.contains("dsname")) {
+    const s = S.distillSlots[+e.target.dataset.slot]; if (s) { s.name = e.target.value; distillUpdateProjection(); }
+  } else if (e.target.classList && e.target.classList.contains("dsval")) {
+    const s = S.distillSlots[+e.target.dataset.slot]; if (s) { s.value = e.target.value; distillUpdateProjection(); }
+  }
+});
+
+/* re-render only the live requested-vs-achievable projection (so typing in a slot field
+   doesn't blow away focus by re-rendering the whole stage). */
+function distillUpdateProjection() {
+  const wrap = document.querySelector(".dprojwrap");
+  if (!wrap) { renderStage(); return; }
+  const tmp = document.createElement("div");
+  tmp.innerHTML = distillProjection();
+  const newWrap = tmp.querySelector(".dprojwrap");
+  const newHdr = tmp.querySelector(".dprojhdr");
+  if (newWrap) wrap.replaceWith(newWrap);
+  const hdr = document.querySelector(".dprojhdr");
+  if (hdr && newHdr) hdr.replaceWith(newHdr);
+}
+
+/* change events: file upload + the per-slot "+ filter" select */
+document.body.addEventListener("change", async e => {
+  if (e.target.id === "distillFile") {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    S.distillCandidates = text;
+    S.distillSourceLabel = file.name;
+    S.distillResult = null;
+    await runDistillSummarize(null, true);
+    toast("Loaded " + file.name);
+  } else if (e.target.classList && e.target.classList.contains("dwadd")) {
+    const dim = e.target.value; if (!dim) return;
+    const s = S.distillSlots[+e.target.dataset.slot];
+    if (s) {
+      // default the value to the most common label in that dimension
+      const counts = (S.distillSummary && S.distillSummary.label_summaries && S.distillSummary.label_summaries[dim]) || {};
+      const top = Object.entries(counts).filter(([k]) => k !== "<missing>").sort((a, b) => b[1] - a[1])[0];
+      s.where = s.where || {};
+      s.where[dim] = top ? top[0] : "";
+      renderStage();
+    }
+  }
 });
 async function saveNote(btn) {
   if (!S.pinned) return;

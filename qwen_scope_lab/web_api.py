@@ -23,6 +23,7 @@ from pydantic import BaseModel
 from .autopilot import run_autopilot
 from .benchmark import ServiceGenerationBackend, attach_benchmark_to_recipe, recipe_from_manual, run_benchmark
 from .benchmark_metrics import score_for_objective
+from .distill_web import compile_mixture, list_examples, load_example, summarize_candidates
 from .experiment_log import ExperimentLog
 from .monitor_schema import BehaviorMonitor
 from .monitor_store import MonitorStore
@@ -391,6 +392,17 @@ class JailbreakScreenReq(BaseModel):
     prompt: str
     layer: int | None = None
     use_judge: bool = False
+
+
+# ---- Distill (mixture-dial corpus compiler) — model-free, works on every backend ----
+class DistillSummarizeReq(BaseModel):
+    candidates: str
+
+
+class DistillCompileReq(BaseModel):
+    candidates: str
+    mixture: dict[str, Any]
+    sample_limit: int = 6
 
 
 async def _guard(fn, *args, **kwargs):
@@ -997,6 +1009,29 @@ def create_app(service: Any, recipes_root: str | Path = "recipes",
     async def jailbreak_screen(req: JailbreakScreenReq) -> dict:
         # live demo screening — high-frequency, so not written to the experiment log
         return await _guard_gpu(op_jailbreak_screen, req.model_dump())
+
+    # ---- Distill: the mixture-dial corpus compiler. Pure-Python, deterministic, model-free —
+    #      it compiles candidate rows + a mixture config into an SFT corpus + manifest. It does NOT
+    #      train or evaluate anything, so these routes never touch the GPU lock. ----
+    @app.get("/api/distill/examples")
+    async def distill_examples() -> dict:
+        return await _guard(list_examples)
+
+    @app.get("/api/distill/examples/{example_id}")
+    async def distill_example(example_id: str) -> dict:
+        return await _guard(load_example, example_id)
+
+    @app.post("/api/distill/summarize")
+    async def distill_summarize(req: DistillSummarizeReq) -> dict:
+        return await _guard(summarize_candidates, req.candidates)
+
+    @app.post("/api/distill/compile")
+    async def distill_compile(req: DistillCompileReq) -> dict:
+        result = await _guard(compile_mixture, req.candidates, req.mixture, sample_limit=req.sample_limit)
+        _log_experiment("distill_compile", {"n_slots": len(req.mixture.get("slots") or []),
+                                            "total": req.mixture.get("total")}, "done",
+                        result={"n_sft": result.get("n_sft")})
+        return result
 
     @app.get("/demo")
     async def demo_page() -> FileResponse:
