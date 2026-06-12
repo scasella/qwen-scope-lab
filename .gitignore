@@ -52,6 +52,12 @@ reports/manifold-research-directions.md
 data/jailbreak_wild_raw/
 data/experiments/jailbreak_wild/
 
+# Agent-boundary injection corpus: rebuilt deterministically (seed 0) by
+# scripts/agent_boundary_build_corpus.py from public sources (BIPIA, InjecAgent,
+# Dolly); the downloaded payload sets and built corpus are not republished here.
+data/agent_boundary_raw/
+data/experiments/agent_boundary/
+
 # Heavy run by-products inside published evidence dirs (retrainable / re-derivable)
 reports/*.zip
 reports/**/*.zip
