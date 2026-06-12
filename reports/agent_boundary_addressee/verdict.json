@@ -1,0 +1,71 @@
+{
+  "model": "mlx-community/Qwen3.5-2B-bf16",
+  "layer": 12,
+  "seed": 0,
+  "n_docs": 700,
+  "n_windows": 2336,
+  "elapsed_s": 141.2,
+  "results": {
+    "A_matched_heldout": {
+      "addressee_dm": {
+        "overall": 0.6731,
+        "explicit": 0.7145,
+        "implicit": 0.6431
+      },
+      "addressee_lg": {
+        "overall": 0.7786,
+        "explicit": 0.8052,
+        "implicit": 0.7539
+      },
+      "lexical_matched": {
+        "overall": 0.6894,
+        "explicit": 0.7415,
+        "implicit": 0.6435
+      },
+      "presence_lg": {
+        "overall": 0.6265,
+        "explicit": 0.5818,
+        "implicit": 0.6698
+      },
+      "by_position_addressee_lg": {
+        "start": 0.9141,
+        "middle": 0.6536,
+        "end": 0.7179
+      },
+      "random": [
+        0.4971,
+        0.0191
+      ]
+    },
+    "B_transfer_real_payloads": {
+      "addressee_lg": {
+        "injected_vs_hard_neg": 0.6444,
+        "injected_vs_clean": 0.6473
+      },
+      "addressee_dm": {
+        "injected_vs_hard_neg": 0.6148,
+        "injected_vs_clean": 0.6115
+      },
+      "lexical_matched": {
+        "injected_vs_hard_neg": 0.5854,
+        "injected_vs_clean": 0.6132
+      },
+      "presence_lg": {
+        "injected_vs_hard_neg": 0.7905,
+        "injected_vs_clean": 0.9431
+      },
+      "combined_min": {
+        "injected_vs_hard_neg": 0.7577,
+        "injected_vs_clean": 0.9004
+      },
+      "random_vs_hard_neg": [
+        0.5092,
+        0.0626
+      ]
+    },
+    "C_axis_anatomy": {
+      "reader_vs_clean_addressee_lg": 0.4957,
+      "model_vs_clean_addressee_lg": 0.6473
+    }
+  }
+}

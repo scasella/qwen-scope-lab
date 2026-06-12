@@ -45,3 +45,26 @@ the corpus generator already produces matched pairs for it).
 Constructed corpus (real carriers, real published payloads, synthetic insertion) — not in-the-wild
 agent traffic; no adaptive evasion; uniform insertion formatting; single model/layer/seed; 50/50
 base rates; override flavor is n=12; hard negatives are author-written; one lexical featurization.
+
+## Follow-up: the addressee probe — pre-registered, NEGATIVE
+
+The localized open problem, tested directly (`reports/agent_boundary_addressee/`,
+`scripts/addressee_build_corpus.py` + `scripts/addressee_eval.py`): 48 **content-matched pairs**
+(same instruction, addressed to the model vs to a human reader, same carrier — the only difference
+within a pair is the addressee), 24 fit / 24 held-out, plus transfer back to this experiment's
+real payloads. All five predictions missed:
+
+| question | answer |
+|---|---|
+| held-out matched pairs (logistic, windowed-max) | **0.779** — at the fit condition (start position) 0.914; brittle to position |
+| transfer to real payloads vs benign imperatives | **0.644** — below the presence probe's 0.790 |
+| two-stage min-stack (presence + addressee) | **0.758** vs hard-neg — *worse* than presence alone; 0.900 vs clean (below 0.943) |
+| diff-means vs logistic on matched pairs | gap 0.106 — the diff-means deficit is not class heterogeneity |
+| axis anatomy (the clean positive) | reader-directed vs clean = **0.496** — the direction is orthogonal to instruction-presence, genuinely (weakly) about addressee |
+
+**The addressee distinction is a real but hard property at 2B layer 12** — a weak direction
+exists (0.91 in-condition, clean anatomy, random 0.50) but does not survive position shift or
+payload-style transfer from 24 authored pairs. The deployable story stays presence-only with
+per-distribution thresholds; "agent-boundary firewall" remains unclaimed, now with the gap
+measured rather than suspected. What might move it (unrun): more pairs, multi-position fit,
+a layer sweep, a bigger model.
